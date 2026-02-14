@@ -1,12 +1,32 @@
 {
-  "updatedAt": "2026-01-20T23:46:12.000Z",
-  "createdAt": "2026-01-20T19:19:09.869Z",
-  "id": "dpUxpqqkuvmbjgRz6RkW-",
+  "updatedAt": "2026-01-26T04:01:11.000Z",
+  "createdAt": "2026-01-20T22:12:38.848Z",
+  "id": "g9Cl7TeGTZMtOBBF",
   "name": "estacionalidad jerarquica",
   "active": false,
   "isArchived": true,
-  "nodes": [],
-  "connections": {},
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        240,
+        352
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        []
+      ]
+    }
+  },
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
@@ -14,15 +34,15 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "3dbf8a54-9fc3-4dde-bee9-8f03caeb8fba",
+  "versionId": "122bd87f-c5ca-4b15-8500-1092df09bc79",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-01-20T19:19:09.902Z",
-      "createdAt": "2026-01-20T19:19:09.902Z",
+      "updatedAt": "2026-01-20T22:12:38.859Z",
+      "createdAt": "2026-01-20T22:12:38.859Z",
       "role": "workflow:owner",
-      "workflowId": "dpUxpqqkuvmbjgRz6RkW-",
+      "workflowId": "g9Cl7TeGTZMtOBBF",
       "projectId": "cEfHDRqL69JgpIBq"
     }
   ],
