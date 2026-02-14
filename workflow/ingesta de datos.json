@@ -1,0 +1,859 @@
+{
+  "updatedAt": "2026-01-26T04:01:02.000Z",
+  "createdAt": "2026-01-17T21:11:06.213Z",
+  "id": "eZ05fH-APIHNv0aEE2awZ",
+  "name": "ingesta de datos",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        640
+      ],
+      "id": "54aa52bf-5004-4d39-bdf0-51efa16d024d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01e0861c-4123-4786-92cf-57c008cf60f8",
+              "name": "y",
+              "value": "={{ Number($json.ADJUSTEDACTUALSQTY) }}",
+              "type": "number"
+            },
+            {
+              "id": "e075d05a-fb30-441e-80db-455d7cc49145",
+              "name": "yhat",
+              "value": "={{ Number($json.foreAct) }}",
+              "type": "number"
+            },
+            {
+              "id": "de871df9-2396-4254-8b55-3657d404f107",
+              "name": "punitario",
+              "value": "={{ Number($json.PUNITARIO) }}",
+              "type": "number"
+            },
+            {
+              "id": "76104ada-943c-465c-92bc-c074686d9489",
+              "name": "pindex",
+              "value": "={{ Number($json.PINDEX) }}",
+              "type": "number"
+            },
+            {
+              "id": "9e1b7504-f38a-4d8a-8e66-eb4c2a293c71",
+              "name": "som",
+              "value": "={{ Number($json.SOM) }}",
+              "type": "number"
+            },
+            {
+              "id": "3e79412f-c1cc-419b-a8ee-49e102e4668d",
+              "name": "sov",
+              "value": "={{ Number($json.SOV) }}",
+              "type": "number"
+            },
+            {
+              "id": "401ee443-5a40-4fa2-bd5b-fa9867c03336",
+              "name": "zselloutcliente",
+              "value": "={{ Number($json.ZSELLOUTCLIENTE) }}",
+              "type": "number"
+            },
+            {
+              "id": "3fb24806-1570-433d-9c83-7fef8e5e55e7",
+              "name": "CUSTID",
+              "value": "={{ $json.CUSTID }}",
+              "type": "string"
+            },
+            {
+              "id": "05415e07-a833-473b-aadc-0d0eb1068395",
+              "name": "PRDID",
+              "value": "={{ $json.PRDID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        640
+      ],
+      "id": "2fe011cd-8c53-4690-8b42-9d5ee3327bc1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "max",
+              "field": "y"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        848
+      ],
+      "id": "b27e5427-7e45-4653-865c-575eefcc459b",
+      "name": "Summarize",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "PRDID, CUSTID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        656
+      ],
+      "id": "15cf837f-98d1-44ef-879b-be7fcaafdfdc",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "defa1d2c-bfa0-481a-a7de-54efb4515a88",
+              "name": "scale_max",
+              "value": "={{ $json.max_y }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        848
+      ],
+      "id": "c9c66d0a-7e24-4997-b411-8f45ffa27b0f",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Definición 1.1 – Normalización por escala (Cliente–Producto)\n * y_norm     = y / scale_max\n * yhat_norm  = yhat / scale_max\n */\n\nconst EPS = 1e-9;\n\nreturn items.map(item => {\n  const r = item.json;\n\n  const y = Number(r.y);\n  const yhat = Number(r.yhat);\n  const scale_max = Number(r.scale_max ?? 0);\n\n  const denom = scale_max + EPS;\n\n  return {\n    json: {\n      ...r,\n\n      y_norm: (Number.isFinite(y) && scale_max > 0) ? (y / denom) : 0,\n      yhat_norm: (Number.isFinite(yhat) && scale_max > 0) ? (yhat / denom) : 0,\n\n      // flag útil para filtrado posterior\n      scale_is_zero: scale_max === 0\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        656
+      ],
+      "id": "675682b2-67a4-441f-89bd-eddc378162ff",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl",
+          "mode": "list",
+          "cachedResultName": "dataset_mrp (2).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "70k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        480
+      ],
+      "id": "38dc7298-7bd8-4dc4-b1c7-bebe60c4f73d",
+      "name": "Download file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M",
+          "mode": "list",
+          "cachedResultName": "propuesta2_dataset_mrp (1).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "4k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        736
+      ],
+      "id": "a4578845-1cd6-44b6-850f-dde7a7574b1f",
+      "name": "Download file3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -176,
+        640
+      ],
+      "id": "02e6a432-0c2d-44e9-b5f4-91c4f908ab34",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); // Clientes (4k)\nlet transactions = [];          // Ventas (70k)\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Usa coma ,)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Usa punto y coma ;)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            // Clave: PRDID + CUSTID\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\n\nfor (const txn of transactions) {\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    // Variable para guardar el valor encontrado (foreAct)\n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Lógica de Fecha Dinámica: 2025-06-01 -> \"25-Jun\"\n        if (txn.PERIODID3) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2); // \"25\"\n                const monthNum = parts[1];           // \"06\"\n                const monthName = monthMap[monthNum];// \"Jun\"\n                \n                if (monthName) {\n                    const dynamicColumn = `${yearShort}-${monthName}`; // \"25-Jun\"\n                    // Intentamos sacar el valor. Si es undefined o vacío, queda null\n                    const val = refData[dynamicColumn];\n                    if (val !== undefined && val !== null && val !== \"\") {\n                        foreActValue = val;\n                    }\n                }\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO ---\n    // SOLO agregamos la fila al resultado si encontramos un valor para foreAct.\n    // Esto elimina automáticamente:\n    // 1. Clientes que no existen en el archivo 4k.\n    // 2. Fechas viejas (2020) que no están en el archivo 4k.\n    if (foreActValue !== null) {\n        \n        const mergedItem = { ...txn };\n        \n        // Agregamos los datos encontrados\n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        mergedItem['foreAct'] = foreActValue; // Aquí está el renombre que pediste\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        640
+      ],
+      "id": "84cade81-f0e5-4a6a-a31d-9d89e675e1c6",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const y = Number(r.y_norm ?? 0);\n  const yhat = Number(r.yhat_norm ?? 0);\n  const scaleMax = Number(r.scale_max ?? 0);\n  const scaleIsZero = Boolean(r.scale_is_zero);\n\n  // Error técnico normalizado\n  const signed_error_norm = y - yhat;\n  const abs_error_norm = Math.abs(signed_error_norm);\n\n  // Impacto en unidades (def 2.1)\n  const abs_error_unit = (scaleIsZero || scaleMax === 0)\n    ? 0\n    : abs_error_norm * scaleMax;\n  const signed_error = Number(r.yhat ?? 0) - Number(r.y ?? 0)\n  return {\n    json: {\n      ...r,\n      signed_error_norm,\n      abs_error_norm,\n      abs_error_unit,\n      signed_error\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        1136
+      ],
+      "id": "f1a84160-9a07-4bce-b776-2f4738d4e92b",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "abs_error_unit"
+            },
+            {
+              "aggregation": "sum",
+              "field": "signed_error_norm"
+            },
+            {
+              "field": "PERIODID3"
+            },
+            {
+              "aggregation": "sum",
+              "field": "signed_error"
+            },
+            {
+              "aggregation": "sum",
+              "field": "y"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        3232,
+        1136
+      ],
+      "id": "833c405c-9eb6-4936-a30f-31c76c3541b9",
+      "name": "Summarize1"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "sum_abs_error_unit"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        3456,
+        1040
+      ],
+      "id": "cbf75351-9300-4eec-8f5b-7e1a7e82354e",
+      "name": "Summarize2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b659e08a-2279-46a8-9d2c-6101acdd7975",
+              "name": "total_abs_error_unit",
+              "value": "={{ Number($json.sum_sum_abs_error_unit || 0) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3648,
+        1040
+      ],
+      "id": "83d83a41-a8b3-46c2-8b77-c002223ec4f2",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Toma el total desde el nodo donde lo calculaste (cambia el nombre del nodo si es distinto)\nconst totalItem = $items(\"Edit Fields5\", 0, 0)[0]?.json;\nconst total = Number(totalItem?.total_abs_error_unit ?? 0);\n\nreturn items.map(item => ({\n  json: {\n    ...item.json,\n    total_abs_error_unit: total\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3456,
+        1216
+      ],
+      "id": "6854dea0-ed8e-40ea-ac64-e4b0e3c0481a",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  // 1. Extracción de variables seguras (inputs del nodo anterior)\n  // Usamos 'sum_abs_error_unit' para el numerador del WAPE\n  const sumAbsError = Number(r.sum_abs_error_unit ?? 0);\n  \n  // Usamos 'sum_signed_error' para el numerador del BIAS (Crucial: conserva el signo)\n  const sumSignedError = Number(r.sum_signed_error ?? 0);\n  \n  // Usamos 'sum_y' (Venta Real Total) como denominador para Bias y WAPE\n  const sumY = Number(r.sum_y ?? 0);\n  \n  // Usamos 'total_abs_error_unit' para el denominador del Share\n  const totalGlobalError = Number(r.total_abs_error_unit ?? 0);\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 1: BIAS (Fórmulas 40 y 41 del PDF)\n  // Fórmula: Suma del error con signo / Suma de venta real\n  // -------------------------------------------------------\n  // Evitamos división por cero si el cliente no tuvo venta real (sumY = 0)\n  const bias = sumY !== 0 ? (sumSignedError / sumY) : 0;\n  \n  // Valor absoluto del bias (necesario para la fórmula final de Score S_I)\n  const abs_bias = Math.abs(bias); \n\n  // Determinamos la dirección (útil para filtrar en dashboard)\n  let bias_direction = 'NEUTRAL';\n  if (bias > 0.0001) bias_direction = 'OVERFORECAST'; // Pronosticaste de más (Sobra stock)\n  if (bias < -0.0001) bias_direction = 'UNDERFORECAST'; // Pronosticaste de menos (Falta stock)\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 2: WAPE (Fórmula 42 del PDF)\n  // Fórmula: Suma del error absoluto / Suma de venta real\n  // -------------------------------------------------------\n  const wape = sumY !== 0 ? (sumAbsError / sumY) : 0;\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 3: CONTRIBUCIÓN (Fórmula 43 del PDF)\n  // Fórmula: Error absoluto del cliente / Error absoluto total de la empresa\n  // -------------------------------------------------------\n  const impact_share = totalGlobalError > 0 ? (sumAbsError / totalGlobalError) : 0;\n  const contribution_pct = impact_share * 100; // Para lectura humana (0-100%)\n\n\n  return {\n    json: {\n      ...r,\n      // Nuevos campos calculados\n      bias,             // El sesgo crudo (ej: 0.20 o -0.15)\n      abs_bias,         // El sesgo absoluto (para el Score SI)\n      bias_direction,   // Etiqueta de texto\n      wape,             // El error porcentual ponderado (ej: 0.35)\n      impact_share,     // Peso decimal\n      contribution_pct  // Peso porcentual\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3664,
+        1216
+      ],
+      "id": "1801d4d7-8011-42fb-a3ce-0bab86f4a4ff",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "keyJ5tQ2kg2fP5ZW",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/keyJ5tQ2kg2fP5ZW",
+          "cachedResultName": "normalizacion y desestacionalizacion"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1744,
+        720
+      ],
+      "name": "Call normalizacion y desestacionalizacion",
+      "id": "c2964984-c24d-4c2a-b695-8dd0a29229b5"
+    },
+    {
+      "parameters": {
+        "path": "26c81a1c-692d-4204-917c-4389c954ea66",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -784,
+        416
+      ],
+      "id": "eb897ea2-50c0-4635-b5d8-1b0ca0b06adb",
+      "name": "Webhook",
+      "webhookId": "26c81a1c-692d-4204-917c-4389c954ea66"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "impact_share",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        4080,
+        1216
+      ],
+      "id": "0f50feec-5f90-4d07-8de6-e03f828729e6",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "jsCode": "// DEFINICIÓN DE PESOS (Estrategia Retail/Supermercados)\nconst W_BIAS = 0.50;   // 50% - Prioridad máxima al sesgo\nconst W_SHARE = 0.35;  // 35% - Prioridad al volumen de impacto\nconst W_WAPE = 0.15;   // 15% - Precisión técnica\n\n// ---------------------------------------------------------\n// PASO 1: ENCONTRAR MÁXIMOS GLOBALES\n// Recorremos toda la lista para saber cuál es el \"peor caso\" en cada métrica\n// ---------------------------------------------------------\n\nlet maxAbsBias = 0;\nlet maxWape = 0;\nlet maxShare = 0;\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Aseguramos que sean números para evitar errores\n  const b = Number(r.abs_bias || 0);\n  const w = Number(r.wape || 0);\n  const s = Number(r.impact_share || 0);\n\n  if (b > maxAbsBias) maxAbsBias = b;\n  if (w > maxWape) maxWape = w;\n  if (s > maxShare) maxShare = s;\n}\n\n// Protección contra división por cero (si todos son 0, el max es 1 para no romper la fórmula)\nif (maxAbsBias === 0) maxAbsBias = 1;\nif (maxWape === 0) maxWape = 1;\nif (maxShare === 0) maxShare = 1;\n\n// ---------------------------------------------------------\n// PASO 2: NORMALIZACIÓN Y CÁLCULO DEL SCORE FINAL (S_I)\n// Aplicamos la fórmula: Score = w1*norm(Bias) + w2*norm(WAPE) + w3*norm(Share)\n// ---------------------------------------------------------\n\nreturn items.map(item => {\n  const r = item.json;\n\n  // Valores originales\n  const valBias = Number(r.abs_bias || 0);\n  const valWape = Number(r.wape || 0);\n  const valShare = Number(r.impact_share || 0);\n\n  // Normalización: Dividir el valor del cliente por el máximo encontrado\n  // Resultado: Un número entre 0 y 1\n  const norm_bias = valBias / maxAbsBias;\n  const norm_wape = valWape / maxWape;\n  const norm_share = valShare / maxShare;\n\n  // CÁLCULO FINAL DEL SCORE DE IMPACTO (S_I)\n  const impact_score_final = (W_BIAS * norm_bias) + \n                             (W_SHARE * norm_share) + \n                             (W_WAPE * norm_wape);\n\n  return {\n    json: {\n      ...r,\n      // Guardamos los normalizados por si quieres auditarlos\n      norm_bias,\n      norm_wape,\n      norm_share,\n      // Este es el SCORE FINAL que usarás para rankear (0 a 1)\n      impact_score_final,\n      // Versión escalada a 100 para dashboards (opcional)\n      impact_score_final_100: impact_score_final * 100\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3872,
+        1216
+      ],
+      "id": "eeeb228a-fd58-4955-8601-b83ac7dbb8f6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configuración de constante pequeña para evitar división por cero (según PDF)\nconst EPSILON = 0.0001;\n// Umbral crítico para marcar anomalías (Z > 3 suele ser el estándar)\nconst Z_CRIT = 3.0;\n\n// 1. Agrupar los items por Cliente-Producto (CUSTID + PRDID)\n// Necesitamos la historia completa de cada par para sacar sus estadísticas\nconst groups = {};\n\nfor (const item of items) {\n  const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}`;\n  \n  if (!groups[key]) {\n    groups[key] = { \n      values: [], \n      items: [] \n    };\n  }\n  \n  // Guardamos el valor desestacionalizado (y_deseason = r_tilde)\n  const val = Number(r.y_deseason || 0);\n  groups[key].values.push(val);\n  groups[key].items.push(item);\n}\n\n// 2. Calcular estadísticas por grupo y asignar resultados\nconst results = [];\n\nfor (const key in groups) {\n  const group = groups[key];\n  const n = group.values.length;\n  \n  // --- A. CALCULAR MEDIA (Mu) ---\n  const sum = group.values.reduce((a, b) => a + b, 0);\n  const mu = sum / n; // Media aritmética\n\n  // --- B. CALCULAR DESVIACIÓN ESTÁNDAR (Sigma) ---\n  // Usamos la fórmula de muestra (dividido por n-1) como pide el PDF (fórmula 59)\n  let sumSqDiff = 0;\n  for (const v of group.values) {\n    sumSqDiff += Math.pow(v - mu, 2);\n  }\n  \n  // Si hay 1 solo dato, la desviación es 0 para no romper el código\n  const sigma = n > 1 ? Math.sqrt(sumSqDiff / (n - 1)) : 0;\n\n  // --- C. CALCULAR Z-SCORE INDIVIDUAL ---\n  for (const item of group.items) {\n    const r = item.json;\n    const val = Number(r.y_deseason || 0);\n    \n    // Fórmula del Z-Score: (Valor - Media) / (Desviación + Epsilon)\n    const z_score = (val - mu) / (sigma + EPSILON);\n    \n    // Detectar si es anomalía según el umbral (AnomRate)\n    const is_anomaly = Math.abs(z_score) >= Z_CRIT;\n\n    // Agregamos los nuevos campos al item\n    item.json.signal_mean = mu;\n    item.json.signal_sigma = sigma;\n    item.json.signal_z_score = z_score;\n    item.json.is_anomaly = is_anomaly; // Booleano útil para filtros posteriores\n    \n    results.push(item);\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3072,
+        640
+      ],
+      "id": "05b48c13-26a7-43fa-a675-03baed103f38",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "jsCode": "// DOCUMENTO TÉCNICO: SECCIÓN 3 (CALIDAD DE SEÑAL) - Fórmulas 246 a 248\n// Objetivo: Calcular métricas estructurales (AnomRate, VarSig, Runs, ADI)\n\nconst groups = {};\n\n// 1. AGRUPADO: Juntamos la historia de cada par Cliente-SKU\nfor (const item of items) {\n  const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  if (!groups[key]) {\n    groups[key] = {\n      items: [],\n      y_values: [],\n      anomalies: 0,\n      sigma: Number(r.signal_sigma || 0) // Tomamos la sigma (es cte por grupo)\n    };\n  }\n\n  groups[key].items.push(item);\n  groups[key].y_values.push(Number(r.y || 0));\n\n  // Contamos anomalías para AnomRate\n  // Nota: Asegúrate de que is_anomaly sea booleano true o string 'true'\n  if (r.is_anomaly === true || r.is_anomaly === 'true') {\n    groups[key].anomalies += 1;\n  }\n}\n\nconst results = [];\n\n// 2. CÁLCULO DE MÉTRICAS POR GRUPO\nfor (const key in groups) {\n  const g = groups[key];\n  const total_periods = g.items.length; // |T|\n\n  // --- A. AnomRate (Tasa de Anomalías) ---\n  // Fórmula: Suma de anomalías / Total de periodos\n  const anom_rate = total_periods > 0 ? (g.anomalies / total_periods) : 0;\n\n  // --- B. VarSig (Varianza de la Señal) ---\n  // Fórmula: Sigma al cuadrado\n  const var_sig = Math.pow(g.sigma, 2);\n\n  // --- C. Intermitencia (Runs y ADI) ---\n  let runs = 0;\n  let purchase_indices = []; // Guardamos en qué indices hubo venta (t)\n\n  // Recorremos la historia de ventas (y)\n  for (let t = 0; t < total_periods; t++) {\n    const is_purchase = g.y_values[t] > 0; // b_t = 1 si y > 0\n\n    if (is_purchase) {\n      purchase_indices.push(t);\n    }\n\n    // Calculamos Runs (Cambios de estado compra/no-compra)\n    if (t > 0) {\n      const prev_purchase = g.y_values[t-1] > 0;\n      if (is_purchase !== prev_purchase) {\n        runs++;\n      }\n    }\n  }\n\n  // --- D. ADI (Average Demand Interval) ---\n  // Fórmula: Promedio de distancia entre compras. Si M < 2, penalización máxima (|T|)\n  let adi = 0;\n  const M = purchase_indices.length; // Número de compras\n\n  if (M < 2) {\n    // Si compró 0 o 1 vez, es extremadamente intermitente.\n    // El documento sugiere usar |T| (total de periodos) como penalización.\n    adi = total_periods;\n  } else {\n    // Sumamos los intervalos entre compras consecutivas\n    let sum_intervals = 0;\n    for (let i = 1; i < M; i++) {\n      sum_intervals += (purchase_indices[i] - purchase_indices[i-1]);\n    }\n    // Promedio\n    adi = sum_intervals / (M - 1);\n  }\n\n  // 3. ASIGNACIÓN: Pegamos los resultados a cada item original\n  for (const item of g.items) {\n    item.json.signal_anom_rate = anom_rate; // 0 a 1 (Porcentaje de \"locura\")\n    item.json.signal_varsig = var_sig;      // Magnitud de la volatilidad\n    item.json.signal_runs = runs;           // Cantidad de \"apagones/encendidos\"\n    item.json.signal_adi = adi;             // Cada cuánto compra (meses)\n\n    results.push(item);\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3376,
+        640
+      ],
+      "id": "fca5b841-b5a0-4ecb-a3cc-d46fd59bc44c",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "jsCode": "// PESOS DE DIFICULTAD (Calibrados para Retail)\nconst W_ADI = 0.40;     // Intermitencia (El enemigo #1 del forecast)\nconst W_VARSIG = 0.30;  // Volatilidad (Ruido)\nconst W_ANOM = 0.20;    // Anomalías puntuales\nconst W_RUNS = 0.10;    // Frecuencia de encendido/apagado\n\n// ---------------------------------------------------------\n// PASO 1: ENCONTRAR MÁXIMOS GLOBALES (Para normalizar)\n// ---------------------------------------------------------\nlet maxAdi = 0;\nlet maxVarSig = 0;\nlet maxAnom = 0;\nlet maxRuns = 0;\n\nfor (const item of items) {\n  const r = item.json;\n  \n  const adi = Number(r.signal_adi || 0);\n  const varsig = Number(r.signal_varsig || 0);\n  const anom = Number(r.signal_anom_rate || 0);\n  const runs = Number(r.signal_runs || 0);\n\n  if (adi > maxAdi) maxAdi = adi;\n  if (varsig > maxVarSig) maxVarSig = varsig;\n  if (anom > maxAnom) maxAnom = anom;\n  if (runs > maxRuns) maxRuns = runs;\n}\n\n// Protecciones contra división por cero\nif (maxAdi === 0) maxAdi = 1;\nif (maxVarSig === 0) maxVarSig = 1;\nif (maxAnom === 0) maxAnom = 1;\nif (maxRuns === 0) maxRuns = 1;\n\n// ---------------------------------------------------------\n// PASO 2: CALCULAR SCORE DE SEÑAL ($S_S$)\n// ---------------------------------------------------------\nreturn items.map(item => {\n  const r = item.json;\n\n  // Valores originales\n  const valAdi = Number(r.signal_adi || 0);\n  const valVarSig = Number(r.signal_varsig || 0);\n  const valAnom = Number(r.signal_anom_rate || 0);\n  const valRuns = Number(r.signal_runs || 0);\n\n  // Normalización (0 a 1)\n  const norm_adi = valAdi / maxAdi;\n  const norm_varsig = valVarSig / maxVarSig;\n  const norm_anom = valAnom / maxAnom;\n  const norm_runs = valRuns / maxRuns;\n\n  // FÓRMULA FINAL SCORE DE SEÑAL\n  const signal_score_final = (W_ADI * norm_adi) + \n                             (W_VARSIG * norm_varsig) + \n                             (W_ANOM * norm_anom) + \n                             (W_RUNS * norm_runs);\n\n  return {\n    json: {\n      ...r,\n      // Métricas normalizadas (útiles para depurar)\n      norm_adi,\n      norm_varsig,\n      \n      // SCORE FINAL DE CALIDAD (0 = Facilísimo, 1 = Imposible)\n      signal_score_final,\n      signal_score_final_100: signal_score_final * 100\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        640
+      ],
+      "id": "b201249d-1340-4cb3-a2fe-25b7a62012eb",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTID, PRDID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4288,
+        672
+      ],
+      "id": "4883fa44-e3da-4309-84e4-ef46ee278356",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN DE ESTRATEGIA (Sección 4) ---\nconst W_IMPACT = 0.60;\nconst W_SIGNAL = 0.40;\nconst THRESHOLD_PROBLEM = 0.5;\nconst CRITICAL_SHARE = 0.20;\n\n// Mapa de Prioridad para ordenar la lista final\nconst priorityMap = {\n  'MANUAL_REVIEW': 100,      // Rojo\n  'AGENT_INVESTIGATION': 80, // Naranja\n  'AUTO_ADJUST': 50,         // Amarillo\n  'MONITOR': 20,             // Gris\n  'KEEP_CURRENT': 0          // Verde\n};\n\n// 1. DEDUPLICACIÓN Y CLASIFICACIÓN\nconst uniquePairs = {};\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Clave única para el par Cliente-Producto\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  // Si ya procesamos este par, pasamos al siguiente (Deduplicación)\n  if (uniquePairs[key]) continue;\n\n  // --- OBTENER SCORES ---\n  const s_signal = Number(r.signal_score_final || 0);\n  const s_impact = Number(r.impact_score_final || 0);\n  const impact_share = Number(r.impact_share || 0);\n\n  // --- CÁLCULO DEL SCORE TOTAL ---\n  const total_score = (W_IMPACT * s_impact) + (W_SIGNAL * s_signal);\n\n  // --- MATRIZ DE DECISIÓN ---\n  let classification = 'STABLE';\n  let strategy = 'KEEP_CURRENT';\n  let justification = 'Bajo impacto y señal estable.';\n\n  // Regla 1: Impacto Crítico (Válvula de Seguridad)\n  if (impact_share > CRITICAL_SHARE) {\n    classification = 'CRITICAL';\n    strategy = 'MANUAL_REVIEW';\n    justification = `Impacto Crítico (${(impact_share*100).toFixed(1)}% del error global).`;\n  } \n  // Regla 2: Problemático (Score > 0.5)\n  else if (total_score >= THRESHOLD_PROBLEM) {\n    // Cuadrante B1: Impacto Alto, Señal Buena -> Oportunidad Técnica\n    if (s_impact > 0.5 && s_signal <= 0.4) {\n      classification = 'OPPORTUNITY';\n      strategy = 'AUTO_ADJUST';\n      justification = 'Alto impacto financiero, pero señal estable.';\n    } \n    // Cuadrante B2: Impacto Alto, Señal Mala -> Caos para el Agente\n    else if (s_impact > 0.5 && s_signal > 0.4) {\n      classification = 'CHAOS';\n      strategy = 'AGENT_INVESTIGATION';\n      justification = 'Alto impacto y comportamiento errático.';\n    } \n    // Resto de casos problemáticos\n    else {\n      classification = 'PROBLEMATIC';\n      strategy = 'MONITOR';\n      justification = `Score combinado alto (${total_score.toFixed(2)}).`;\n    }\n  }\n\n  // --- CONSTRUCCIÓN DEL OBJETO FINAL (PAR ÚNICO) ---\n  uniquePairs[key] = {\n    // Identificadores\n    CUSTID: r.CUSTID,\n    PRDID: r.PRDID,\n    REGION: r.CUSTREGION,\n\n    // Resultado de la Clasificación\n    STATUS: classification,\n    STRATEGY: strategy,\n    FINAL_SCORE: Number(total_score.toFixed(3)),\n    JUSTIFICATION: justification,\n\n    // Métricas Agregadas (Para referencia rápida)\n    IMPACT_SCORE: s_impact.toFixed(2),\n    SIGNAL_SCORE: s_signal.toFixed(2),\n    ERROR_SHARE: (impact_share * 100).toFixed(2) + '%',\n    TOTAL_SALES: Number(r.sum_y || 0),\n    BIAS: Number(r.bias || 0).toFixed(3),\n    WAPE: Number(r.wape || 0).toFixed(3)\n  };\n}\n\n// 2. ORDENAMIENTO (De más urgente a menos urgente)\nconst resultList = Object.values(uniquePairs);\n\nresultList.sort((a, b) => {\n  const prioA = priorityMap[a.STRATEGY] || 0;\n  const prioB = priorityMap[b.STRATEGY] || 0;\n  \n  // Primero por urgencia de estrategia\n  if (prioA !== prioB) return prioB - prioA;\n  \n  // Desempate por Score numérico\n  return b.FINAL_SCORE - a.FINAL_SCORE;\n});\n\nreturn resultList.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4496,
+        672
+      ],
+      "id": "6f1a69f6-1214-49f4-9f05-e2e5bf7a6d22",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN DE VISUALIZACIÓN ---\n\n// 1. FILTRADO: ¿Qué estrategias NO quieres ver?\n// Quitamos lo que ya funciona bien para que no te ocupe espacio visual.\nconst IGNORE_STRATEGIES = ['KEEP_CURRENT', 'NONE', 'IGNORE', 'STABLE'];\n\n// 2. PRIORIDAD: ¿Qué debe salir primero en la lista? (Sort Order)\nconst priorityMap = {\n  'MANUAL_REVIEW': 100,      // ROJO: Críticos (Válvula de seguridad)\n  'AGENT_INVESTIGATION': 80, // NARANJA: Caos (Señal sucia + Impacto alto)\n  'AUTO_ADJUST': 50,         // AMARILLO: Oportunidad (Señal limpia + Impacto alto)\n  'MONITOR': 20              // GRIS: Problemático genérico\n};\n\n// --- LÓGICA DE PROCESAMIENTO ---\n\n// A. Aplicamos el Filtro\nconst actionableItems = items.filter(item => {\n  const strategy = item.json.final_strategy || 'NONE';\n  // Si la estrategia está en la lista de ignorar, la descartamos\n  return !IGNORE_STRATEGIES.includes(strategy);\n});\n\n// B. Aplicamos el Ordenamiento (Sort)\nactionableItems.sort((a, b) => {\n  const stratA = a.json.final_strategy;\n  const stratB = b.json.final_strategy;\n  \n  // 1. Ordenar por Categoría (Prioridad de Negocio)\n  const prioA = priorityMap[stratA] || 0;\n  const prioB = priorityMap[stratB] || 0;\n\n  if (prioA !== prioB) {\n    return prioB - prioA; // Mayor prioridad va primero\n  }\n  \n  // 2. Desempate: Si tienen la misma categoría, el que tenga mayor Score Total va primero\n  const scoreA = Number(a.json.final_total_score || 0);\n  const scoreB = Number(b.json.final_total_score || 0);\n  return scoreB - scoreA;\n});\n\n// --- LIMPIEZA DE OUTPUT (UX) ---\n// Reordenamos las columnas del JSON para que lo importante salga a la izquierda en n8n\nreturn actionableItems.map(item => {\n  const r = item.json;\n  \n  return {\n    json: {\n      // COLUMNAS CLAVE (Con guión bajo para que salgan primero al ordenar alfabéticamente si quieres)\n      STATUS: r.final_classification,     // Ej: CHAOS\n      STRATEGY: r.final_strategy,         // Ej: AGENT_INVESTIGATION\n      SCORE: Number(r.final_total_score).toFixed(2), // Ej: 0.85\n      JUSTIFICATION: r.final_justification,\n      \n      // IDENTIFICADORES\n      CUSTID: r.CUSTID,\n      PRDID: r.PRDID,\n      \n      // MÉTRICAS RESUMIDAS (Para que entiendas por qué está ahí)\n      ERROR_SHARE: (Number(r.impact_share || 0) * 100).toFixed(1) + '%',\n      ADI: Number(r.signal_adi || 0).toFixed(1),\n      \n      // EL RESTO DE LOS DATOS (Al final, por si necesitas debuggear)\n      ...r\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4480,
+        480
+      ],
+      "id": "6f0679d2-a128-42bd-b03f-c65858619175",
+      "name": "mostrar casos no estables"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Call normalizacion y desestacionalizacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file3": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Summarize1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize1": {
+      "main": [
+        [
+          {
+            "node": "Summarize2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call normalizacion y desestacionalizacion": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript8": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 3600
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "1c742802-09a7-4eef-a928-4e6aa756d6c3",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-17T21:11:06.223Z",
+      "createdAt": "2026-01-17T21:11:06.223Z",
+      "role": "workflow:owner",
+      "workflowId": "eZ05fH-APIHNv0aEE2awZ",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
