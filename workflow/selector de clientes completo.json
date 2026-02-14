@@ -1,0 +1,1870 @@
+{
+  "updatedAt": "2026-02-14T03:10:32.227Z",
+  "createdAt": "2026-01-26T03:34:26.921Z",
+  "id": "tpAhmxic6x60O4LsHzf9Y",
+  "name": "selector de clientes completo",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2496,
+        432
+      ],
+      "id": "2611f558-1265-427f-811d-89b362177863",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01e0861c-4123-4786-92cf-57c008cf60f8",
+              "name": "y",
+              "value": "={{ Number($json.ADJUSTEDACTUALSQTY) }}",
+              "type": "number"
+            },
+            {
+              "id": "e075d05a-fb30-441e-80db-455d7cc49145",
+              "name": "yhat",
+              "value": "={{ Number($json.foreAct) }}",
+              "type": "number"
+            },
+            {
+              "id": "de871df9-2396-4254-8b55-3657d404f107",
+              "name": "punitario",
+              "value": "={{ Number($json.PUNITARIO) }}",
+              "type": "number"
+            },
+            {
+              "id": "76104ada-943c-465c-92bc-c074686d9489",
+              "name": "pindex",
+              "value": "={{ Number($json.PINDEX) }}",
+              "type": "number"
+            },
+            {
+              "id": "9e1b7504-f38a-4d8a-8e66-eb4c2a293c71",
+              "name": "som",
+              "value": "={{ Number($json.SOM) }}",
+              "type": "number"
+            },
+            {
+              "id": "3e79412f-c1cc-419b-a8ee-49e102e4668d",
+              "name": "sov",
+              "value": "={{ Number($json.SOV) }}",
+              "type": "number"
+            },
+            {
+              "id": "401ee443-5a40-4fa2-bd5b-fa9867c03336",
+              "name": "zselloutcliente",
+              "value": "={{ Number($json.ZSELLOUTCLIENTE) }}",
+              "type": "number"
+            },
+            {
+              "id": "3fb24806-1570-433d-9c83-7fef8e5e55e7",
+              "name": "CUSTID",
+              "value": "={{ $json.CUSTID }}",
+              "type": "string"
+            },
+            {
+              "id": "05415e07-a833-473b-aadc-0d0eb1068395",
+              "name": "PRDID",
+              "value": "={{ $json.PRDID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1600,
+        624
+      ],
+      "id": "54499cd6-2a15-4dba-b369-74c82d637ee1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -1456,
+        832
+      ],
+      "id": "aa8a8a88-b838-4bff-baef-b976c1eef67c",
+      "name": "Summarize",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "PRDID, CUSTID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1104,
+        640
+      ],
+      "id": "b2250c72-6033-47fd-b9aa-aa91ad011fc5",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "defa1d2c-bfa0-481a-a7de-54efb4515a88",
+              "name": "scale_avg",
+              "value": "={{ $json.average_y }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1280,
+        832
+      ],
+      "id": "6179f877-4181-4f46-a374-cf9e8e4b2013",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl",
+          "mode": "list",
+          "cachedResultName": "dataset_mrp (2).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "70k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2224,
+        448
+      ],
+      "id": "2ab04727-784b-455b-95ad-68f141e04f15",
+      "name": "Download file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M",
+          "mode": "list",
+          "cachedResultName": "propuesta2_dataset_mrp (1).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "4k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2224,
+        704
+      ],
+      "id": "4731311c-e6c8-4da9-8e2b-f942fc256002",
+      "name": "Download file3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2064,
+        624
+      ],
+      "id": "a1ff9659-6015-4b30-a197-330f4e838366",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "path": "selector",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2480,
+        656
+      ],
+      "id": "a013d71c-3ee4-4c88-af07-7e11b3a63105",
+      "name": "Webhook",
+      "webhookId": "26c81a1c-692d-4204-917c-4389c954ea66"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTID, PRDID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -48,
+        704
+      ],
+      "id": "498a7183-7b9c-49a6-9360-66b42750518e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN DE ESTRATEGIA (Sección 4) ---\nconst W_IMPACT = 0.60;\nconst W_SIGNAL = 0.40;\nconst THRESHOLD_PROBLEM = 0.3;\nconst CRITICAL_SHARE = 0.03;\n\n// Mapa de Prioridad para ordenar la lista final\nconst priorityMap = {\n  'MANUAL_REVIEW': 100,      // Rojo\n  'AGENT_INVESTIGATION': 80, // Naranja\n  'AUTO_ADJUST': 50,         // Amarillo\n  'MONITOR': 20,             // Gris\n  'KEEP_CURRENT': 0          // Verde\n};\n\n// 1. DEDUPLICACIÓN Y CLASIFICACIÓN\nconst uniquePairs = {};\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Clave única para el par Cliente-Producto\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  // Si ya procesamos este par, pasamos al siguiente (Deduplicación)\n  if (uniquePairs[key]) continue;\n\n  // --- OBTENER SCORES ---\n  const s_signal = Number(r.signal_score_final || 0);\n  const s_impact = Number(r.impact_score_final || 0);\n  const impact_share = Number(r.impact_share || 0);\n\n  // --- CÁLCULO DEL SCORE TOTAL ---\n  const total_score = (W_IMPACT * s_impact) + (W_SIGNAL * s_signal);\n\n  // --- MATRIZ DE DECISIÓN ---\n  let classification = 'STABLE';\n  let strategy = 'KEEP_CURRENT';\n  let justification = 'Bajo impacto y señal estable.';\n\n  // Regla 1: Impacto Crítico (Válvula de Seguridad)\n  if (impact_share > CRITICAL_SHARE) {\n    classification = 'CRITICAL';\n    strategy = 'MANUAL_REVIEW';\n    justification = `Impacto Crítico (${(impact_share*100).toFixed(1)}% del error global).`;\n  } \n  // Regla 2: Problemático (Score > 0.5)\n  else if (total_score >= THRESHOLD_PROBLEM) {\n    // Cuadrante B1: Impacto Alto, Señal Buena -> Oportunidad Técnica\n    if (s_impact > 0.5 && s_signal <= 0.4) {\n      classification = 'OPPORTUNITY';\n      strategy = 'AUTO_ADJUST';\n      justification = 'Alto impacto financiero, pero señal estable.';\n    } \n    // Cuadrante B2: Impacto Alto, Señal Mala -> Caos para el Agente\n    else if (s_impact > 0.5 && s_signal > 0.4) {\n      classification = 'CHAOS';\n      strategy = 'AGENT_INVESTIGATION';\n      justification = 'Alto impacto y comportamiento errático.';\n    } \n    // Resto de casos problemáticos\n    else {\n      classification = 'PROBLEMATIC';\n      strategy = 'MONITOR';\n      justification = `Score combinado alto (${total_score.toFixed(2)}).`;\n    }\n  }\n\n  // --- CONSTRUCCIÓN DEL OBJETO FINAL (PAR ÚNICO) ---\n  uniquePairs[key] = {\n    // Identificadores\n    CUSTID: r.CUSTID,\n    PRDID: r.PRDID,\n    REGION: r.CUSTREGION,\n\n    // Resultado de la Clasificación\n    STATUS: classification,\n    STRATEGY: strategy,\n    FINAL_SCORE: Number(total_score.toFixed(3)),\n    JUSTIFICATION: justification,\n\n    // Métricas Agregadas (Para referencia rápida)\n    IMPACT_SCORE: s_impact.toFixed(2),\n    SIGNAL_SCORE: s_signal.toFixed(2),\n    ERROR_SHARE: (impact_share * 100).toFixed(2) + '%',\n    TOTAL_SALES: Number(r.sum_y || 0),\n    BIAS: Number(r.bias || 0).toFixed(3),\n    WAPE: Number(r.wape || 0).toFixed(3)\n  };\n}\n\n// 2. ORDENAMIENTO (De más urgente a menos urgente)\nconst resultList = Object.values(uniquePairs);\n\nresultList.sort((a, b) => {\n  const prioA = priorityMap[a.STRATEGY] || 0;\n  const prioB = priorityMap[b.STRATEGY] || 0;\n  \n  // Primero por urgencia de estrategia\n  if (prioA !== prioB) return prioB - prioA;\n  \n  // Desempate por Score numérico\n  return b.FINAL_SCORE - a.FINAL_SCORE;\n});\n\nreturn resultList.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        704
+      ],
+      "id": "a9bf1077-92ff-41b0-9e94-4344db394a8e",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e38b8747-ac57-48a5-ac6e-b53d54b6f14b",
+              "leftValue": "={{ $json.STATUS }}",
+              "rightValue": "STABLE",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        880
+      ],
+      "id": "26d81eee-142c-4c63-890e-85fc7dcb4edc",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); // Clientes (4k)\nlet transactions = [];          // Ventas (70k)\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Usa coma ,)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Usa punto y coma ;)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            // Clave: PRDID + CUSTID\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\n\nfor (const txn of transactions) {\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    // Variable para guardar el valor encontrado (foreAct)\n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Lógica de Fecha Dinámica: 2025-06-01 -> \"25-Jun\"\n        if (txn.PERIODID3) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2); // \"25\"\n                const monthNum = parts[1];           // \"06\"\n                const monthName = monthMap[monthNum];// \"Jun\"\n                \n                if (monthName) {\n                    const dynamicColumn = `${yearShort}-${monthName}`; // \"25-Jun\"\n                    // Intentamos sacar el valor. Si es undefined o vacío, queda null\n                    const val = refData[dynamicColumn];\n                    if (val !== undefined && val !== null && val !== \"\") {\n                        foreActValue = val;\n                    }\n                }\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO ---\n    // SOLO agregamos la fila al resultado si encontramos un valor para foreAct.\n    // Esto elimina automáticamente:\n    // 1. Clientes que no existen en el archivo 4k.\n    // 2. Fechas viejas (2020) que no están en el archivo 4k.\n    if (foreActValue !== null) {\n        \n        const mergedItem = { ...txn };\n        \n        // Agregamos los datos encontrados\n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        mergedItem['foreAct'] = foreActValue; // Aquí está el renombre que pediste\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1808,
+        624
+      ],
+      "id": "80021a7e-6c99-49bf-bede-3890183611b0",
+      "name": "leer documentos"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "2QNW70i5pMi85LF2",
+          "mode": "list",
+          "cachedResultName": "clientes problematicos nuevo",
+          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "REGION": "={{ $json.REGION }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "REGION",
+              "displayName": "REGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        1056
+      ],
+      "id": "732b5ab6-9c19-4115-9da6-6daf52720749",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "2QNW70i5pMi85LF2",
+          "mode": "list",
+          "cachedResultName": "clientes problematicos nuevo",
+          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "CUSTID",
+              "keyValue": "={{ $json.CUSTID }}"
+            },
+            {
+              "keyName": "PRDID",
+              "keyValue": "={{ $json.PRDID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        800
+      ],
+      "id": "2218eb07-0c10-4043-aa33-344f31370357",
+      "name": "Delete row(s)",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "CR7rjHAYzdC7ktH4",
+          "mode": "list"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        656
+      ],
+      "name": "Call normalizacion 1.1 y 1.2",
+      "id": "ee019b4b-271c-4bd5-9299-8d5341a0ff2d"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "jRCBLFwiifnH7T3Z",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/jRCBLFwiifnH7T3Z",
+          "cachedResultName": "calculo de impacto 2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        864
+      ],
+      "name": "Call calculo de impacto 2",
+      "id": "6cf301b5-1cf6-46d6-b1ff-2561feeabff1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FW3dDnVmtsZfTiM4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FW3dDnVmtsZfTiM4",
+          "cachedResultName": "calculo de señal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        400
+      ],
+      "name": "Call calculo de señal",
+      "id": "e47b199a-c8af-4b72-893e-b75e41e2b3a0"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "1ALfp7WCaqyNPuHE",
+          "mode": "list",
+          "cachedResultName": "clientes clasificados",
+          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/1ALfp7WCaqyNPuHE"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "REGION": "={{ $json.REGION }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "REGION",
+              "displayName": "REGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        560
+      ],
+      "id": "91adc4ce-06ad-4f89-95eb-cc71f25a5d5c",
+      "name": "Insert row2"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "1ALfp7WCaqyNPuHE",
+          "mode": "list",
+          "cachedResultName": "clientes clasificados",
+          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/1ALfp7WCaqyNPuHE"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "CUSTID",
+              "keyValue": "={{ $json.CUSTID }}"
+            },
+            {
+              "keyName": "PRDID",
+              "keyValue": "={{ $json.PRDID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        224
+      ],
+      "id": "075c46f9-c0cd-409b-9db6-56f00755bfa2",
+      "name": "Delete row(s)1",
+      "executeOnce": false
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Call normalizacion 1.1 y 1.2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Download file2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file3": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "leer documentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete row(s)1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert row2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leer documentos": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call normalizacion 1.1 y 1.2": {
+      "main": [
+        [
+          {
+            "node": "Call calculo de impacto 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call calculo de señal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call calculo de impacto 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Call calculo de señal": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timeSavedPerExecution": 90
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "e3b365e1-da76-4f86-8856-3a60fab1a4fb",
+  "activeVersionId": "bb6d7a4b-8b71-491d-9a4a-8a2b41734de6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-26T03:34:26.942Z",
+      "createdAt": "2026-01-26T03:34:26.942Z",
+      "role": "workflow:owner",
+      "workflowId": "tpAhmxic6x60O4LsHzf9Y",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-27T03:22:52.000Z",
+    "createdAt": "2026-01-27T03:21:00.054Z",
+    "versionId": "bb6d7a4b-8b71-491d-9a4a-8a2b41734de6",
+    "workflowId": "tpAhmxic6x60O4LsHzf9Y",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -2416,
+          624
+        ],
+        "id": "2611f558-1265-427f-811d-89b362177863",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "01e0861c-4123-4786-92cf-57c008cf60f8",
+                "name": "y",
+                "value": "={{ Number($json.ADJUSTEDACTUALSQTY) }}",
+                "type": "number"
+              },
+              {
+                "id": "e075d05a-fb30-441e-80db-455d7cc49145",
+                "name": "yhat",
+                "value": "={{ Number($json.foreAct) }}",
+                "type": "number"
+              },
+              {
+                "id": "de871df9-2396-4254-8b55-3657d404f107",
+                "name": "punitario",
+                "value": "={{ Number($json.PUNITARIO) }}",
+                "type": "number"
+              },
+              {
+                "id": "76104ada-943c-465c-92bc-c074686d9489",
+                "name": "pindex",
+                "value": "={{ Number($json.PINDEX) }}",
+                "type": "number"
+              },
+              {
+                "id": "9e1b7504-f38a-4d8a-8e66-eb4c2a293c71",
+                "name": "som",
+                "value": "={{ Number($json.SOM) }}",
+                "type": "number"
+              },
+              {
+                "id": "3e79412f-c1cc-419b-a8ee-49e102e4668d",
+                "name": "sov",
+                "value": "={{ Number($json.SOV) }}",
+                "type": "number"
+              },
+              {
+                "id": "401ee443-5a40-4fa2-bd5b-fa9867c03336",
+                "name": "zselloutcliente",
+                "value": "={{ Number($json.ZSELLOUTCLIENTE) }}",
+                "type": "number"
+              },
+              {
+                "id": "3fb24806-1570-433d-9c83-7fef8e5e55e7",
+                "name": "CUSTID",
+                "value": "={{ $json.CUSTID }}",
+                "type": "string"
+              },
+              {
+                "id": "05415e07-a833-473b-aadc-0d0eb1068395",
+                "name": "PRDID",
+                "value": "={{ $json.PRDID }}",
+                "type": "string"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1600,
+          624
+        ],
+        "id": "54499cd6-2a15-4dba-b369-74c82d637ee1",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "y"
+              }
+            ]
+          },
+          "fieldsToSplitBy": "CUSTID, PRDID\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          -1456,
+          832
+        ],
+        "id": "aa8a8a88-b838-4bff-baef-b976c1eef67c",
+        "name": "Summarize",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "PRDID, CUSTID",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -1104,
+          640
+        ],
+        "id": "b2250c72-6033-47fd-b9aa-aa91ad011fc5",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "defa1d2c-bfa0-481a-a7de-54efb4515a88",
+                "name": "scale_avg",
+                "value": "={{ $json.average_y }}",
+                "type": "number"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "include": "selected",
+          "includeFields": "PRDID, CUSTID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1280,
+          832
+        ],
+        "id": "6179f877-4181-4f46-a374-cf9e8e4b2013",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl",
+            "mode": "list",
+            "cachedResultName": "dataset_mrp (2).csv",
+            "cachedResultUrl": "https://drive.google.com/file/d/1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl/view?usp=drivesdk"
+          },
+          "options": {
+            "binaryPropertyName": "70k"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -2176,
+          464
+        ],
+        "id": "2ab04727-784b-455b-95ad-68f141e04f15",
+        "name": "Download file2",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YDXrgVq9dh5QCcVj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M",
+            "mode": "list",
+            "cachedResultName": "propuesta2_dataset_mrp (1).csv",
+            "cachedResultUrl": "https://drive.google.com/file/d/1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M/view?usp=drivesdk"
+          },
+          "options": {
+            "binaryPropertyName": "4k"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -2176,
+          720
+        ],
+        "id": "4731311c-e6c8-4da9-8e2b-f942fc256002",
+        "name": "Download file3",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YDXrgVq9dh5QCcVj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -2064,
+          624
+        ],
+        "id": "a1ff9659-6015-4b30-a197-330f4e838366",
+        "name": "Merge2"
+      },
+      {
+        "parameters": {
+          "path": "selector",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -2464,
+          416
+        ],
+        "id": "a013d71c-3ee4-4c88-af07-7e11b3a63105",
+        "name": "Webhook",
+        "webhookId": "26c81a1c-692d-4204-917c-4389c954ea66"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "CUSTID, PRDID",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -48,
+          704
+        ],
+        "id": "498a7183-7b9c-49a6-9360-66b42750518e",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "jsCode": "// --- CONFIGURACIÓN DE ESTRATEGIA (Sección 4) ---\nconst W_IMPACT = 0.60;\nconst W_SIGNAL = 0.40;\nconst THRESHOLD_PROBLEM = 0.3;\nconst CRITICAL_SHARE = 0.03;\n\n// Mapa de Prioridad para ordenar la lista final\nconst priorityMap = {\n  'MANUAL_REVIEW': 100,      // Rojo\n  'AGENT_INVESTIGATION': 80, // Naranja\n  'AUTO_ADJUST': 50,         // Amarillo\n  'MONITOR': 20,             // Gris\n  'KEEP_CURRENT': 0          // Verde\n};\n\n// 1. DEDUPLICACIÓN Y CLASIFICACIÓN\nconst uniquePairs = {};\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Clave única para el par Cliente-Producto\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  // Si ya procesamos este par, pasamos al siguiente (Deduplicación)\n  if (uniquePairs[key]) continue;\n\n  // --- OBTENER SCORES ---\n  const s_signal = Number(r.signal_score_final || 0);\n  const s_impact = Number(r.impact_score_final || 0);\n  const impact_share = Number(r.impact_share || 0);\n\n  // --- CÁLCULO DEL SCORE TOTAL ---\n  const total_score = (W_IMPACT * s_impact) + (W_SIGNAL * s_signal);\n\n  // --- MATRIZ DE DECISIÓN ---\n  let classification = 'STABLE';\n  let strategy = 'KEEP_CURRENT';\n  let justification = 'Bajo impacto y señal estable.';\n\n  // Regla 1: Impacto Crítico (Válvula de Seguridad)\n  if (impact_share > CRITICAL_SHARE) {\n    classification = 'CRITICAL';\n    strategy = 'MANUAL_REVIEW';\n    justification = `Impacto Crítico (${(impact_share*100).toFixed(1)}% del error global).`;\n  } \n  // Regla 2: Problemático (Score > 0.5)\n  else if (total_score >= THRESHOLD_PROBLEM) {\n    // Cuadrante B1: Impacto Alto, Señal Buena -> Oportunidad Técnica\n    if (s_impact > 0.5 && s_signal <= 0.4) {\n      classification = 'OPPORTUNITY';\n      strategy = 'AUTO_ADJUST';\n      justification = 'Alto impacto financiero, pero señal estable.';\n    } \n    // Cuadrante B2: Impacto Alto, Señal Mala -> Caos para el Agente\n    else if (s_impact > 0.5 && s_signal > 0.4) {\n      classification = 'CHAOS';\n      strategy = 'AGENT_INVESTIGATION';\n      justification = 'Alto impacto y comportamiento errático.';\n    } \n    // Resto de casos problemáticos\n    else {\n      classification = 'PROBLEMATIC';\n      strategy = 'MONITOR';\n      justification = `Score combinado alto (${total_score.toFixed(2)}).`;\n    }\n  }\n\n  // --- CONSTRUCCIÓN DEL OBJETO FINAL (PAR ÚNICO) ---\n  uniquePairs[key] = {\n    // Identificadores\n    CUSTID: r.CUSTID,\n    PRDID: r.PRDID,\n    REGION: r.CUSTREGION,\n\n    // Resultado de la Clasificación\n    STATUS: classification,\n    STRATEGY: strategy,\n    FINAL_SCORE: Number(total_score.toFixed(3)),\n    JUSTIFICATION: justification,\n\n    // Métricas Agregadas (Para referencia rápida)\n    IMPACT_SCORE: s_impact.toFixed(2),\n    SIGNAL_SCORE: s_signal.toFixed(2),\n    ERROR_SHARE: (impact_share * 100).toFixed(2) + '%',\n    TOTAL_SALES: Number(r.sum_y || 0),\n    BIAS: Number(r.bias || 0).toFixed(3),\n    WAPE: Number(r.wape || 0).toFixed(3)\n  };\n}\n\n// 2. ORDENAMIENTO (De más urgente a menos urgente)\nconst resultList = Object.values(uniquePairs);\n\nresultList.sort((a, b) => {\n  const prioA = priorityMap[a.STRATEGY] || 0;\n  const prioB = priorityMap[b.STRATEGY] || 0;\n  \n  // Primero por urgencia de estrategia\n  if (prioA !== prioB) return prioB - prioA;\n  \n  // Desempate por Score numérico\n  return b.FINAL_SCORE - a.FINAL_SCORE;\n});\n\nreturn resultList.map(r => ({ json: r }));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          160,
+          704
+        ],
+        "id": "a9bf1077-92ff-41b0-9e94-4344db394a8e",
+        "name": "Code in JavaScript9"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e38b8747-ac57-48a5-ac6e-b53d54b6f14b",
+                "leftValue": "={{ $json.STATUS }}",
+                "rightValue": "STABLE",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          352,
+          720
+        ],
+        "id": "26d81eee-142c-4c63-890e-85fc7dcb4edc",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); // Clientes (4k)\nlet transactions = [];          // Ventas (70k)\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Usa coma ,)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Usa punto y coma ;)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            // Clave: PRDID + CUSTID\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\n\nfor (const txn of transactions) {\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    // Variable para guardar el valor encontrado (foreAct)\n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Lógica de Fecha Dinámica: 2025-06-01 -> \"25-Jun\"\n        if (txn.PERIODID3) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2); // \"25\"\n                const monthNum = parts[1];           // \"06\"\n                const monthName = monthMap[monthNum];// \"Jun\"\n                \n                if (monthName) {\n                    const dynamicColumn = `${yearShort}-${monthName}`; // \"25-Jun\"\n                    // Intentamos sacar el valor. Si es undefined o vacío, queda null\n                    const val = refData[dynamicColumn];\n                    if (val !== undefined && val !== null && val !== \"\") {\n                        foreActValue = val;\n                    }\n                }\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO ---\n    // SOLO agregamos la fila al resultado si encontramos un valor para foreAct.\n    // Esto elimina automáticamente:\n    // 1. Clientes que no existen en el archivo 4k.\n    // 2. Fechas viejas (2020) que no están en el archivo 4k.\n    if (foreActValue !== null) {\n        \n        const mergedItem = { ...txn };\n        \n        // Agregamos los datos encontrados\n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        mergedItem['foreAct'] = foreActValue; // Aquí está el renombre que pediste\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1808,
+          624
+        ],
+        "id": "80021a7e-6c99-49bf-bede-3890183611b0",
+        "name": "leer documentos"
+      },
+      {
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "value": "2QNW70i5pMi85LF2",
+            "mode": "list",
+            "cachedResultName": "clientes problematicos nuevo",
+            "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "REGION": "={{ $json.REGION }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "REGION",
+                "displayName": "REGION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          560,
+          800
+        ],
+        "id": "732b5ab6-9c19-4115-9da6-6daf52720749",
+        "name": "Insert row"
+      },
+      {
+        "parameters": {
+          "operation": "deleteRows",
+          "dataTableId": {
+            "__rl": true,
+            "value": "2QNW70i5pMi85LF2",
+            "mode": "list",
+            "cachedResultName": "clientes problematicos nuevo",
+            "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+          },
+          "matchType": "allConditions",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "CUSTID",
+                "keyValue": "={{ $json.CUSTID }}"
+              },
+              {
+                "keyName": "PRDID",
+                "keyValue": "={{ $json.PRDID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          576,
+          640
+        ],
+        "id": "2218eb07-0c10-4043-aa33-344f31370357",
+        "name": "Delete row(s)",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "CR7rjHAYzdC7ktH4",
+            "mode": "list"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -800,
+          656
+        ],
+        "name": "Call normalizacion 1.1 y 1.2",
+        "id": "ee019b4b-271c-4bd5-9299-8d5341a0ff2d"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "jRCBLFwiifnH7T3Z",
+            "mode": "list"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -480,
+          896
+        ],
+        "name": "Call calculo de impacto 2",
+        "id": "6cf301b5-1cf6-46d6-b1ff-2561feeabff1"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "FW3dDnVmtsZfTiM4",
+            "mode": "list"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -448,
+          560
+        ],
+        "name": "Call calculo de señal",
+        "id": "e47b199a-c8af-4b72-893e-b75e41e2b3a0"
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Download file2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Download file3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Summarize",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "Call normalizacion 1.1 y 1.2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Download file2": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file3": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "node": "leer documentos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Download file2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Download file3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript9",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript9": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Delete row(s)",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Insert row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "leer documentos": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call normalizacion 1.1 y 1.2": {
+        "main": [
+          [
+            {
+              "node": "Call calculo de impacto 2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Call calculo de señal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call calculo de impacto 2": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Call calculo de señal": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  Guedez",
+    "name": "Version bb6d7a4b",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
