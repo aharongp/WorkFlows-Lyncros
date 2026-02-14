@@ -1,0 +1,251 @@
+{
+  "updatedAt": "2025-07-23T06:54:50.000Z",
+  "createdAt": "2025-06-30T05:54:16.978Z",
+  "id": "w2FIXLBIIG4vIm1S",
+  "name": "Global KPIs de ventas",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        120
+      ],
+      "id": "71d6be47-ea69-496e-b225-b4e3e8cbe500",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -400,
+        20
+      ],
+      "id": "36aa1408-deb4-4750-a66c-b3930d4022e0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "nz0kAh3YtpE22Lj2",
+          "mode": "list",
+          "cachedResultName": "KPIs de ventas"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ProductID": "={{ $json.ProductoID }}",
+            "Dia": 1,
+            "Mes": 1,
+            "Año": 2025
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ProductID",
+              "displayName": "ProductID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Dia",
+              "displayName": "Dia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "Mes",
+              "displayName": "Mes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "Año",
+              "displayName": "Año",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -140,
+        140
+      ],
+      "id": "e7a178a4-5e76-49f3-b7ec-ca1bf6280959",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        180
+      ],
+      "id": "7424c8a7-a8ac-40fa-a19b-75d9c780d5c1",
+      "name": "Wait",
+      "webhookId": "1e6e636f-edeb-4f39-b10e-a97018f66504"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3f7d7f40-3608-456f-b6d1-4f4dbad437c1",
+      "name": "Wait1",
+      "webhookId": "bbafb854-d95c-49ba-af91-7e339a399555"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923592231,
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -620,
+        20
+      ],
+      "id": "dcc0ea4d-7b7f-4f30-be95-308fc7fc7f29",
+      "name": "Get row(s) in sheet",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d13f73a3-3f81-4735-b9f2-70eb58f25870",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T05:54:16.990Z",
+      "createdAt": "2025-06-30T05:54:16.990Z",
+      "role": "workflow:owner",
+      "workflowId": "w2FIXLBIIG4vIm1S",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
