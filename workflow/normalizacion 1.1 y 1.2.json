@@ -1,0 +1,1174 @@
+{
+  "updatedAt": "2026-01-26T03:35:56.000Z",
+  "createdAt": "2026-01-26T03:35:56.556Z",
+  "id": "CR7rjHAYzdC7ktH4",
+  "name": "normalizacion 1.1 y 1.2",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "/**\n * Definición 1.1 – Normalización CORRECTA (Promedio)\n * y_norm      = y / y_bar (Promedio histórico)\n */\nconst EPS = 0.0001; // Epsilon del PDF (Fórmula 26)\n\nreturn items.map(item => {\n  const r = item.json;\n  const y = Number(r.y);\n  const yhat = Number(r.yhat);\n  \n  // AHORA ES EL PROMEDIO, NO EL MÁXIMO\n  const y_bar = Number(r.scale_avg ?? 0); \n\n  const denom = y_bar + EPS;\n\n  return {\n    json: {\n      ...r,\n      // Fórmula 26 del PDF\n      y_norm: (Number.isFinite(y)) ? (y / denom) : 0,\n      \n      // Fórmula 27 del PDF\n      yhat_norm: (Number.isFinite(yhat)) ? (yhat / denom) : 0,\n\n      scale_is_zero: y_bar === 0\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        640
+      ],
+      "id": "f1462dc9-2dde-4f72-874d-217d0104c9a9",
+      "name": "Code in JavaScript1",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": []
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PERIODID3, PRDID, CUSTID, MONTH, YEAR, SEASON, CUSTREGION, CUSTGROUP, y, yhat, punitario, pindex, som, sov, zselloutcliente, y_norm, yhat_norm, scale_is_zero, scale_avg",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        768
+      ],
+      "id": "2fe0c17b-0537-407e-b2b5-12573a374851",
+      "name": "Edit Fields3",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "aggregation": "count",
+              "field": "PERIODID3",
+              "includeEmpty": false
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        160
+      ],
+      "id": "fcb4eb69-e133-4584-944b-acf6242d37ac",
+      "name": "pair_mean",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByFields",
+        "advanced": false,
+        "fieldsToMatchString": "CUSTID, PRDID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e6909498-0481-4205-b980-0505c5d30cf1",
+      "name": "Merge3",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5642c45f-3564-4835-ac26-24473f39f463",
+              "name": "pair_avg_y_norm",
+              "value": "={{ $json.average_y_norm }}",
+              "type": "number"
+            },
+            {
+              "id": "61c2f606-3685-44c1-b1f1-80ee35eade30",
+              "name": "n_periods",
+              "value": "={{ $json.count_PERIODID3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        160
+      ],
+      "id": "6c118861-0fd2-47f6-b73e-78b6627508f2",
+      "name": "Edit Fields1",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "aggregation": "count",
+              "field": "PERIODID3",
+              "includeEmpty": false
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTREGION, CUSTGROUP, MONTH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        432
+      ],
+      "id": "fc7fd138-281b-4e7f-9012-b6b230f37805",
+      "name": "cluster_month_avg",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "aggregation": "count",
+              "field": "PERIODID3",
+              "includeEmpty": false
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTREGION, CUSTGROUP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        608
+      ],
+      "id": "73ef2e27-998a-407f-9c07-640da3321e42",
+      "name": "cluster_mean",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d4e79e3b-23b4-4daa-80b5-50e8987e6b6d",
+              "name": "cluster_avg_y_norm",
+              "value": "={{ $json.average_y_norm }}",
+              "type": "number"
+            },
+            {
+              "id": "b9a5a205-5d65-4fad-95b0-1956c1671afc",
+              "name": "cluster_n_periods",
+              "value": "={{ $json.count_PERIODID3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "CUSTREGION, CUSTGROUP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        608
+      ],
+      "id": "61cab984-cf6d-4ad1-90fe-3f75f6f02faa",
+      "name": "Edit Fields4",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByFields",
+        "advanced": false,
+        "fieldsToMatchString": "CUSTREGION, CUSTGROUP",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        16,
+        448
+      ],
+      "id": "35f66dd2-4f17-4eb1-a4c1-b66e78b347dc",
+      "name": "Merge4",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByFields",
+        "advanced": false,
+        "fieldsToMatchString": "CUSTREGION, CUSTGROUP, MONTH",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        416,
+        272
+      ],
+      "id": "320210fc-ba9b-4df7-bb12-523bb8e75c54",
+      "name": "Merge5",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Nodo: s_final\n// Objetivo: Ponderar estacionalidad individual vs grupal (Shrinkage)\n\nreturn items.map(item => {\n  const r = item.json;\n  \n  // Parametros\n  const T = 12; // Ventana de tiempo (12 meses)\n  \n  // 1. Calcular Alpha (Peso de la historia individual)\n  const n = Number(r.n_periods ?? 0);\n  // Si n=0 (producto nuevo), confiamos 100% en el cluster\n  const alpha = T > 0 ? Math.min(1, n / T) : 0; \n\n  // 2. Recuperar Estacionalidades\n  // Si son null/0, asumimos 0 temporalmente, la protección viene al final\n  const s_pair = Number(r.s_pair ?? 0);\n  const s_cluster = Number(r.s_cluster ?? 0);\n\n  // 3. Fórmula de Shrinkage (Fórmula 241)\n  let s_final = (alpha * s_pair) + ((1 - alpha) * s_cluster);\n\n  // PROTECCIÓN CRÍTICA:\n  // Si después del cálculo s_final sigue siendo 0 (ej: nadie vende esto en Enero),\n  // forzamos un valor mínimo (EPSILON) en el siguiente paso, \n  // pero aquí devolvemos el valor calculado o un default de 1 si no hubo datos.\n  \n  // Si s_final es 0 exacto, significa que es un mes \"muerto\".\n  // Lo dejamos pasar como 0 aquí, pero lo atajamos en la división.\n  \n  return {\n    json: {\n      ...r,\n      alpha,\n      s_pair,\n      s_cluster,\n      s_final // Puede ser 0.05, 1.2, o 0.0\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        608
+      ],
+      "id": "f031ee64-b569-4e3d-8a72-fa86410a0037",
+      "name": "s_final",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const avg_month = Number(r.average_y_norm ?? 0);      // promedio y_norm del mes para el par\n  const avg_pair  = Number(r.pair_avg_y_norm ?? 0);     // promedio y_norm global del par\n\n  const denom = avg_pair > 0 ? avg_pair : 1e-9;\n\n  const s_pair = avg_month / denom;\n\n  return {\n    json: {\n      ...r,\n      s_pair\n    }\n  };\n});\n",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        176
+      ],
+      "id": "8aaced12-2fbf-4cf5-9dd7-8c63703f8263",
+      "name": "s_pair",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const avg_month = Number(r.average_y_norm ?? 0);\n  const avg_cluster = Number(r.cluster_avg_y_norm ?? 0);\n\n  const denom = avg_cluster > 0 ? avg_cluster : 1e-9;\n\n  return {\n    json: {\n      ...r,\n      s_cluster: avg_month / denom\n    }\n  };\n});\n",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        336
+      ],
+      "id": "9a1d2064-2dfa-40e1-ae00-3f688067731e",
+      "name": "s_cluster",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Nodo: desestacionalizacion para 2.2\n// Fórmulas: 241 (última línea) y 247 (definición de r tilde)\n\n// Epsilon: Valor pequeño para evitar división por cero.\n// El documento sugiere un valor pequeño. 0.01 o 0.001 suele funcionar bien en Retail.\nconst EPSILON = 0.0001; \n\nreturn items.map(item => {\n  const r = item.json;\n\n  // 1. Validar Inputs\n  const y_norm = Number(r.y_norm ?? 0);\n  let s = Number(r.s_final ?? 0); // Si es null, asumimos 0\n\n  // 2. Aplicar Epsilon al Denominador (Fórmula 241)\n  // Si la estacionalidad (s) es muy baja o cero, usamos EPSILON.\n  // Esto evita que y_deseason se vaya a Infinito.\n  if (s < EPSILON) {\n    s = EPSILON;\n  }\n\n  // 3. Calcular Demanda Desestacionalizada (r tilde)\n  const y_deseason = y_norm / s;\n\n  // 4. Protección final contra Infinity/NaN (por seguridad de n8n)\n  let safe_y_deseason = y_deseason;\n  if (!isFinite(y_deseason) || isNaN(y_deseason)) {\n    safe_y_deseason = 0; \n  }\n\n  return {\n    json: {\n      ...r,\n      // Guardamos la 's' usada realmente para audit\n      s_final_used: s,\n      y_deseason: safe_y_deseason\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        816
+      ],
+      "id": "9cbb52bf-1e87-43d3-a2bb-2352787eb86d",
+      "name": "desestacionalizacion para 2.2",
+      "alwaysOutputData": true,
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByFields",
+        "advanced": false,
+        "fieldsToMatchString": "CUSTID, PRDID, MONTH",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        816
+      ],
+      "id": "b632cd52-799f-4dcb-a9eb-13e5c6a00a1a",
+      "name": "Merge6",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// NODO: pair_month_avg_SMART\n// Objetivo: Calcular estacionalidad ignorando el periodo \"pre-vida\" del cliente.\n\nreturn (() => {\n  const groups = {};\n\n  // 1. AGRUPAR TODO EL HISTORIAL POR PAR (Cliente-Producto)\n  for (const item of items) {\n    const r = item.json;\n    const key = `${r.CUSTID}_${r.PRDID}`;\n    \n    if (!groups[key]) {\n      groups[key] = { \n        history: [], \n        first_sale_date: null // Aquí guardaremos cuándo nació la relación\n      };\n    }\n\n    // Convertimos la fecha (asumiendo formato YYYY-MM-DD o similar ISO)\n    // Es importante que PERIODID3 sea ordenable cronológicamente\n    const dateVal = new Date(r.PERIODID3).getTime(); \n    const sales = Number(r.y_norm || 0);\n\n    groups[key].history.push({\n      item: item, // Guardamos referencia al item original\n      date: dateVal,\n      month: r.MONTH,\n      y_norm: sales\n    });\n\n    // Detectar fecha de inicio de actividad (primera venta > 0)\n    if (sales > 0) {\n      if (groups[key].first_sale_date === null || dateVal < groups[key].first_sale_date) {\n        groups[key].first_sale_date = dateVal;\n      }\n    }\n  }\n\n  // 2. CALCULAR PROMEDIOS MENSUALES FILTRADOS\n  const results = [];\n\n  for (const key in groups) {\n    const group = groups[key];\n    const firstSale = group.first_sale_date;\n\n    // Si nunca vendió nada en la historia, no podemos calcular estacionalidad\n    // Devolvemos 0 y seguimos\n    if (firstSale === null) {\n      // Necesitamos devolver una fila por cada mes existente para que el merge no falle,\n      // o simplemente dejamos que el flujo principal maneje los nulos.\n      // Para mantener compatibilidad con tu Summarize, generamos las filas agrupadas por mes.\n      // (Aquí simplificamos devolviendo 0 para los meses detectados en el input)\n      const monthGroups = {};\n      for (const h of group.history) {\n        if(!monthGroups[h.month]) monthGroups[h.month] = { sum:0, count:0, cust: h.item.json.CUSTID, prd: h.item.json.PRDID };\n      }\n      for (const m in monthGroups) {\n        results.push({ json: { \n            average_y_norm: 0, \n            count_PERIODID3: 0, \n            MONTH: m, \n            PRDID: monthGroups[m].prd, \n            CUSTID: monthGroups[m].cust \n        }});\n      }\n      continue;\n    }\n\n    // Agrupamos por MES, pero SOLO sumamos si la fecha >= firstSale\n    const months = {};\n\n    for (const h of group.history) {\n      // FILTRO MÁGICO: Si la fecha es anterior a la primera venta, SE IGNORA.\n      // (Es un \"0\" de no-existencia, no de no-compra)\n      if (h.date < firstSale) continue;\n\n      const m = h.month;\n      if (!months[m]) months[m] = { sum: 0, count: 0, ref: h.item.json };\n\n      months[m].sum += h.y_norm;\n      months[m].count += 1;\n    }\n\n    // Generar Salida (formato idéntico a tu Summarize anterior)\n    for (const m in months) {\n      const stats = months[m];\n      results.push({\n        json: {\n          average_y_norm: stats.sum / stats.count, // Promedio \"limpio\"\n          count_PERIODID3: stats.count,            // Cuántos meses \"activos\" hubo\n          MONTH: m,\n          PRDID: stats.ref.PRDID,\n          CUSTID: stats.ref.CUSTID\n        }\n      });\n    }\n  }\n\n  return results;\n})();",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -304,
+        16
+      ],
+      "id": "73154ce2-ae0d-4eeb-92db-fa31fc77f550",
+      "name": "code_pair_month_avg",
+      "disabled": false
+    },
+    {
+      "id": "24f99998-9037-44fd-a75f-dcd7ec0825d4",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -1024,
+        640
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    }
+  ],
+  "connections": {
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "pair_mean",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "cluster_month_avg",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "cluster_mean",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "code_pair_month_avg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pair_mean": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "s_pair",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "cluster_month_avg": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cluster_mean": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "s_cluster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "s_final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "s_final": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "s_pair": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "s_cluster": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge6": {
+      "main": [
+        [
+          {
+            "node": "desestacionalizacion para 2.2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "code_pair_month_avg": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "54d9a26f-b667-4c5b-b226-fc30e6004eaa",
+  "activeVersionId": "54d9a26f-b667-4c5b-b226-fc30e6004eaa",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-26T03:35:56.563Z",
+      "createdAt": "2026-01-26T03:35:56.563Z",
+      "role": "workflow:owner",
+      "workflowId": "CR7rjHAYzdC7ktH4",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-26T03:35:56.566Z",
+    "createdAt": "2026-01-26T03:35:56.566Z",
+    "versionId": "54d9a26f-b667-4c5b-b226-fc30e6004eaa",
+    "workflowId": "CR7rjHAYzdC7ktH4",
+    "nodes": [
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "/**\n * Definición 1.1 – Normalización CORRECTA (Promedio)\n * y_norm      = y / y_bar (Promedio histórico)\n */\nconst EPS = 0.0001; // Epsilon del PDF (Fórmula 26)\n\nreturn items.map(item => {\n  const r = item.json;\n  const y = Number(r.y);\n  const yhat = Number(r.yhat);\n  \n  // AHORA ES EL PROMEDIO, NO EL MÁXIMO\n  const y_bar = Number(r.scale_avg ?? 0); \n\n  const denom = y_bar + EPS;\n\n  return {\n    json: {\n      ...r,\n      // Fórmula 26 del PDF\n      y_norm: (Number.isFinite(y)) ? (y / denom) : 0,\n      \n      // Fórmula 27 del PDF\n      yhat_norm: (Number.isFinite(yhat)) ? (yhat / denom) : 0,\n\n      scale_is_zero: y_bar === 0\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -816,
+          640
+        ],
+        "id": "f1462dc9-2dde-4f72-874d-217d0104c9a9",
+        "name": "Code in JavaScript1",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": []
+          },
+          "includeOtherFields": true,
+          "include": "selected",
+          "includeFields": "PERIODID3, PRDID, CUSTID, MONTH, YEAR, SEASON, CUSTREGION, CUSTGROUP, y, yhat, punitario, pindex, som, sov, zselloutcliente, y_norm, yhat_norm, scale_is_zero, scale_avg",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -608,
+          768
+        ],
+        "id": "2fe0c17b-0537-407e-b2b5-12573a374851",
+        "name": "Edit Fields3",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "y_norm"
+              },
+              {
+                "aggregation": "count",
+                "field": "PERIODID3",
+                "includeEmpty": false
+              }
+            ]
+          },
+          "fieldsToSplitBy": "CUSTID, PRDID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          -256,
+          160
+        ],
+        "id": "fcb4eb69-e133-4584-944b-acf6242d37ac",
+        "name": "pair_mean",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByFields",
+          "advanced": false,
+          "fieldsToMatchString": "CUSTID, PRDID",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "e6909498-0481-4205-b980-0505c5d30cf1",
+        "name": "Merge3",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": [
+              {
+                "id": "5642c45f-3564-4835-ac26-24473f39f463",
+                "name": "pair_avg_y_norm",
+                "value": "={{ $json.average_y_norm }}",
+                "type": "number"
+              },
+              {
+                "id": "61c2f606-3685-44c1-b1f1-80ee35eade30",
+                "name": "n_periods",
+                "value": "={{ $json.count_PERIODID3 }}",
+                "type": "number"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "include": "selected",
+          "includeFields": "PRDID, CUSTID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -128,
+          160
+        ],
+        "id": "6c118861-0fd2-47f6-b73e-78b6627508f2",
+        "name": "Edit Fields1",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "y_norm"
+              },
+              {
+                "aggregation": "count",
+                "field": "PERIODID3",
+                "includeEmpty": false
+              }
+            ]
+          },
+          "fieldsToSplitBy": "CUSTREGION, CUSTGROUP, MONTH",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          -256,
+          432
+        ],
+        "id": "fc7fd138-281b-4e7f-9012-b6b230f37805",
+        "name": "cluster_month_avg",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "y_norm"
+              },
+              {
+                "aggregation": "count",
+                "field": "PERIODID3",
+                "includeEmpty": false
+              }
+            ]
+          },
+          "fieldsToSplitBy": "CUSTREGION, CUSTGROUP",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          -256,
+          608
+        ],
+        "id": "73ef2e27-998a-407f-9c07-640da3321e42",
+        "name": "cluster_mean",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d4e79e3b-23b4-4daa-80b5-50e8987e6b6d",
+                "name": "cluster_avg_y_norm",
+                "value": "={{ $json.average_y_norm }}",
+                "type": "number"
+              },
+              {
+                "id": "b9a5a205-5d65-4fad-95b0-1956c1671afc",
+                "name": "cluster_n_periods",
+                "value": "={{ $json.count_PERIODID3 }}",
+                "type": "number"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "include": "selected",
+          "includeFields": "CUSTREGION, CUSTGROUP",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -128,
+          608
+        ],
+        "id": "61cab984-cf6d-4ad1-90fe-3f75f6f02faa",
+        "name": "Edit Fields4",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByFields",
+          "advanced": false,
+          "fieldsToMatchString": "CUSTREGION, CUSTGROUP",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          16,
+          448
+        ],
+        "id": "35f66dd2-4f17-4eb1-a4c1-b66e78b347dc",
+        "name": "Merge4",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByFields",
+          "advanced": false,
+          "fieldsToMatchString": "CUSTREGION, CUSTGROUP, MONTH",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          416,
+          272
+        ],
+        "id": "320210fc-ba9b-4df7-bb12-523bb8e75c54",
+        "name": "Merge5",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// Nodo: s_final\n// Objetivo: Ponderar estacionalidad individual vs grupal (Shrinkage)\n\nreturn items.map(item => {\n  const r = item.json;\n  \n  // Parametros\n  const T = 12; // Ventana de tiempo (12 meses)\n  \n  // 1. Calcular Alpha (Peso de la historia individual)\n  const n = Number(r.n_periods ?? 0);\n  // Si n=0 (producto nuevo), confiamos 100% en el cluster\n  const alpha = T > 0 ? Math.min(1, n / T) : 0; \n\n  // 2. Recuperar Estacionalidades\n  // Si son null/0, asumimos 0 temporalmente, la protección viene al final\n  const s_pair = Number(r.s_pair ?? 0);\n  const s_cluster = Number(r.s_cluster ?? 0);\n\n  // 3. Fórmula de Shrinkage (Fórmula 241)\n  let s_final = (alpha * s_pair) + ((1 - alpha) * s_cluster);\n\n  // PROTECCIÓN CRÍTICA:\n  // Si después del cálculo s_final sigue siendo 0 (ej: nadie vende esto en Enero),\n  // forzamos un valor mínimo (EPSILON) en el siguiente paso, \n  // pero aquí devolvemos el valor calculado o un default de 1 si no hubo datos.\n  \n  // Si s_final es 0 exacto, significa que es un mes \"muerto\".\n  // Lo dejamos pasar como 0 aquí, pero lo atajamos en la división.\n  \n  return {\n    json: {\n      ...r,\n      alpha,\n      s_pair,\n      s_cluster,\n      s_final // Puede ser 0.05, 1.2, o 0.0\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          592,
+          608
+        ],
+        "id": "f031ee64-b569-4e3d-8a72-fa86410a0037",
+        "name": "s_final",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const avg_month = Number(r.average_y_norm ?? 0);      // promedio y_norm del mes para el par\n  const avg_pair  = Number(r.pair_avg_y_norm ?? 0);     // promedio y_norm global del par\n\n  const denom = avg_pair > 0 ? avg_pair : 1e-9;\n\n  const s_pair = avg_month / denom;\n\n  return {\n    json: {\n      ...r,\n      s_pair\n    }\n  };\n});\n",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          176,
+          176
+        ],
+        "id": "8aaced12-2fbf-4cf5-9dd7-8c63703f8263",
+        "name": "s_pair",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const avg_month = Number(r.average_y_norm ?? 0);\n  const avg_cluster = Number(r.cluster_avg_y_norm ?? 0);\n\n  const denom = avg_cluster > 0 ? avg_cluster : 1e-9;\n\n  return {\n    json: {\n      ...r,\n      s_cluster: avg_month / denom\n    }\n  };\n});\n",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          176,
+          336
+        ],
+        "id": "9a1d2064-2dfa-40e1-ae00-3f688067731e",
+        "name": "s_cluster",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// Nodo: desestacionalizacion para 2.2\n// Fórmulas: 241 (última línea) y 247 (definición de r tilde)\n\n// Epsilon: Valor pequeño para evitar división por cero.\n// El documento sugiere un valor pequeño. 0.01 o 0.001 suele funcionar bien en Retail.\nconst EPSILON = 0.0001; \n\nreturn items.map(item => {\n  const r = item.json;\n\n  // 1. Validar Inputs\n  const y_norm = Number(r.y_norm ?? 0);\n  let s = Number(r.s_final ?? 0); // Si es null, asumimos 0\n\n  // 2. Aplicar Epsilon al Denominador (Fórmula 241)\n  // Si la estacionalidad (s) es muy baja o cero, usamos EPSILON.\n  // Esto evita que y_deseason se vaya a Infinito.\n  if (s < EPSILON) {\n    s = EPSILON;\n  }\n\n  // 3. Calcular Demanda Desestacionalizada (r tilde)\n  const y_deseason = y_norm / s;\n\n  // 4. Protección final contra Infinity/NaN (por seguridad de n8n)\n  let safe_y_deseason = y_deseason;\n  if (!isFinite(y_deseason) || isNaN(y_deseason)) {\n    safe_y_deseason = 0; \n  }\n\n  return {\n    json: {\n      ...r,\n      // Guardamos la 's' usada realmente para audit\n      s_final_used: s,\n      y_deseason: safe_y_deseason\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          928,
+          816
+        ],
+        "id": "9cbb52bf-1e87-43d3-a2bb-2352787eb86d",
+        "name": "desestacionalizacion para 2.2",
+        "alwaysOutputData": true,
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByFields",
+          "advanced": false,
+          "fieldsToMatchString": "CUSTID, PRDID, MONTH",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          784,
+          816
+        ],
+        "id": "b632cd52-799f-4dcb-a9eb-13e5c6a00a1a",
+        "name": "Merge6",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// NODO: pair_month_avg_SMART\n// Objetivo: Calcular estacionalidad ignorando el periodo \"pre-vida\" del cliente.\n\nreturn (() => {\n  const groups = {};\n\n  // 1. AGRUPAR TODO EL HISTORIAL POR PAR (Cliente-Producto)\n  for (const item of items) {\n    const r = item.json;\n    const key = `${r.CUSTID}_${r.PRDID}`;\n    \n    if (!groups[key]) {\n      groups[key] = { \n        history: [], \n        first_sale_date: null // Aquí guardaremos cuándo nació la relación\n      };\n    }\n\n    // Convertimos la fecha (asumiendo formato YYYY-MM-DD o similar ISO)\n    // Es importante que PERIODID3 sea ordenable cronológicamente\n    const dateVal = new Date(r.PERIODID3).getTime(); \n    const sales = Number(r.y_norm || 0);\n\n    groups[key].history.push({\n      item: item, // Guardamos referencia al item original\n      date: dateVal,\n      month: r.MONTH,\n      y_norm: sales\n    });\n\n    // Detectar fecha de inicio de actividad (primera venta > 0)\n    if (sales > 0) {\n      if (groups[key].first_sale_date === null || dateVal < groups[key].first_sale_date) {\n        groups[key].first_sale_date = dateVal;\n      }\n    }\n  }\n\n  // 2. CALCULAR PROMEDIOS MENSUALES FILTRADOS\n  const results = [];\n\n  for (const key in groups) {\n    const group = groups[key];\n    const firstSale = group.first_sale_date;\n\n    // Si nunca vendió nada en la historia, no podemos calcular estacionalidad\n    // Devolvemos 0 y seguimos\n    if (firstSale === null) {\n      // Necesitamos devolver una fila por cada mes existente para que el merge no falle,\n      // o simplemente dejamos que el flujo principal maneje los nulos.\n      // Para mantener compatibilidad con tu Summarize, generamos las filas agrupadas por mes.\n      // (Aquí simplificamos devolviendo 0 para los meses detectados en el input)\n      const monthGroups = {};\n      for (const h of group.history) {\n        if(!monthGroups[h.month]) monthGroups[h.month] = { sum:0, count:0, cust: h.item.json.CUSTID, prd: h.item.json.PRDID };\n      }\n      for (const m in monthGroups) {\n        results.push({ json: { \n            average_y_norm: 0, \n            count_PERIODID3: 0, \n            MONTH: m, \n            PRDID: monthGroups[m].prd, \n            CUSTID: monthGroups[m].cust \n        }});\n      }\n      continue;\n    }\n\n    // Agrupamos por MES, pero SOLO sumamos si la fecha >= firstSale\n    const months = {};\n\n    for (const h of group.history) {\n      // FILTRO MÁGICO: Si la fecha es anterior a la primera venta, SE IGNORA.\n      // (Es un \"0\" de no-existencia, no de no-compra)\n      if (h.date < firstSale) continue;\n\n      const m = h.month;\n      if (!months[m]) months[m] = { sum: 0, count: 0, ref: h.item.json };\n\n      months[m].sum += h.y_norm;\n      months[m].count += 1;\n    }\n\n    // Generar Salida (formato idéntico a tu Summarize anterior)\n    for (const m in months) {\n      const stats = months[m];\n      results.push({\n        json: {\n          average_y_norm: stats.sum / stats.count, // Promedio \"limpio\"\n          count_PERIODID3: stats.count,            // Cuántos meses \"activos\" hubo\n          MONTH: m,\n          PRDID: stats.ref.PRDID,\n          CUSTID: stats.ref.CUSTID\n        }\n      });\n    }\n  }\n\n  return results;\n})();",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -304,
+          16
+        ],
+        "id": "73154ce2-ae0d-4eeb-92db-fa31fc77f550",
+        "name": "code_pair_month_avg",
+        "disabled": false
+      },
+      {
+        "id": "24f99998-9037-44fd-a75f-dcd7ec0825d4",
+        "typeVersion": 1.1,
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          -1024,
+          640
+        ],
+        "parameters": {
+          "inputSource": "passthrough"
+        }
+      }
+    ],
+    "connections": {
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "pair_mean",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "cluster_month_avg",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "cluster_mean",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge6",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "code_pair_month_avg",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "pair_mean": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "node": "s_pair",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "cluster_month_avg": {
+        "main": [
+          [
+            {
+              "node": "Merge4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "cluster_mean": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields4": {
+        "main": [
+          [
+            {
+              "node": "Merge4",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge4": {
+        "main": [
+          [
+            {
+              "node": "s_cluster",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge5": {
+        "main": [
+          [
+            {
+              "node": "s_final",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "s_final": {
+        "main": [
+          [
+            {
+              "node": "Merge6",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "s_pair": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "s_cluster": {
+        "main": [
+          [
+            {
+              "node": "Merge5",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge6": {
+        "main": [
+          [
+            {
+              "node": "desestacionalizacion para 2.2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "code_pair_month_avg": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  Guedez",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
