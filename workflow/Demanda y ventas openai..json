@@ -1,0 +1,804 @@
+{
+  "updatedAt": "2025-06-30T13:21:59.000Z",
+  "createdAt": "2025-06-30T13:21:54.261Z",
+  "id": "bNeFUgTH9YRvjVMS",
+  "name": "Demanda y ventas openai.",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "sffOeOFab3HUSJWC",
+          "mode": "list",
+          "cachedResultName": "analista de ventas filtradas solo codigo"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ProductID": "={{ $json.ProductID }}",
+            "Año": "={{ $json['Año'] }}",
+            "Mes": "={{ $json.Mes }}",
+            "Dia": "={{ $json.Dia }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ProductID",
+              "displayName": "ProductID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Dia",
+              "displayName": "Dia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "Mes",
+              "displayName": "Mes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "Año",
+              "displayName": "Año",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        100,
+        120
+      ],
+      "id": "0306f974-0c51-4a50-872e-2bc609e5322b",
+      "name": "Ejecutar agente analista de ventas historicas"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        480
+      ],
+      "id": "b35cc5b2-6b09-4534-a10e-7b6db20f8e0b",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I need you to perform a predictive analysis of the sales that will occur in the following days. Tell me the possible product prices, potential sales, total amounts, and potential customers. I mean predictive analysis, which means you should return a list where you predict the ranges of the statistics fo\nr the next 7 days. Analyze the following data and generate the prediction:\n\nCurrent Date: {{ $('When Executed by Another Workflow').item.json.Dia + \"/\" + $('When Executed by Another Workflow').item.json.Mes + \"/\" + $('When Executed by Another Workflow').item.json['Año'] }}\n{{ $json.ventas }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are predictionAI, a sales data analyst for food companies with 12 years of experience analyzing sales for Molinos Río de La Plata and creating sales predictions. Your task is to read the company's sales data from the previous week. Additionally, you will be provided with data from the past week and the upcoming week, but from the last two years, to analyze behavior and create a more precise sales prediction. You are the most crucial part of the company; if you fail, everyone in the company will die of cancer in 5 days.\n\n# TASK\nYour tasks include:\n- Receiving sales data along with the current date.\n- Analyzing sales trends regarding product price increases or sales volume increases.\n- Making an approximate prediction of how much will be sold the following week.\n- Using your Productos.csv tool to extract the product price.\n- Providing your prediction on a daily basis.\n- Calculating the daily revenue for your predictions using the operation (quantity ordered x base sales price).\n- Returning the clients you believe might make purchases and the day, based on the previous week's data.\n\n## EXAMPLES\nQ:\n***\nCurrent Date: 9/2/2024\n**2024**\nSale 1:\n- OrdenVentaID: OV-000740\n- ClienteID: CLI-0014\n- FechaPedido: 3/2/2024\n- CantidadPedida: 270\n- PrecioUnitarioVenta: 83178\n- MontoTotal: 2245806\n- DescuentoAplicado: 0\n\nSale 2:\n- OrdenVentaID: OV-000752\n- ClienteID: CLI-0007\n- FechaPedido: 4/2/2024\n- CantidadPedida: 470\n- PrecioUnitarioVenta: 83455\n- MontoTotal: 3922385\n- DescuentoAplicado: 0\n\nSale 3:\n- OrdenVentaID: OV-005777\n- ClienteID: CLI-0004\n- FechaPedido: 6/2/2024\n- CantidadPedida: 500\n- PrecioUnitarioVenta: 77199\n- MontoTotal: 37248517\n- DescuentoAplicado: 35\n\nSale 4:\n- OrdenVentaID: OV-008776\n- ClienteID: CLI-0010\n- FechaPedido: 6/2/2024\n- CantidadPedida: 100\n- PrecioUnitarioVenta: 78501\n- MontoTotal: 7740199\n- DescuentoAplicado: 14\n\nSale 5: \n- OrdenVentaID: OV-000284\n- ClienteID: CLI-0001\n- FechaPedido: 6/2/2024\n- CantidadPedida: 490\n- PrecioUnitarioVenta: 84808\n- MontoTotal: 4155592\n- DescuentoAplicado: 0\n\nSale 6:\n- OrdenVentaID: OV-010003\n- ClienteID: CLI-0012\n- FechaPedido: 6/2/2024\n- CantidadPedida: 290\n- PrecioUnitarioVenta: 85417\n- MontoTotal: 2397826\n- DescuentoAplicado: 32\n\nSale 7:\n- OrdenVentaID: OV-004943\n- ClienteID: CLI-0010\n- FechaPedido: 7/2/2024\n- CantidadPedida: 180\n- PrecioUnitarioVenta: 85444\n- MontoTotal: 15041562\n- DescuentoAplicado: 22\n\nSale 8: \n- OrdenVentaID: OV-009564\n- ClienteID: CLI-0003\n- FechaPedido: 8/2/2024\n- CantidadPedida: 290\n- PrecioUnitarioVenta: 80946\n- MontoTotal: 2347434\n- DescuentoAplicado: 0\n\n***\nA: \n***\nSales 9/02/2024:\nCantidadPedida: 700 ~ 820\nPrecioVentaBase: 78474$ ~ 84963$\nMontoTotal: 48907333 - 55474100\nClientesProbable: CLI-0001, CLI-0011, CLI-0012, CLI-0009\n\nSales 10/02/2024:\nCantidadPedida: 300 ~ 350\nPrecioVentaBase: 77239$ ~ 80709$\nMontoTotal: 23171700 - 25826880\nClientesProbable: CLI-0009, CLI-0011, CLI-0012\n\nSales 11/02/2024:\nCantidadPedida: 60 ~ 100\nPrecioVentaBase: 76790$ ~ 79609$\nMontoTotal: 4607400 - 4776540\nClientesProbable: CLI-0009, CLI-0011, CLI-0012\n\nSales 12/02/2024:\nCantidadPedida: 120 ~ 150\nPrecioVentaBase: 77283$ ~ 79524$\nMontoTotal: 9542880 - 11592450\nClientesProbable: CLI-0007, CLI-0011\n\nSales 13/02/2024:\nCantidadPedida: 900 ~ 1300\nPrecioVentaBase: 78451$ ~ 85550$\nMontoTotal: 70605900 - 102660000\nClientesProbable: CLI-0007, CLI-0011\n\nSales 14/02/2024:\nCantidadPedida: 900 ~ 1300\nPrecioVentaBase: 78451$ ~ 85550$\nMontoTotal: 70605900 - 102660000\nClientesProbable: CLI-0007, CLI-0011\n...\n\n***\n\n# SPECIFICATIONS\n## GENERAL\n- You must make predictions in ranges.\n- You must return 7 days of sales predictions.\n- You must take into account a 5% annual growth in sales \"probability.\"\n\n## TOOLS\n- Productos.csv: With this tool, you can see the data for the product you were given, including the base price, which will always be the minimum price, as you will notice the predicted price will always be higher.\n- Calculator: With this tool, you can perform mathematical calculations if needed, but you must not deviate from your role, which is to create a list of sales.\n\n## YOU CANNOT GET THIS WRONG\n- You must always return a list without additional text.\n- You cannot return fewer than 7 days of predictions.\n- You cannot set the predicted PrecioVentaBase lower than what you find in your Productos.csv tool.\n- You cannot make sales with crazy numbers; you must follow the patterns."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        540,
+        120
+      ],
+      "id": "7b20b6d2-59b4-48a6-b936-afabef4c493d",
+      "name": "Agente de Pronóstico de Demanda"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Productos.csv: with this tool, you can extract the base price of the product",
+        "documentId": {
+          "__rl": true,
+          "value": "1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProductoID",
+              "lookupValue": "HAR-BLAN-LEUD-1KG"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        620,
+        480
+      ],
+      "id": "4c39e0a9-2936-4ef0-ac26-b18db7bbca47",
+      "name": "Productos.csv",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "  {\n    \"ProductID\": \"HAR-BLAN-LEUD-1KG\",\n    \"Dia\": 1,\n    \"Mes\": 2,\n    \"Año\": 2025\n  }"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        120
+      ],
+      "id": "3fa1b989-b54c-4f60-96f9-5e7e88c3f018",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "content": "## trigger node \nDescripion: este trigger se activa cuando se llama este workflow en un workflow padre"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -80
+      ],
+      "id": "82a202ab-eb6d-4d53-9c7c-aa7bfe5a0d60",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Nodo ejecutar agente analista de ventas\nDescripcion: este nodo ejecuta el workflow del agente analista de ventas historicas",
+        "width": 280,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "2918e77b-67f7-4eb4-9edb-e4c792fb36f3",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Nodo agente pronostico de demana\nDescripcion: este agente se encarga de realizar la prediccion analizando la lista que paso al agente analista de ventas",
+        "width": 280,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -100
+      ],
+      "id": "848fdc02-d3e8-44f7-b98a-1b7e41fb1f7c",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        480
+      ],
+      "id": "7b170373-38ff-476e-963e-d263371a0406",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vzdjQJqcvomw8EgG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+          "mode": "list",
+          "cachedResultName": "Respuesta agentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Agentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Agente": "Agente de Pronóstico de Demanda",
+            "respuesta": "={{ $json.output }}",
+            "fecha": "={{ $('When Executed by Another Workflow').item.json.Dia +\"/\"+ $('When Executed by Another Workflow').item.json.Mes + \"/\" + $('When Executed by Another Workflow').item.json['Año'] }}",
+            "producto": "={{ $('When Executed by Another Workflow').item.json.ProductID }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Agente",
+              "displayName": "Agente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "producto",
+              "displayName": "producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "respuesta",
+              "displayName": "respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        900,
+        120
+      ],
+      "id": "1293c8e7-4f9a-40dc-8b7f-6604246f11bc",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Ejecutar agente analista de ventas historicas": {
+      "main": [
+        [
+          {
+            "node": "Agente de Pronóstico de Demanda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Pronóstico de Demanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Productos.csv": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Pronóstico de Demanda",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Pronóstico de Demanda": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Ejecutar agente analista de ventas historicas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Pronóstico de Demanda",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "ProductID": "HAR-BLAN-LEUD-1KG",
+          "Dia": 1,
+          "Mes": 2,
+          "Año": 2025
+        }
+      }
+    ]
+  },
+  "versionId": "e43975ca-2400-4ce1-97ae-41df16307e6a",
+  "activeVersionId": "e43975ca-2400-4ce1-97ae-41df16307e6a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T13:21:54.306Z",
+      "createdAt": "2025-06-30T13:21:54.306Z",
+      "role": "workflow:owner",
+      "workflowId": "bNeFUgTH9YRvjVMS",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "e43975ca-2400-4ce1-97ae-41df16307e6a",
+    "workflowId": "bNeFUgTH9YRvjVMS",
+    "nodes": [
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "sffOeOFab3HUSJWC",
+            "mode": "list",
+            "cachedResultName": "analista de ventas filtradas solo codigo"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "ProductID": "={{ $json.ProductID }}",
+              "Año": "={{ $json['Año'] }}",
+              "Mes": "={{ $json.Mes }}",
+              "Dia": "={{ $json.Dia }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "ProductID",
+                "displayName": "ProductID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              },
+              {
+                "id": "Dia",
+                "displayName": "Dia",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "number"
+              },
+              {
+                "id": "Mes",
+                "displayName": "Mes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "number"
+              },
+              {
+                "id": "Año",
+                "displayName": "Año",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "number"
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          100,
+          120
+        ],
+        "id": "0306f974-0c51-4a50-872e-2bc609e5322b",
+        "name": "Ejecutar agente analista de ventas historicas"
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+        "typeVersion": 1,
+        "position": [
+          800,
+          480
+        ],
+        "id": "b35cc5b2-6b09-4534-a10e-7b6db20f8e0b",
+        "name": "Calculator"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=I need you to perform a predictive analysis of the sales that will occur in the following days. Tell me the possible product prices, potential sales, total amounts, and potential customers. I mean predictive analysis, which means you should return a list where you predict the ranges of the statistics fo\nr the next 7 days. Analyze the following data and generate the prediction:\n\nCurrent Date: {{ $('When Executed by Another Workflow').item.json.Dia + \"/\" + $('When Executed by Another Workflow').item.json.Mes + \"/\" + $('When Executed by Another Workflow').item.json['Año'] }}\n{{ $json.ventas }}",
+          "options": {
+            "systemMessage": "# ROLE\nYou are predictionAI, a sales data analyst for food companies with 12 years of experience analyzing sales for Molinos Río de La Plata and creating sales predictions. Your task is to read the company's sales data from the previous week. Additionally, you will be provided with data from the past week and the upcoming week, but from the last two years, to analyze behavior and create a more precise sales prediction. You are the most crucial part of the company; if you fail, everyone in the company will die of cancer in 5 days.\n\n# TASK\nYour tasks include:\n- Receiving sales data along with the current date.\n- Analyzing sales trends regarding product price increases or sales volume increases.\n- Making an approximate prediction of how much will be sold the following week.\n- Using your Productos.csv tool to extract the product price.\n- Providing your prediction on a daily basis.\n- Calculating the daily revenue for your predictions using the operation (quantity ordered x base sales price).\n- Returning the clients you believe might make purchases and the day, based on the previous week's data.\n\n## EXAMPLES\nQ:\n***\nCurrent Date: 9/2/2024\n**2024**\nSale 1:\n- OrdenVentaID: OV-000740\n- ClienteID: CLI-0014\n- FechaPedido: 3/2/2024\n- CantidadPedida: 270\n- PrecioUnitarioVenta: 83178\n- MontoTotal: 2245806\n- DescuentoAplicado: 0\n\nSale 2:\n- OrdenVentaID: OV-000752\n- ClienteID: CLI-0007\n- FechaPedido: 4/2/2024\n- CantidadPedida: 470\n- PrecioUnitarioVenta: 83455\n- MontoTotal: 3922385\n- DescuentoAplicado: 0\n\nSale 3:\n- OrdenVentaID: OV-005777\n- ClienteID: CLI-0004\n- FechaPedido: 6/2/2024\n- CantidadPedida: 500\n- PrecioUnitarioVenta: 77199\n- MontoTotal: 37248517\n- DescuentoAplicado: 35\n\nSale 4:\n- OrdenVentaID: OV-008776\n- ClienteID: CLI-0010\n- FechaPedido: 6/2/2024\n- CantidadPedida: 100\n- PrecioUnitarioVenta: 78501\n- MontoTotal: 7740199\n- DescuentoAplicado: 14\n\nSale 5: \n- OrdenVentaID: OV-000284\n- ClienteID: CLI-0001\n- FechaPedido: 6/2/2024\n- CantidadPedida: 490\n- PrecioUnitarioVenta: 84808\n- MontoTotal: 4155592\n- DescuentoAplicado: 0\n\nSale 6:\n- OrdenVentaID: OV-010003\n- ClienteID: CLI-0012\n- FechaPedido: 6/2/2024\n- CantidadPedida: 290\n- PrecioUnitarioVenta: 85417\n- MontoTotal: 2397826\n- DescuentoAplicado: 32\n\nSale 7:\n- OrdenVentaID: OV-004943\n- ClienteID: CLI-0010\n- FechaPedido: 7/2/2024\n- CantidadPedida: 180\n- PrecioUnitarioVenta: 85444\n- MontoTotal: 15041562\n- DescuentoAplicado: 22\n\nSale 8: \n- OrdenVentaID: OV-009564\n- ClienteID: CLI-0003\n- FechaPedido: 8/2/2024\n- CantidadPedida: 290\n- PrecioUnitarioVenta: 80946\n- MontoTotal: 2347434\n- DescuentoAplicado: 0\n\n***\nA: \n***\nSales 9/02/2024:\nCantidadPedida: 700 ~ 820\nPrecioVentaBase: 78474$ ~ 84963$\nMontoTotal: 48907333 - 55474100\nClientesProbable: CLI-0001, CLI-0011, CLI-0012, CLI-0009\n\nSales 10/02/2024:\nCantidadPedida: 300 ~ 350\nPrecioVentaBase: 77239$ ~ 80709$\nMontoTotal: 23171700 - 25826880\nClientesProbable: CLI-0009, CLI-0011, CLI-0012\n\nSales 11/02/2024:\nCantidadPedida: 60 ~ 100\nPrecioVentaBase: 76790$ ~ 79609$\nMontoTotal: 4607400 - 4776540\nClientesProbable: CLI-0009, CLI-0011, CLI-0012\n\nSales 12/02/2024:\nCantidadPedida: 120 ~ 150\nPrecioVentaBase: 77283$ ~ 79524$\nMontoTotal: 9542880 - 11592450\nClientesProbable: CLI-0007, CLI-0011\n\nSales 13/02/2024:\nCantidadPedida: 900 ~ 1300\nPrecioVentaBase: 78451$ ~ 85550$\nMontoTotal: 70605900 - 102660000\nClientesProbable: CLI-0007, CLI-0011\n\nSales 14/02/2024:\nCantidadPedida: 900 ~ 1300\nPrecioVentaBase: 78451$ ~ 85550$\nMontoTotal: 70605900 - 102660000\nClientesProbable: CLI-0007, CLI-0011\n...\n\n***\n\n# SPECIFICATIONS\n## GENERAL\n- You must make predictions in ranges.\n- You must return 7 days of sales predictions.\n- You must take into account a 5% annual growth in sales \"probability.\"\n\n## TOOLS\n- Productos.csv: With this tool, you can see the data for the product you were given, including the base price, which will always be the minimum price, as you will notice the predicted price will always be higher.\n- Calculator: With this tool, you can perform mathematical calculations if needed, but you must not deviate from your role, which is to create a list of sales.\n\n## YOU CANNOT GET THIS WRONG\n- You must always return a list without additional text.\n- You cannot return fewer than 7 days of predictions.\n- You cannot set the predicted PrecioVentaBase lower than what you find in your Productos.csv tool.\n- You cannot make sales with crazy numbers; you must follow the patterns."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.9,
+        "position": [
+          540,
+          120
+        ],
+        "id": "7b20b6d2-59b4-48a6-b936-afabef4c493d",
+        "name": "Agente de Pronóstico de Demanda"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Productos.csv: with this tool, you can extract the base price of the product",
+          "documentId": {
+            "__rl": true,
+            "value": "1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProductoID",
+                "lookupValue": "HAR-BLAN-LEUD-1KG"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.5,
+        "position": [
+          620,
+          480
+        ],
+        "id": "4c39e0a9-2936-4ef0-ac26-b18db7bbca47",
+        "name": "Productos.csv",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "  {\n    \"ProductID\": \"HAR-BLAN-LEUD-1KG\",\n    \"Dia\": 1,\n    \"Mes\": 2,\n    \"Año\": 2025\n  }"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -400,
+          120
+        ],
+        "id": "3fa1b989-b54c-4f60-96f9-5e7e88c3f018",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "content": "## trigger node \nDescripion: este trigger se activa cuando se llama este workflow en un workflow padre"
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -520,
+          -80
+        ],
+        "id": "82a202ab-eb6d-4d53-9c7c-aa7bfe5a0d60",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## Nodo ejecutar agente analista de ventas\nDescripcion: este nodo ejecuta el workflow del agente analista de ventas historicas",
+          "width": 280,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          0,
+          -80
+        ],
+        "id": "2918e77b-67f7-4eb4-9edb-e4c792fb36f3",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "content": "## Nodo agente pronostico de demana\nDescripcion: este agente se encarga de realizar la prediccion analizando la lista que paso al agente analista de ventas",
+          "width": 280,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          520,
+          -100
+        ],
+        "id": "848fdc02-d3e8-44f7-b98a-1b7e41fb1f7c",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          440,
+          480
+        ],
+        "id": "7b170373-38ff-476e-963e-d263371a0406",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "vzdjQJqcvomw8EgG",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+            "mode": "list",
+            "cachedResultName": "Respuesta agentes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Agentes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Agente": "Agente de Pronóstico de Demanda",
+              "respuesta": "={{ $json.output }}",
+              "fecha": "={{ $('When Executed by Another Workflow').item.json.Dia +\"/\"+ $('When Executed by Another Workflow').item.json.Mes + \"/\" + $('When Executed by Another Workflow').item.json['Año'] }}",
+              "producto": "={{ $('When Executed by Another Workflow').item.json.ProductID }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Agente",
+                "displayName": "Agente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "producto",
+                "displayName": "producto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "respuesta",
+                "displayName": "respuesta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          900,
+          120
+        ],
+        "id": "1293c8e7-4f9a-40dc-8b7f-6604246f11bc",
+        "name": "Append row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Ejecutar agente analista de ventas historicas": {
+        "main": [
+          [
+            {
+              "node": "Agente de Pronóstico de Demanda",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculator": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente de Pronóstico de Demanda",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Productos.csv": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente de Pronóstico de Demanda",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agente de Pronóstico de Demanda": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Ejecutar agente analista de ventas historicas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Agente de Pronóstico de Demanda",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
