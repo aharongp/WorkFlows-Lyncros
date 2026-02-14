@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-14T22:49:09.999Z",
+  "updatedAt": "2026-02-14T23:34:34.662Z",
   "createdAt": "2026-02-14T22:09:20.819Z",
   "id": "RSXSSidfDBeguLz_pK8Xd",
   "name": "restore",
@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        224
+        -144,
+        136
       ],
-      "id": "3207b5ae-4bba-4a86-bb80-c8d37ad8644a",
+      "id": "4a19f895-661d-4832-b33c-f8efed2b9877",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -38,10 +38,10 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        224,
-        224
+        80,
+        136
       ],
-      "id": "1849dbc1-d6cb-4232-8f4f-dcd6c686562b",
+      "id": "bf7e77bf-4f66-4cfd-9ac6-15ebf86cbda8",
       "name": "List files",
       "webhookId": "f50dba63-7db1-4216-8ba8-6022e1240f8e",
       "credentials": {
@@ -54,15 +54,16 @@
     {
       "parameters": {
         "operation": "create",
+        "workflowObject": "={{  JSON.stringify($json.workflowData)}}",
         "requestOptions": {}
       },
       "type": "n8n-nodes-base.n8n",
       "typeVersion": 1,
       "position": [
-        1792,
-        320
+        976,
+        136
       ],
-      "id": "66ae7fd6-bcea-41be-b127-9a853feb1aca",
+      "id": "bca3c322-fd56-41a0-ac4f-65ad9f8e0108",
       "name": "Create a workflow",
       "credentials": {
         "n8nApi": {
@@ -78,10 +79,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        448,
-        224
+        304,
+        136
       ],
-      "id": "bcb3b6e6-d528-4912-b873-2cce44b35f6c",
+      "id": "5d4b6dbe-9792-4502-a818-7daf4f6a0441",
       "name": "Loop Over Items"
     },
     {
@@ -104,10 +105,10 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        896,
-        -48
+        528,
+        64
       ],
-      "id": "c3eb3020-a920-4d3a-a979-34c494010d6e",
+      "id": "47bbddf2-254d-4672-807a-fdecdd51754d",
       "name": "Get a file",
       "webhookId": "7ced58a9-e53a-47a9-bbcd-bb464573d318",
       "credentials": {
@@ -119,199 +120,16 @@
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 0,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "3a1ee12a-1f4b-4d42-8bc1-a032e8d8d649"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "6cf65801-3ecb-4c9f-abea-244edfb31969",
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "5a535d17-fef8-4809-9a22-a2aa752f8e05",
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 2,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.3,
-      "position": [
-        1568,
-        112
-      ],
-      "id": "a18d4d86-e5b9-4310-85c2-8f948db17fec",
-      "name": "Status"
-    },
-    {
-      "parameters": {
-        "jsCode": "// 1. Identificar entradas\nconst input = items[0].json;\n\n// 2. Extraer contenido de GitHub (viene del primer input del Merge)\nlet remoteWorkflowObj = null;\nif (input.content) {\n    try {\n        const decoded = Buffer.from(input.content, 'base64').toString('utf-8');\n        remoteWorkflowObj = JSON.parse(decoded);\n    } catch (e) {\n        remoteWorkflowObj = null;\n    }\n}\n\n// 3. Extraer ID local (viene del segundo input del Merge / Get many workflows)\n// Si el Merge funcionó, 'id' debería existir. \n// Si 'id' es undefined, es que el Merge no encontró pareja por el NOMBRE.\nconst localId = input.id; \n\n// LÓGICA DE DECISIÓN\nif (!localId) {\n    return {\n        json: {\n            status: 2, // Crear nuevo\n            name: input.name || \"Sin nombre\",\n            data: remoteWorkflowObj,\n            debug: \"No se encontró ID local. Revisa que el nombre en n8n coincida con el de GitHub.\"\n        }\n    };\n}\n\n// Comparación básica para decidir si actualizar (Status 1) o ignorar (Status 0)\nconst remoteStr = JSON.stringify(remoteWorkflowObj?.nodes || []);\nconst localStr = JSON.stringify(input.nodes || []);\n\nif (remoteStr === localStr) {\n    return { json: { status: 0, message: \"Sin cambios\", workflowId: localId } };\n} else {\n    return { \n        json: { \n            status: 1, \n            workflowId: localId, \n            data: remoteWorkflowObj,\n            name: input.name \n        } \n    };\n}"
+        "jsCode": "// 1. Obtenemos el nombre del archivo de la parte JSON\nconst fileName = items[0].json.name || \"flujo_sin_nombre\";\nconst cleanName = fileName.replace('.json', '');\n\ntry {\n  // 2. Leemos el buffer binario usando el helper oficial de n8n\n  // Esto resuelve el problema de \"filesystem-v2\"\n  const buffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n  \n  // 3. Convertimos el buffer a texto y luego a objeto JSON\n  const workflowObj = JSON.parse(buffer.toString('utf-8'));\n\n  // 4. Inyectamos el nombre limpio\n  workflowObj.name = cleanName;\n\n  return {\n    json: {\n      workflowData: workflowObj\n    }\n  };\n} catch (error) {\n  return {\n    json: {\n      error: \"Error procesando el binario\",\n      detalles: error.message,\n      nota: \"Si el error persiste, verifica que el nodo anterior tenga el binario en la propiedad 'data'\"\n    }\n  };\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1344,
-        128
+        752,
+        64
       ],
-      "id": "0fe9c0b1-2890-4a11-ad5b-b98ea6dcbe9b",
+      "id": "527af2aa-4abf-456f-b509-af1f482083c8",
       "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "name": "igual",
-      "typeVersion": 1,
-      "position": [
-        1792,
-        -64
-      ],
-      "id": "51a8aba7-c760-422d-8a89-4d54649a5993"
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "workflowId": {
-          "__rl": true,
-          "value": "244",
-          "mode": "id"
-        },
-        "requestOptions": {}
-      },
-      "type": "n8n-nodes-base.n8n",
-      "typeVersion": 1,
-      "position": [
-        1792,
-        128
-      ],
-      "id": "3a19a841-91e1-4de2-8d14-dd6d73ef71bb",
-      "name": "Update a workflow",
-      "credentials": {
-        "n8nApi": {
-          "id": "XE18JDowzzNYBUnY",
-          "name": "n8n account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "fieldsToMatchString": "name",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1120,
-        128
-      ],
-      "id": "bf109ec5-fd55-4126-a548-11603be197cb",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "filters": {},
-        "requestOptions": {}
-      },
-      "type": "n8n-nodes-base.n8n",
-      "typeVersion": 1,
-      "position": [
-        672,
-        224
-      ],
-      "id": "93943f6f-111f-4f8f-ae1a-71ab942247f7",
-      "name": "Get many workflows",
-      "credentials": {
-        "n8nApi": {
-          "id": "XE18JDowzzNYBUnY",
-          "name": "n8n account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "bc58bab4-a3cc-4321-8309-8db51494c69e",
-              "name": "name",
-              "value": "={{ $json.name }}.json",
-              "type": "string"
-            },
-            {
-              "id": "135a07c4-5c0b-4adb-ac5a-4b9b43d76a7f",
-              "name": "id",
-              "value": "={{ $json.id }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        896,
-        224
-      ],
-      "id": "18af5821-a6d5-43a7-8f60-b15e8b0960ef",
-      "name": "Edit Fields"
     }
   ],
   "connections": {
@@ -337,23 +155,6 @@
         ]
       ]
     },
-    "Loop Over Items": {
-      "main": [
-        [],
-        [
-          {
-            "node": "Get a file",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Get many workflows",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Create a workflow": {
       "main": [
         [
@@ -365,54 +166,19 @@
         ]
       ]
     },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Get a file": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Status": {
-      "main": [
-        [
-          {
-            "node": "igual",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Update a workflow",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Create a workflow",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge": {
       "main": [
         [
           {
@@ -423,44 +189,11 @@
         ]
       ]
     },
-    "Get many workflows": {
+    "Code in JavaScript": {
       "main": [
         [
           {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Update a workflow": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "igual": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
+            "node": "Create a workflow",
             "type": "main",
             "index": 0
           }
@@ -477,7 +210,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "eb90a83e-7992-424d-8d64-b8e55831512f",
+  "versionId": "db5bbc16-79f4-410a-a627-dd2fbe55f573",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
