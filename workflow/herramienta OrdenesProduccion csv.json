@@ -1,0 +1,408 @@
+{
+  "updatedAt": "2025-06-30T05:40:55.000Z",
+  "createdAt": "2025-06-30T05:39:33.145Z",
+  "id": "rCyHVYJ2Aa9xTNXP",
+  "name": "herramienta OrdenesProduccion csv",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        180
+      ],
+      "id": "3c944513-1b0c-44d4-87fd-b433feb61346",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "ProductoID"
+            },
+            {
+              "fieldToAggregate": "LineaProduccionID"
+            },
+            {
+              "fieldToAggregate": "FechaPlanificadaInicio"
+            },
+            {
+              "fieldToAggregate": "FechaRealInicio"
+            },
+            {
+              "fieldToAggregate": "FechaRealFin"
+            },
+            {
+              "fieldToAggregate": "EficienciaReal"
+            },
+            {
+              "fieldToAggregate": "TiempoParadaNoPlanificadaMin"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        440,
+        100
+      ],
+      "id": "d05b85e7-aeee-4c0a-bb85-9e05fe0643b4",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "let productoID = $input.first().json.ProductoID[1]\nlet lineaProduccionID = $input.first().json.LineaProduccionID[1]\nlet fechaPlanificadaInicio = $input.first().json.FechaPlanificadaInicio.slice(-2)\nlet fechaRealInicio = $input.first().json.FechaRealInicio.slice(-2)\nlet fechaRealFin = $input.first().json.FechaRealFin.slice(-2)\nlet eficienciaReal = $input.first().json.EficienciaReal.slice(-2)\nlet tiempoParadaNoPlanificada = $input.first().json.TiempoParadaNoPlanificadaMin.slice(-2)\n\nlet str = \"Ultimas 2 ordenes de produccion para el producto: \"+ productoID + \" en la linea de produccion: \" + lineaProduccionID + \"\\n\\n\"\n\nfor (let i = 0; i < 2; i++) {\n  str = str + \"fecha de inicio planificada: \"+ fechaPlanificadaInicio[i] + \"\\n\" + \"fecha de inicio real: \"+ fechaRealInicio[i] + \"\\n\" + \"fecha de fin real: \" + fechaRealFin[i] + \"\\n\" + \"eficiencia real: \"+ eficienciaReal + \"\\n\" + \"tiempo de parada no planificada: \"+ tiempoParadaNoPlanificada + \"\\n\\n\"\n}\n\nreturn {\"ordenes\": str};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        100
+      ],
+      "id": "83c0c9e2-5031-42f2-aa7e-e76242511b43",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ProductoID"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ab7409c2-1ad3-4b9d-a770-9641b12dd60b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 501630710,
+          "mode": "list",
+          "cachedResultName": "OrdenesProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=501630710"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProductoID",
+              "lookupValue": "={{ $json.ProductoID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        100
+      ],
+      "id": "970bd74f-5e98-461d-8cb7-5c5b8a346f59",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "ProductoID": "REB-PREF-500G"
+        }
+      }
+    ]
+  },
+  "versionId": "1b2015e0-046b-4686-872d-72961df240d4",
+  "activeVersionId": "1b2015e0-046b-4686-872d-72961df240d4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T05:39:33.156Z",
+      "createdAt": "2025-06-30T05:39:33.156Z",
+      "role": "workflow:owner",
+      "workflowId": "rCyHVYJ2Aa9xTNXP",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:08.125Z",
+    "createdAt": "2026-01-17T21:03:08.125Z",
+    "versionId": "1b2015e0-046b-4686-872d-72961df240d4",
+    "workflowId": "rCyHVYJ2Aa9xTNXP",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          180
+        ],
+        "id": "3c944513-1b0c-44d4-87fd-b433feb61346",
+        "name": "When clicking ‘Execute workflow’",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "ProductoID"
+              },
+              {
+                "fieldToAggregate": "LineaProduccionID"
+              },
+              {
+                "fieldToAggregate": "FechaPlanificadaInicio"
+              },
+              {
+                "fieldToAggregate": "FechaRealInicio"
+              },
+              {
+                "fieldToAggregate": "FechaRealFin"
+              },
+              {
+                "fieldToAggregate": "EficienciaReal"
+              },
+              {
+                "fieldToAggregate": "TiempoParadaNoPlanificadaMin"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          440,
+          100
+        ],
+        "id": "d05b85e7-aeee-4c0a-bb85-9e05fe0643b4",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "jsCode": "let productoID = $input.first().json.ProductoID[1]\nlet lineaProduccionID = $input.first().json.LineaProduccionID[1]\nlet fechaPlanificadaInicio = $input.first().json.FechaPlanificadaInicio.slice(-2)\nlet fechaRealInicio = $input.first().json.FechaRealInicio.slice(-2)\nlet fechaRealFin = $input.first().json.FechaRealFin.slice(-2)\nlet eficienciaReal = $input.first().json.EficienciaReal.slice(-2)\nlet tiempoParadaNoPlanificada = $input.first().json.TiempoParadaNoPlanificadaMin.slice(-2)\n\nlet str = \"Ultimas 2 ordenes de produccion para el producto: \"+ productoID + \" en la linea de produccion: \" + lineaProduccionID + \"\\n\\n\"\n\nfor (let i = 0; i < 2; i++) {\n  str = str + \"fecha de inicio planificada: \"+ fechaPlanificadaInicio[i] + \"\\n\" + \"fecha de inicio real: \"+ fechaRealInicio[i] + \"\\n\" + \"fecha de fin real: \" + fechaRealFin[i] + \"\\n\" + \"eficiencia real: \"+ eficienciaReal + \"\\n\" + \"tiempo de parada no planificada: \"+ tiempoParadaNoPlanificada + \"\\n\\n\"\n}\n\nreturn {\"ordenes\": str};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          660,
+          100
+        ],
+        "id": "83c0c9e2-5031-42f2-aa7e-e76242511b43",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "ProductoID"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "ab7409c2-1ad3-4b9d-a770-9641b12dd60b",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 501630710,
+            "mode": "list",
+            "cachedResultName": "OrdenesProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=501630710"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProductoID",
+                "lookupValue": "={{ $json.ProductoID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          220,
+          100
+        ],
+        "id": "970bd74f-5e98-461d-8cb7-5c5b8a346f59",
+        "name": "Get row(s) in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-06-30T05:39:23.880Z",
+      "createdAt": "2025-06-30T05:39:23.880Z",
+      "id": "PCwJPjYtmsBC33eY",
+      "name": "codigo"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.906Z",
+      "createdAt": "2025-06-30T05:39:23.906Z",
+      "id": "gh4ts8neeyHbzaZE",
+      "name": "herramienta"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.935Z",
+      "createdAt": "2025-06-30T05:39:23.935Z",
+      "id": "nH1Q67MvpBeviA8C",
+      "name": "Proyecto multi agentes"
+    }
+  ]
+}
