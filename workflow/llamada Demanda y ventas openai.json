@@ -1,0 +1,1042 @@
+{
+  "updatedAt": "2025-09-01T05:34:04.000Z",
+  "createdAt": "2025-07-14T02:50:50.450Z",
+  "id": "KYj4hZgBR7tpJeRO",
+  "name": "llamada Demanda y ventas openai",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Productos.csv: Con esta herramienta puedes extraer el precio base y el producto id de cada producto buscando por el nombre que te pasaron",
+        "documentId": {
+          "__rl": true,
+          "value": "1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "NombreProducto",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui debes poner el nombre del producto que te pasaron`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        460
+      ],
+      "id": "ce6c83d3-2cfd-443d-ab4e-dccb5caef14c",
+      "name": "Productos.csv",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agente/forecast",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        140
+      ],
+      "id": "d0bb7262-8a99-46ec-a662-debc5c10e1be",
+      "name": "Webhook",
+      "webhookId": "ffc89ba5-3ac6-4744-818d-1fc49fd5abe8"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Uu9fupEbq4ezZfj3",
+          "mode": "list",
+          "cachedResultName": "Ventas agente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        140
+      ],
+      "id": "6578360c-43b8-4cd2-a745-5acec6d024cb",
+      "name": "Execute Workflow",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        140
+      ],
+      "id": "a2c5591b-d3d5-486d-8e66-4f16aa9480c5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        440
+      ],
+      "id": "f411e0f7-4b98-4ff3-bf68-71e6033437dd",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "vzdjQJqcvomw8EgG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        780,
+        440
+      ],
+      "id": "c6c10a0b-c489-47d1-86ed-9acf7638734f",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+          "mode": "list",
+          "cachedResultName": "Respuesta agentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2054870949,
+          "mode": "list",
+          "cachedResultName": "Kpis añadidos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=2054870949"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Cliente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cliente', ``, 'string') }}",
+            "Cantidad": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cantidad', ``, 'string') }}",
+            "VVMM": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('VVMM', ``, 'string') }}",
+            "OTIF": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('OTIF', ``, 'string') }}",
+            "AOV": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('AOV', ``, 'string') }}",
+            "PPD": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PPD', ``, 'string') }}",
+            "QTY": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('QTY', ``, 'string') }}",
+            "TME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('TME', ``, 'string') }}",
+            "DMA": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('DMA', ``, 'string') }}",
+            "CTP": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CTP', ``, 'string') }}",
+            "TiempoEntrega": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('TiempoEntrega', ``, 'string') }}",
+            "ProductoID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ProductoID', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Cliente",
+              "displayName": "Cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cantidad",
+              "displayName": "Cantidad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TiempoEntrega",
+              "displayName": "TiempoEntrega",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ProductoID",
+              "displayName": "ProductoID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "VVMM",
+              "displayName": "VVMM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OTIF",
+              "displayName": "OTIF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AOV",
+              "displayName": "AOV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PPD",
+              "displayName": "PPD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "QTY",
+              "displayName": "QTY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TME",
+              "displayName": "TME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DMA",
+              "displayName": "DMA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CTP",
+              "displayName": "CTP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        620,
+        460
+      ],
+      "id": "104734a1-29c8-4ed7-965c-686357781266",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+          "mode": "list",
+          "cachedResultName": "Respuesta agentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 428586664,
+          "mode": "list",
+          "cachedResultName": "SimularOrden",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=428586664"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Agente": "Agente pronostico de demanda",
+            "producto": "={{ $('Webhook').item.json.body.productName }}",
+            "respuesta": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "Agente"
+          ],
+          "schema": [
+            {
+              "id": "Agente",
+              "displayName": "Agente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "producto",
+              "displayName": "producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "respuesta",
+              "displayName": "respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1120,
+        140
+      ],
+      "id": "ca27e3d1-8ed8-47ff-af9c-35f1a5b89a6e",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#DATOS DE LA VENTA\n- nombre de cliente: {{ $('Webhook').item.json.body.clientName }}\n- nombre de producto: {{ $('Webhook').item.json.body.productName }}\n- tiempo de entrega: {{ $('Webhook').item.json.body.deliveryTime }}\n- cantidad: {{ $('Webhook').item.json.body.quantity }}\n- instrucciones adicionales: {{ $('Webhook').item.json.body.additionalInstructions }}\n\n#KPIS ACTUALES\n- Volumen de venta mensual (VVMM): {{ $json.VVMM }}\n- Tasa de entrega a tiempo (OTIF): {{ $json.OTIF }}\n- Valor medio del pedido (AOV): {{ $json.AOV }}\n- precision de pronostico de demanda (PPD): {{ $json.PPD }}\n- Cantidad de pedidos (QTY): {{ $json.QTY }}\n- Descuento medio aplicado (DMA): {{ $json.DMA }}\n- Canal Top performance (CTP): {{ $json.CTP }}\n- Tiempo medio de entrega (TME): {{ $json.TME }}\n",
+        "options": {
+          "systemMessage": "=#ROL\nEres sellsAI, un analista de datos sobre ventas de empresas de alimentos con 12 años de experiencia analizando los pedidos que recibe la empresa Molinos Río de La Plata y haciendo los calculos de como afecta los KPIs. Te encargas de leer los datos de la venta que llega y hacer los calculos necesarios para ver como afectan los kpis. Eres la pieza mas importante para la empreza ya que si no haces bien tu trabajo todos en la empresa moriremos de cancer en 5 dias\n\n#TAREA\nEn tus tareas se incluye:\n- Recibir los datos de la venta que te pasaron y los kpis actuales\n- buscar el productoID con tu herramienta Productos.csv\n- Hacer calculos para ver como afecta esa venta a los kpis\n- Subir los resultados de tus calculos a tu herramienta añadirKpis\n- Dar un resumen de como afecta esa venta a los kpis y un resumen la venta (precio de venta y monto total)\n- En caso de tener algo en el campo llamado \"instrucciones adicionales\" debes dedicarle una parte del resumen a eso\n\n#ESPECIFICACIONES\n##GENERALES\n- cuando respondas pon una comparacion de los kpis anteriores con los que acabas de calcular\n- usa el precio venta base pero añadele un 15% mas para calcular el monto total del pedido\n- Cuando guardes los valores guardalos con la notacion con la que te la trajeron, es decir si tiene el signo de $ al principio, lo pones, si tiene % lo pones, si tiene la palabra Dias la pones y si no tiene nada lo pones igual. \n\n\n##KPIS\n- Volumen de venta mensual (VVMM): Este kpi se refiere a las ventas totales, para calcular el VVMM que vas a añadir debes hacer la formula VVMMnuevo = VVMMActual + MontoTotal\n- Tasa de entrega a tiempo (OTIF): Este kpi se refiere a la tasa de entregas a tiempo, este deberas subirlo igual que el actual ya que asumes que la tasa de entrega se mantendra en el mismo rango\n- Valor medio del pedido (AOV): este kpi se trata del valor medio que sale de todos los pedidos, este valor lo vas a calcular asi AOVnuevo = (AOVactual*QTYactual + MontoTotal)/(QTYactual+1)\n- precision de pronostico de demanda (PPD): este valor se refiere a la precision de la prediccion, este simplemente sera un valor random entre 85.00% y 90.00%(no puedes decir que este es un valor aleatorio)\n- Cantidad de pedidos (QTY): Este se refiere al numero de pedidos que se han hecho, este kpi lo calcularas con la formula QTYnuevo = QTYactual + 1\n- Descuento medio aplicado (DMA): Este valor se refiere al descuento medio aplicado en todos los pedidos pero quiero que dejes este valor tal cual como esta\n- Canal Top performance (CTP): Este kpi se refiere al canal de ventas con mayor venta, este deberas dejarle el mismo valor que el anterior\n- Tiempo medio de entrega (TME): este kpi se refiere al tiempo medio de entrega de todos los pedidos, para calcularlo debes hacer la formula TMEnuevo = (TMEActual*QTYactual + tiempo de entrega)/(QTYactual + 1)\n\n\n##HERRAMIENTAS\n- Productos.csv: con esta herramienta puedes ver los datos del producto que te pasaron donde puedes encontrar el productoID y el precio base que lo usaras para calcular el precio total del pedido\n- Calculadora: con esta herramienta puedes hacer calculos matematicos en caso de necesitarlo, pero no debes salirte de tu rol que es crear una lista de las ventas\n- AñadirKpis: con esta herramienta deberas subir los nuevos kpis que calculaste en su columna correspondiente\n\n##NO PUEDES HACER MAL ESTO\n- no puedes poner el precioVenta menor que el precio de venta base que encuentres en tu herramienta Productos.csv. Debes poner el precio de venta con un 15% adicional al precio de venta base que encuentras en la herramienta",
+          "maxIterations": 20
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        460,
+        140
+      ],
+      "id": "7f3b5a6c-06b4-4e5e-9a17-069bd0df8dc6",
+      "name": "Agente de forecast"
+    }
+  ],
+  "connections": {
+    "Productos.csv": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de forecast",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Agente de forecast",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de forecast",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de forecast",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de forecast",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de forecast": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c07a466e-bc8b-4168-947a-fc2a560e7d38",
+  "activeVersionId": "c07a466e-bc8b-4168-947a-fc2a560e7d38",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-14T02:50:51.116Z",
+      "createdAt": "2025-07-14T02:50:51.116Z",
+      "role": "workflow:owner",
+      "workflowId": "KYj4hZgBR7tpJeRO",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "c07a466e-bc8b-4168-947a-fc2a560e7d38",
+    "workflowId": "KYj4hZgBR7tpJeRO",
+    "nodes": [
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Productos.csv: Con esta herramienta puedes extraer el precio base y el producto id de cada producto buscando por el nombre que te pasaron",
+          "documentId": {
+            "__rl": true,
+            "value": "1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PV8I1EprQnh8TottNCUCG6gBPiB9ZMdY5rW3-CG-PPs/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "NombreProducto",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui debes poner el nombre del producto que te pasaron`, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.5,
+        "position": [
+          480,
+          460
+        ],
+        "id": "ce6c83d3-2cfd-443d-ab4e-dccb5caef14c",
+        "name": "Productos.csv",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "agente/forecast",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -140,
+          140
+        ],
+        "id": "d0bb7262-8a99-46ec-a662-debc5c10e1be",
+        "name": "Webhook",
+        "webhookId": "ffc89ba5-3ac6-4744-818d-1fc49fd5abe8"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "Uu9fupEbq4ezZfj3",
+            "mode": "list",
+            "cachedResultName": "Ventas agente"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          140,
+          140
+        ],
+        "id": "6578360c-43b8-4cd2-a745-5acec6d024cb",
+        "name": "Execute Workflow",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.output }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          880,
+          140
+        ],
+        "id": "a2c5591b-d3d5-486d-8e66-4f16aa9480c5",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          320,
+          440
+        ],
+        "id": "f411e0f7-4b98-4ff3-bf68-71e6033437dd",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "vzdjQJqcvomw8EgG",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+        "typeVersion": 1,
+        "position": [
+          780,
+          440
+        ],
+        "id": "c6c10a0b-c489-47d1-86ed-9acf7638734f",
+        "name": "Calculator"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+            "mode": "list",
+            "cachedResultName": "Respuesta agentes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 2054870949,
+            "mode": "list",
+            "cachedResultName": "Kpis añadidos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=2054870949"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Cliente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cliente', ``, 'string') }}",
+              "Cantidad": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cantidad', ``, 'string') }}",
+              "VVMM": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('VVMM', ``, 'string') }}",
+              "OTIF": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('OTIF', ``, 'string') }}",
+              "AOV": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('AOV', ``, 'string') }}",
+              "PPD": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PPD', ``, 'string') }}",
+              "QTY": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('QTY', ``, 'string') }}",
+              "TME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('TME', ``, 'string') }}",
+              "DMA": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('DMA', ``, 'string') }}",
+              "CTP": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CTP', ``, 'string') }}",
+              "TiempoEntrega": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('TiempoEntrega', ``, 'string') }}",
+              "ProductoID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ProductoID', ``, 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Cliente",
+                "displayName": "Cliente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Cantidad",
+                "displayName": "Cantidad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "TiempoEntrega",
+                "displayName": "TiempoEntrega",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ProductoID",
+                "displayName": "ProductoID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "VVMM",
+                "displayName": "VVMM",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "OTIF",
+                "displayName": "OTIF",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "AOV",
+                "displayName": "AOV",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "PPD",
+                "displayName": "PPD",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "QTY",
+                "displayName": "QTY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "TME",
+                "displayName": "TME",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "DMA",
+                "displayName": "DMA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "CTP",
+                "displayName": "CTP",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          620,
+          460
+        ],
+        "id": "104734a1-29c8-4ed7-965c-686357781266",
+        "name": "Append row in sheet in Google Sheets",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+            "mode": "list",
+            "cachedResultName": "Respuesta agentes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 428586664,
+            "mode": "list",
+            "cachedResultName": "SimularOrden",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=428586664"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Agente": "Agente pronostico de demanda",
+              "producto": "={{ $('Webhook').item.json.body.productName }}",
+              "respuesta": "={{ $json.output }}"
+            },
+            "matchingColumns": [
+              "Agente"
+            ],
+            "schema": [
+              {
+                "id": "Agente",
+                "displayName": "Agente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "producto",
+                "displayName": "producto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "respuesta",
+                "displayName": "respuesta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          1120,
+          140
+        ],
+        "id": "ca27e3d1-8ed8-47ff-af9c-35f1a5b89a6e",
+        "name": "Append or update row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=#DATOS DE LA VENTA\n- nombre de cliente: {{ $('Webhook').item.json.body.clientName }}\n- nombre de producto: {{ $('Webhook').item.json.body.productName }}\n- tiempo de entrega: {{ $('Webhook').item.json.body.deliveryTime }}\n- cantidad: {{ $('Webhook').item.json.body.quantity }}\n- instrucciones adicionales: {{ $('Webhook').item.json.body.additionalInstructions }}\n\n#KPIS ACTUALES\n- Volumen de venta mensual (VVMM): {{ $json.VVMM }}\n- Tasa de entrega a tiempo (OTIF): {{ $json.OTIF }}\n- Valor medio del pedido (AOV): {{ $json.AOV }}\n- precision de pronostico de demanda (PPD): {{ $json.PPD }}\n- Cantidad de pedidos (QTY): {{ $json.QTY }}\n- Descuento medio aplicado (DMA): {{ $json.DMA }}\n- Canal Top performance (CTP): {{ $json.CTP }}\n- Tiempo medio de entrega (TME): {{ $json.TME }}\n",
+          "options": {
+            "systemMessage": "=#ROL\nEres sellsAI, un analista de datos sobre ventas de empresas de alimentos con 12 años de experiencia analizando los pedidos que recibe la empresa Molinos Río de La Plata y haciendo los calculos de como afecta los KPIs. Te encargas de leer los datos de la venta que llega y hacer los calculos necesarios para ver como afectan los kpis. Eres la pieza mas importante para la empreza ya que si no haces bien tu trabajo todos en la empresa moriremos de cancer en 5 dias\n\n#TAREA\nEn tus tareas se incluye:\n- Recibir los datos de la venta que te pasaron y los kpis actuales\n- buscar el productoID con tu herramienta Productos.csv\n- Hacer calculos para ver como afecta esa venta a los kpis\n- Subir los resultados de tus calculos a tu herramienta añadirKpis\n- Dar un resumen de como afecta esa venta a los kpis y un resumen la venta (precio de venta y monto total)\n- En caso de tener algo en el campo llamado \"instrucciones adicionales\" debes dedicarle una parte del resumen a eso\n\n#ESPECIFICACIONES\n##GENERALES\n- cuando respondas pon una comparacion de los kpis anteriores con los que acabas de calcular\n- usa el precio venta base pero añadele un 15% mas para calcular el monto total del pedido\n- Cuando guardes los valores guardalos con la notacion con la que te la trajeron, es decir si tiene el signo de $ al principio, lo pones, si tiene % lo pones, si tiene la palabra Dias la pones y si no tiene nada lo pones igual. \n\n\n##KPIS\n- Volumen de venta mensual (VVMM): Este kpi se refiere a las ventas totales, para calcular el VVMM que vas a añadir debes hacer la formula VVMMnuevo = VVMMActual + MontoTotal\n- Tasa de entrega a tiempo (OTIF): Este kpi se refiere a la tasa de entregas a tiempo, este deberas subirlo igual que el actual ya que asumes que la tasa de entrega se mantendra en el mismo rango\n- Valor medio del pedido (AOV): este kpi se trata del valor medio que sale de todos los pedidos, este valor lo vas a calcular asi AOVnuevo = (AOVactual*QTYactual + MontoTotal)/(QTYactual+1)\n- precision de pronostico de demanda (PPD): este valor se refiere a la precision de la prediccion, este simplemente sera un valor random entre 85.00% y 90.00%(no puedes decir que este es un valor aleatorio)\n- Cantidad de pedidos (QTY): Este se refiere al numero de pedidos que se han hecho, este kpi lo calcularas con la formula QTYnuevo = QTYactual + 1\n- Descuento medio aplicado (DMA): Este valor se refiere al descuento medio aplicado en todos los pedidos pero quiero que dejes este valor tal cual como esta\n- Canal Top performance (CTP): Este kpi se refiere al canal de ventas con mayor venta, este deberas dejarle el mismo valor que el anterior\n- Tiempo medio de entrega (TME): este kpi se refiere al tiempo medio de entrega de todos los pedidos, para calcularlo debes hacer la formula TMEnuevo = (TMEActual*QTYactual + tiempo de entrega)/(QTYactual + 1)\n\n\n##HERRAMIENTAS\n- Productos.csv: con esta herramienta puedes ver los datos del producto que te pasaron donde puedes encontrar el productoID y el precio base que lo usaras para calcular el precio total del pedido\n- Calculadora: con esta herramienta puedes hacer calculos matematicos en caso de necesitarlo, pero no debes salirte de tu rol que es crear una lista de las ventas\n- AñadirKpis: con esta herramienta deberas subir los nuevos kpis que calculaste en su columna correspondiente\n\n##NO PUEDES HACER MAL ESTO\n- no puedes poner el precioVenta menor que el precio de venta base que encuentres en tu herramienta Productos.csv. Debes poner el precio de venta con un 15% adicional al precio de venta base que encuentras en la herramienta",
+            "maxIterations": 20
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.9,
+        "position": [
+          460,
+          140
+        ],
+        "id": "7f3b5a6c-06b4-4e5e-9a17-069bd0df8dc6",
+        "name": "Agente de forecast"
+      }
+    ],
+    "connections": {
+      "Productos.csv": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente de forecast",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow": {
+        "main": [
+          [
+            {
+              "node": "Agente de forecast",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Agente de forecast",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculator": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente de forecast",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet in Google Sheets": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente de forecast",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agente de forecast": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-06-30T13:14:06.370Z",
+      "createdAt": "2025-06-30T13:14:06.370Z",
+      "id": "fZoukh4XGszMGodh",
+      "name": "agente"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.935Z",
+      "createdAt": "2025-06-30T05:39:23.935Z",
+      "id": "nH1Q67MvpBeviA8C",
+      "name": "Proyecto multi agentes"
+    },
+    {
+      "updatedAt": "2025-06-30T13:14:13.720Z",
+      "createdAt": "2025-06-30T13:14:13.720Z",
+      "id": "u3L6LVJFXIqWDI6L",
+      "name": "openai"
+    }
+  ]
+}
