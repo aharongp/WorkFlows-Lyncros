@@ -1,0 +1,240 @@
+{
+  "updatedAt": "2026-01-26T03:37:04.000Z",
+  "createdAt": "2026-01-26T03:37:04.542Z",
+  "id": "FW3dDnVmtsZfTiM4",
+  "name": "calculo de señal",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Configuración de constante pequeña para evitar división por cero (según PDF)\nconst EPSILON = 0.0001;\n// Umbral crítico para marcar anomalías (Z > 3 suele ser el estándar)\nconst Z_CRIT = 3.0;\n\n// 1. Agrupar los items por Cliente-Producto (CUSTID + PRDID)\n// Necesitamos la historia completa de cada par para sacar sus estadísticas\nconst groups = {};\n\nfor (const item of items) {\n  const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}`;\n  \n  if (!groups[key]) {\n    groups[key] = { \n      values: [], \n      items: [] \n    };\n  }\n  \n  // Guardamos el valor desestacionalizado (y_deseason = r_tilde)\n  const val = Number(r.y_deseason || 0);\n  groups[key].values.push(val);\n  groups[key].items.push(item);\n}\n\n// 2. Calcular estadísticas por grupo y asignar resultados\nconst results = [];\n\nfor (const key in groups) {\n  const group = groups[key];\n  const n = group.values.length;\n  \n  // --- A. CALCULAR MEDIA (Mu) ---\n  const sum = group.values.reduce((a, b) => a + b, 0);\n  const mu = sum / n; // Media aritmética\n\n  // --- B. CALCULAR DESVIACIÓN ESTÁNDAR (Sigma) ---\n  // Usamos la fórmula de muestra (dividido por n-1) como pide el PDF (fórmula 59)\n  let sumSqDiff = 0;\n  for (const v of group.values) {\n    sumSqDiff += Math.pow(v - mu, 2);\n  }\n  \n  // Si hay 1 solo dato, la desviación es 0 para no romper el código\n  const sigma = n > 1 ? Math.sqrt(sumSqDiff / (n - 1)) : 0;\n\n  // --- C. CALCULAR Z-SCORE INDIVIDUAL ---\n  for (const item of group.items) {\n    const r = item.json;\n    const val = Number(r.y_deseason || 0);\n    \n    // Fórmula del Z-Score: (Valor - Media) / (Desviación + Epsilon)\n    const z_score = (val - mu) / (sigma + EPSILON);\n    \n    // Detectar si es anomalía según el umbral (AnomRate)\n    const is_anomaly = Math.abs(z_score) >= Z_CRIT;\n\n    // Agregamos los nuevos campos al item\n    item.json.signal_mean = mu;\n    item.json.signal_sigma = sigma;\n    item.json.signal_z_score = z_score;\n    item.json.is_anomaly = is_anomaly; // Booleano útil para filtros posteriores\n    \n    results.push(item);\n  }\n}\n\nreturn results;",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        832
+      ],
+      "id": "75983977-5f98-427d-86b6-9c62930404ff",
+      "name": "Code in JavaScript6",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// DOCUMENTO TÉCNICO: SECCIÓN 3 (CALIDAD DE SEÑAL) - Fórmulas 246 a 248\n// Objetivo: Calcular métricas estructurales (AnomRate, VarSig, Runs, ADI)\n\nconst groups = {};\n\n// 1. AGRUPADO: Juntamos la historia de cada par Cliente-SKU\nfor (const item of items) {\n  const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  if (!groups[key]) {\n    groups[key] = {\n      items: [],\n      y_values: [],\n      anomalies: 0,\n      sigma: Number(r.signal_sigma || 0) // Tomamos la sigma (es cte por grupo)\n    };\n  }\n\n  groups[key].items.push(item);\n  groups[key].y_values.push(Number(r.y || 0));\n\n  // Contamos anomalías para AnomRate\n  // Nota: Asegúrate de que is_anomaly sea booleano true o string 'true'\n  if (r.is_anomaly === true || r.is_anomaly === 'true') {\n    groups[key].anomalies += 1;\n  }\n}\n\nconst results = [];\n\n// 2. CÁLCULO DE MÉTRICAS POR GRUPO\nfor (const key in groups) {\n  const g = groups[key];\n  const total_periods = g.items.length; // |T|\n\n  // --- A. AnomRate (Tasa de Anomalías) ---\n  // Fórmula: Suma de anomalías / Total de periodos\n  const anom_rate = total_periods > 0 ? (g.anomalies / total_periods) : 0;\n\n  // --- B. VarSig (Varianza de la Señal) ---\n  // Fórmula: Sigma al cuadrado\n  const var_sig = Math.pow(g.sigma, 2);\n\n  // --- C. Intermitencia (Runs y ADI) ---\n  let runs = 0;\n  let purchase_indices = []; // Guardamos en qué indices hubo venta (t)\n\n  // Recorremos la historia de ventas (y)\n  for (let t = 0; t < total_periods; t++) {\n    const is_purchase = g.y_values[t] > 0; // b_t = 1 si y > 0\n\n    if (is_purchase) {\n      purchase_indices.push(t);\n    }\n\n    // Calculamos Runs (Cambios de estado compra/no-compra)\n    if (t > 0) {\n      const prev_purchase = g.y_values[t-1] > 0;\n      if (is_purchase !== prev_purchase) {\n        runs++;\n      }\n    }\n  }\n\n  // --- D. ADI (Average Demand Interval) ---\n  // Fórmula: Promedio de distancia entre compras. Si M < 2, penalización máxima (|T|)\n  let adi = 0;\n  const M = purchase_indices.length; // Número de compras\n\n  if (M < 2) {\n    // Si compró 0 o 1 vez, es extremadamente intermitente.\n    // El documento sugiere usar |T| (total de periodos) como penalización.\n    adi = total_periods;\n  } else {\n    // Sumamos los intervalos entre compras consecutivas\n    let sum_intervals = 0;\n    for (let i = 1; i < M; i++) {\n      sum_intervals += (purchase_indices[i] - purchase_indices[i-1]);\n    }\n    // Promedio\n    adi = sum_intervals / (M - 1);\n  }\n\n  // 3. ASIGNACIÓN: Pegamos los resultados a cada item original\n  for (const item of g.items) {\n    item.json.signal_anom_rate = anom_rate; // 0 a 1 (Porcentaje de \"locura\")\n    item.json.signal_varsig = var_sig;      // Magnitud de la volatilidad\n    item.json.signal_runs = runs;           // Cantidad de \"apagones/encendidos\"\n    item.json.signal_adi = adi;             // Cada cuánto compra (meses)\n\n    results.push(item);\n  }\n}\n\nreturn results;",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        832
+      ],
+      "id": "aef48465-6664-49da-bd1e-dec387b11951",
+      "name": "Code in JavaScript7",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// PESOS DE DIFICULTAD (Calibrados para Retail)\nconst W_ADI = 0.40;     // Intermitencia\nconst W_VARSIG = 0.30;  // Volatilidad\nconst W_ANOM = 0.20;    // Anomalías puntuales\nconst W_RUNS = 0.10;    // Frecuencia de encendido/apagado\n\n// --- TOPES LÓGICOS (CAPPING) ---\n// Un ADI de 4 (comprar cada 4 meses) ya es \"Máxima Dificultad\" para un forecast mensual.\n// Si no ponemos esto, un cliente que compró hace 10 años distorsiona la escala.\nconst CAP_ADI = 4.0; \n\n// ---------------------------------------------------------\n// PASO 1: ENCONTRAR MÁXIMOS (CON TOPES)\n// ---------------------------------------------------------\nlet maxAdi = 0;\nlet maxVarSig = 0;\nlet maxAnom = 0;\nlet maxRuns = 0;\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Leemos y aplicamos CAP inmediato al ADI\n  let adi = Number(r.signal_adi || 0);\n  if (adi > CAP_ADI) adi = CAP_ADI; // Si es 12, se vuelve 4\n\n  const varsig = Number(r.signal_varsig || 0);\n  const anom = Number(r.signal_anom_rate || 0);\n  const runs = Number(r.signal_runs || 0);\n\n  if (adi > maxAdi) maxAdi = adi;\n  if (varsig > maxVarSig) maxVarSig = varsig;\n  if (anom > maxAnom) maxAnom = anom;\n  if (runs > maxRuns) maxRuns = runs;\n}\n\n// Protecciones\nif (maxAdi === 0) maxAdi = 1;\nif (maxVarSig === 0) maxVarSig = 1;\nif (maxAnom === 0) maxAnom = 1;\nif (maxRuns === 0) maxRuns = 1;\n\n// ---------------------------------------------------------\n// PASO 2: CALCULAR SCORE DE SEÑAL\n// ---------------------------------------------------------\nreturn items.map(item => {\n  const r = item.json;\n\n  let valAdi = Number(r.signal_adi || 0);\n  const valVarSig = Number(r.signal_varsig || 0);\n  const valAnom = Number(r.signal_anom_rate || 0);\n  const valRuns = Number(r.signal_runs || 0);\n\n  // Aplicar CAP individual\n  if (valAdi > CAP_ADI) valAdi = CAP_ADI;\n\n  // Normalización\n  const norm_adi = valAdi / maxAdi;     // Ahora un ADI de 4 dará 1.0 (Castigo máximo)\n  const norm_varsig = valVarSig / maxVarSig;\n  const norm_anom = valAnom / maxAnom;\n  const norm_runs = valRuns / maxRuns;\n\n  const signal_score_final = (W_ADI * norm_adi) + \n                             (W_VARSIG * norm_varsig) + \n                             (W_ANOM * norm_anom) + \n                             (W_RUNS * norm_runs);\n\n  return {\n    json: {\n      ...r,\n      norm_adi, // Debug: Verás que sube mucho respecto a antes\n      signal_score_final,\n      signal_score_final_100: signal_score_final * 100\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        832
+      ],
+      "id": "e1b0e408-a5e5-4ed2-92db-a8f7a8e0d41d",
+      "name": "Code in JavaScript8",
+      "disabled": false
+    },
+    {
+      "id": "4611ebb8-7dd5-4212-a97f-9b3fed8c9909",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        1280,
+        832
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    }
+  ],
+  "connections": {
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "3124ce24-083e-49a8-8786-661b4be8269e",
+  "activeVersionId": "3124ce24-083e-49a8-8786-661b4be8269e",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-26T03:37:04.550Z",
+      "createdAt": "2026-01-26T03:37:04.550Z",
+      "role": "workflow:owner",
+      "workflowId": "FW3dDnVmtsZfTiM4",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-26T03:37:04.551Z",
+    "createdAt": "2026-01-26T03:37:04.551Z",
+    "versionId": "3124ce24-083e-49a8-8786-661b4be8269e",
+    "workflowId": "FW3dDnVmtsZfTiM4",
+    "nodes": [
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// Configuración de constante pequeña para evitar división por cero (según PDF)\nconst EPSILON = 0.0001;\n// Umbral crítico para marcar anomalías (Z > 3 suele ser el estándar)\nconst Z_CRIT = 3.0;\n\n// 1. Agrupar los items por Cliente-Producto (CUSTID + PRDID)\n// Necesitamos la historia completa de cada par para sacar sus estadísticas\nconst groups = {};\n\nfor (const item of items) {\n  const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}`;\n  \n  if (!groups[key]) {\n    groups[key] = { \n      values: [], \n      items: [] \n    };\n  }\n  \n  // Guardamos el valor desestacionalizado (y_deseason = r_tilde)\n  const val = Number(r.y_deseason || 0);\n  groups[key].values.push(val);\n  groups[key].items.push(item);\n}\n\n// 2. Calcular estadísticas por grupo y asignar resultados\nconst results = [];\n\nfor (const key in groups) {\n  const group = groups[key];\n  const n = group.values.length;\n  \n  // --- A. CALCULAR MEDIA (Mu) ---\n  const sum = group.values.reduce((a, b) => a + b, 0);\n  const mu = sum / n; // Media aritmética\n\n  // --- B. CALCULAR DESVIACIÓN ESTÁNDAR (Sigma) ---\n  // Usamos la fórmula de muestra (dividido por n-1) como pide el PDF (fórmula 59)\n  let sumSqDiff = 0;\n  for (const v of group.values) {\n    sumSqDiff += Math.pow(v - mu, 2);\n  }\n  \n  // Si hay 1 solo dato, la desviación es 0 para no romper el código\n  const sigma = n > 1 ? Math.sqrt(sumSqDiff / (n - 1)) : 0;\n\n  // --- C. CALCULAR Z-SCORE INDIVIDUAL ---\n  for (const item of group.items) {\n    const r = item.json;\n    const val = Number(r.y_deseason || 0);\n    \n    // Fórmula del Z-Score: (Valor - Media) / (Desviación + Epsilon)\n    const z_score = (val - mu) / (sigma + EPSILON);\n    \n    // Detectar si es anomalía según el umbral (AnomRate)\n    const is_anomaly = Math.abs(z_score) >= Z_CRIT;\n\n    // Agregamos los nuevos campos al item\n    item.json.signal_mean = mu;\n    item.json.signal_sigma = sigma;\n    item.json.signal_z_score = z_score;\n    item.json.is_anomaly = is_anomaly; // Booleano útil para filtros posteriores\n    \n    results.push(item);\n  }\n}\n\nreturn results;",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1488,
+          832
+        ],
+        "id": "75983977-5f98-427d-86b6-9c62930404ff",
+        "name": "Code in JavaScript6",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// DOCUMENTO TÉCNICO: SECCIÓN 3 (CALIDAD DE SEÑAL) - Fórmulas 246 a 248\n// Objetivo: Calcular métricas estructurales (AnomRate, VarSig, Runs, ADI)\n\nconst groups = {};\n\n// 1. AGRUPADO: Juntamos la historia de cada par Cliente-SKU\nfor (const item of items) {\n  const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  if (!groups[key]) {\n    groups[key] = {\n      items: [],\n      y_values: [],\n      anomalies: 0,\n      sigma: Number(r.signal_sigma || 0) // Tomamos la sigma (es cte por grupo)\n    };\n  }\n\n  groups[key].items.push(item);\n  groups[key].y_values.push(Number(r.y || 0));\n\n  // Contamos anomalías para AnomRate\n  // Nota: Asegúrate de que is_anomaly sea booleano true o string 'true'\n  if (r.is_anomaly === true || r.is_anomaly === 'true') {\n    groups[key].anomalies += 1;\n  }\n}\n\nconst results = [];\n\n// 2. CÁLCULO DE MÉTRICAS POR GRUPO\nfor (const key in groups) {\n  const g = groups[key];\n  const total_periods = g.items.length; // |T|\n\n  // --- A. AnomRate (Tasa de Anomalías) ---\n  // Fórmula: Suma de anomalías / Total de periodos\n  const anom_rate = total_periods > 0 ? (g.anomalies / total_periods) : 0;\n\n  // --- B. VarSig (Varianza de la Señal) ---\n  // Fórmula: Sigma al cuadrado\n  const var_sig = Math.pow(g.sigma, 2);\n\n  // --- C. Intermitencia (Runs y ADI) ---\n  let runs = 0;\n  let purchase_indices = []; // Guardamos en qué indices hubo venta (t)\n\n  // Recorremos la historia de ventas (y)\n  for (let t = 0; t < total_periods; t++) {\n    const is_purchase = g.y_values[t] > 0; // b_t = 1 si y > 0\n\n    if (is_purchase) {\n      purchase_indices.push(t);\n    }\n\n    // Calculamos Runs (Cambios de estado compra/no-compra)\n    if (t > 0) {\n      const prev_purchase = g.y_values[t-1] > 0;\n      if (is_purchase !== prev_purchase) {\n        runs++;\n      }\n    }\n  }\n\n  // --- D. ADI (Average Demand Interval) ---\n  // Fórmula: Promedio de distancia entre compras. Si M < 2, penalización máxima (|T|)\n  let adi = 0;\n  const M = purchase_indices.length; // Número de compras\n\n  if (M < 2) {\n    // Si compró 0 o 1 vez, es extremadamente intermitente.\n    // El documento sugiere usar |T| (total de periodos) como penalización.\n    adi = total_periods;\n  } else {\n    // Sumamos los intervalos entre compras consecutivas\n    let sum_intervals = 0;\n    for (let i = 1; i < M; i++) {\n      sum_intervals += (purchase_indices[i] - purchase_indices[i-1]);\n    }\n    // Promedio\n    adi = sum_intervals / (M - 1);\n  }\n\n  // 3. ASIGNACIÓN: Pegamos los resultados a cada item original\n  for (const item of g.items) {\n    item.json.signal_anom_rate = anom_rate; // 0 a 1 (Porcentaje de \"locura\")\n    item.json.signal_varsig = var_sig;      // Magnitud de la volatilidad\n    item.json.signal_runs = runs;           // Cantidad de \"apagones/encendidos\"\n    item.json.signal_adi = adi;             // Cada cuánto compra (meses)\n\n    results.push(item);\n  }\n}\n\nreturn results;",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1792,
+          832
+        ],
+        "id": "aef48465-6664-49da-bd1e-dec387b11951",
+        "name": "Code in JavaScript7",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// PESOS DE DIFICULTAD (Calibrados para Retail)\nconst W_ADI = 0.40;     // Intermitencia\nconst W_VARSIG = 0.30;  // Volatilidad\nconst W_ANOM = 0.20;    // Anomalías puntuales\nconst W_RUNS = 0.10;    // Frecuencia de encendido/apagado\n\n// --- TOPES LÓGICOS (CAPPING) ---\n// Un ADI de 4 (comprar cada 4 meses) ya es \"Máxima Dificultad\" para un forecast mensual.\n// Si no ponemos esto, un cliente que compró hace 10 años distorsiona la escala.\nconst CAP_ADI = 4.0; \n\n// ---------------------------------------------------------\n// PASO 1: ENCONTRAR MÁXIMOS (CON TOPES)\n// ---------------------------------------------------------\nlet maxAdi = 0;\nlet maxVarSig = 0;\nlet maxAnom = 0;\nlet maxRuns = 0;\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Leemos y aplicamos CAP inmediato al ADI\n  let adi = Number(r.signal_adi || 0);\n  if (adi > CAP_ADI) adi = CAP_ADI; // Si es 12, se vuelve 4\n\n  const varsig = Number(r.signal_varsig || 0);\n  const anom = Number(r.signal_anom_rate || 0);\n  const runs = Number(r.signal_runs || 0);\n\n  if (adi > maxAdi) maxAdi = adi;\n  if (varsig > maxVarSig) maxVarSig = varsig;\n  if (anom > maxAnom) maxAnom = anom;\n  if (runs > maxRuns) maxRuns = runs;\n}\n\n// Protecciones\nif (maxAdi === 0) maxAdi = 1;\nif (maxVarSig === 0) maxVarSig = 1;\nif (maxAnom === 0) maxAnom = 1;\nif (maxRuns === 0) maxRuns = 1;\n\n// ---------------------------------------------------------\n// PASO 2: CALCULAR SCORE DE SEÑAL\n// ---------------------------------------------------------\nreturn items.map(item => {\n  const r = item.json;\n\n  let valAdi = Number(r.signal_adi || 0);\n  const valVarSig = Number(r.signal_varsig || 0);\n  const valAnom = Number(r.signal_anom_rate || 0);\n  const valRuns = Number(r.signal_runs || 0);\n\n  // Aplicar CAP individual\n  if (valAdi > CAP_ADI) valAdi = CAP_ADI;\n\n  // Normalización\n  const norm_adi = valAdi / maxAdi;     // Ahora un ADI de 4 dará 1.0 (Castigo máximo)\n  const norm_varsig = valVarSig / maxVarSig;\n  const norm_anom = valAnom / maxAnom;\n  const norm_runs = valRuns / maxRuns;\n\n  const signal_score_final = (W_ADI * norm_adi) + \n                             (W_VARSIG * norm_varsig) + \n                             (W_ANOM * norm_anom) + \n                             (W_RUNS * norm_runs);\n\n  return {\n    json: {\n      ...r,\n      norm_adi, // Debug: Verás que sube mucho respecto a antes\n      signal_score_final,\n      signal_score_final_100: signal_score_final * 100\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          832
+        ],
+        "id": "e1b0e408-a5e5-4ed2-92db-a8f7a8e0d41d",
+        "name": "Code in JavaScript8",
+        "disabled": false
+      },
+      {
+        "id": "4611ebb8-7dd5-4212-a97f-9b3fed8c9909",
+        "typeVersion": 1.1,
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          1280,
+          832
+        ],
+        "parameters": {
+          "inputSource": "passthrough"
+        }
+      }
+    ],
+    "connections": {
+      "Code in JavaScript6": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript7": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript8",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  Guedez",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
