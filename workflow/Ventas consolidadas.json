@@ -1,0 +1,1163 @@
+{
+  "updatedAt": "2025-07-23T07:04:50.000Z",
+  "createdAt": "2025-06-30T05:55:16.964Z",
+  "id": "MHfyMJbFqHdDyyes",
+  "name": "Ventas consolidadas",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "valor",
+              "renameField": true,
+              "outputFieldName": "CanalVenta"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        160,
+        980
+      ],
+      "id": "18cf8134-82b0-4a73-97ff-e6d71cf00204",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        -220
+      ],
+      "id": "c49ba07b-3a23-4376-91cf-c3781f5ee488",
+      "name": "VVMM"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        -20
+      ],
+      "id": "b82ace82-3176-4bf4-8cab-bb6ae3d16e75",
+      "name": "OTIF"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        380
+      ],
+      "id": "d5b4eb98-38da-4bcf-9774-ee3a537ed6e9",
+      "name": "PPD"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        180
+      ],
+      "id": "392a2b76-e6b5-4c2a-92b2-adb3224accd5",
+      "name": "AOV"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        580
+      ],
+      "id": "06514246-8c68-49bc-b240-70c6fbce6f37",
+      "name": "QTY"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -60,
+        780
+      ],
+      "id": "c0890682-6761-4ba7-b5cd-1289981edfa7",
+      "name": "DMA"
+    },
+    {
+      "parameters": {
+        "jsCode": "const strings = $input.first().json.CanalVenta;\n\nconst groupedByFirstLetter = strings.reduce((acc, currentString) => {\n  const firstLetter = currentString[0].toLowerCase(); // Usar la primera letra como clave, en minúsculas para agrupar 'Apple' y 'apple'\n  if (!acc[firstLetter]) {\n    acc[firstLetter] = []; // Si la clave no existe, inicializa un nuevo array\n  }\n  acc[firstLetter].push(currentString); // Agrega el string al array correspondiente\n  return acc;\n}, {}); \n\nconst groupedStringsObject = groupedByFirstLetter;\n\nconst counts = {}; \nlet mostFrequentString = null;\nlet maxCount = 0;\n\nfor (const key in groupedStringsObject) {\n  if (Object.hasOwnProperty.call(groupedStringsObject, key)) {\n    const stringArray = groupedStringsObject[key];\n\n    // Iterar sobre cada string dentro del array\n    stringArray.forEach(str => {\n      // Incrementar el contador para el string actual\n      counts[str] = (counts[str] || 0) + 1;\n\n      // Si el contador actual es mayor que el máximo, actualizar\n      if (counts[str] > maxCount) {\n        maxCount = counts[str];\n        mostFrequentString = str;\n      }\n    });\n  }\n}\n\n\nreturn {kpi:{\n  kpi: \"CTP\",\n    valor: mostFrequentString\n}};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        980
+      ],
+      "id": "eb6ee040-9400-48a9-a476-794d38c1d1b2",
+      "name": "CTP"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        1180
+      ],
+      "id": "2854e757-f68a-4903-9c37-340bc0e0d558",
+      "name": "TME"
+    },
+    {
+      "parameters": {
+        "numberInputs": 8
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        600,
+        380
+      ],
+      "id": "e7624df1-732e-42ca-accb-34a7d071754c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64225db6-e7e6-4075-b315-8b1efe24255e",
+              "name": "kpi",
+              "value": "={\n  \"kpi\": \"VVMM\",\n  \"valor\":\"{{ $json.sum_valor.round() }}\"\n}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        -220
+      ],
+      "id": "2a91158a-fea3-4af2-8667-0b5033ff64fe",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3405178d-f82b-408e-bbec-da28fec436b6",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"OTIF\",   \"valor\":\"{{ $json.average_valor.round(2) }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        -20
+      ],
+      "id": "dc26490b-3bb2-4937-a7d1-7f26dc377075",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2205b00c-6c9d-419a-90ce-db2db0293a25",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"AOV\",   \"valor\":\"{{ $json.average_valor.round() }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        180
+      ],
+      "id": "7f2f2e4f-9ac7-4277-8bb0-025cf110437e",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "21672c78-4ef9-4533-ab1b-564824d026b9",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"PPD\",   \"valor\":\"{{ $json.average_valor }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        380
+      ],
+      "id": "96fec660-c506-485a-b112-8c1f79d8f99f",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7c2e361f-66ab-499a-99c7-7875b4b2ce30",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"QTY\",   \"valor\":\"{{ $json.sum_valor }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        580
+      ],
+      "id": "9d62cd44-a71e-42ac-975e-cefa7587fa9f",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "07969489-8e1e-4ce3-825a-111b6360d184",
+              "name": "DMA",
+              "value": "={{ ($json.average_valor * 100) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        780
+      ],
+      "id": "0f561b04-9dbb-40f6-9c8c-f22d51cc120e",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bf6c9b19-0628-49a6-9f50-f4bcc40edd3c",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"TME\",   \"valor\":\"{{ $json.average_valor }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        1180
+      ],
+      "id": "72fbe119-a089-43b8-a1ea-fbe3cd9e03d7",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b9508f0a-3bb8-413d-a43c-e247ecc07bee",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"DMA\",   \"valor\":\"{{ $json.DMA.round(2) }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        780
+      ],
+      "id": "44d9f0f8-a37c-4433-94a6-19ea7251df89",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "VVMM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        -220
+      ],
+      "id": "de634009-d709-46bc-8672-93fd88ec25b0",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1643267292,
+          "mode": "list",
+          "cachedResultName": "OTIF",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=1643267292"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        -20
+      ],
+      "id": "ee3a09a8-242d-4f76-892f-07b37cdb8722",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1219776711,
+          "mode": "list",
+          "cachedResultName": "AOV",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=1219776711"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        180
+      ],
+      "id": "05a7d926-5d23-4cd5-b9e0-212c40466583",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1199710344,
+          "mode": "list",
+          "cachedResultName": "PPD",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=1199710344"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        380
+      ],
+      "id": "a09d42dc-9a75-46f9-9b9d-65180ecf0d44",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 854245972,
+          "mode": "list",
+          "cachedResultName": "QTY",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=854245972"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        580
+      ],
+      "id": "7f0ab6a6-3a14-4ac4-bd60-d2cf2584bd48",
+      "name": "Get row(s) in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1788374855,
+          "mode": "list",
+          "cachedResultName": "DMA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=1788374855"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -280,
+        780
+      ],
+      "id": "57fcc8cb-4f0e-4812-a0d7-306b6097d161",
+      "name": "Get row(s) in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1393527217,
+          "mode": "list",
+          "cachedResultName": "CTP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=1393527217"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        980
+      ],
+      "id": "02b21884-baab-4b64-9485-64c62f1564b0",
+      "name": "Get row(s) in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 929379655,
+          "mode": "list",
+          "cachedResultName": "TME",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BO6eYWNuNjTWd_48UGJJFbvjFS8UL61CzN1o8N8xGM0/edit#gid=929379655"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "01/01/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        1180
+      ],
+      "id": "db187f30-fc5d-4a3a-853a-989b9d480a3f",
+      "name": "Get row(s) in sheet7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        560
+      ],
+      "id": "fdef5fec-0bb1-40a8-9568-574412aa4e26",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1199409120,
+          "mode": "list",
+          "cachedResultName": "Ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1199409120"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "KPI": "={{ $json.kpi.kpi }}",
+            "Valor": "={{ $json.kpi.valor }}",
+            "Fecha": "=01/01/2025"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "KPI",
+              "displayName": "KPI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        860,
+        480
+      ],
+      "id": "83556094-709b-4b4e-a773-8a3ea5e1c145",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "CTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VVMM": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OTIF": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PPD": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AOV": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QTY": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DMA": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CTP": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "TME": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "VVMM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "OTIF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "AOV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "PPD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "QTY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet5": {
+      "main": [
+        [
+          {
+            "node": "DMA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet6": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet7": {
+      "main": [
+        [
+          {
+            "node": "TME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0e42fe85-16c7-414e-8193-75664e3a3a9b",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T05:55:16.970Z",
+      "createdAt": "2025-06-30T05:55:16.970Z",
+      "role": "workflow:owner",
+      "workflowId": "MHfyMJbFqHdDyyes",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
