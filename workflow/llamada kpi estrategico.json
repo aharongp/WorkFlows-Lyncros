@@ -1,0 +1,381 @@
+{
+  "updatedAt": "2025-07-07T00:05:07.000Z",
+  "createdAt": "2025-07-06T17:09:59.799Z",
+  "id": "9I9XoSgXDeOhUnGj",
+  "name": "llamada kpi estrategico",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "9e2f6be4-6a2d-455c-9146-cd4ac7f35f6b",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        120
+      ],
+      "id": "16e165cb-7db1-4f09-839d-f3d24e226d16",
+      "name": "Webhook",
+      "webhookId": "9e2f6be4-6a2d-455c-9146-cd4ac7f35f6b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ebitda\": \"{{ $json.EBITDTA[0] +\"$\"}}\",\n  \"forecast\": \"{{ $json.PPD[0] +\"%\"}}\",\n  \"oee\": \"{{ $json.OEE[0] +\"%\"}}\",\n  \"delays\": \"{{ $json.sum_valor[0] +\"$\"}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        120
+      ],
+      "id": "9dccc3e8-cd50-4479-b2aa-27d4faa0ca91",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Fecha",
+              "lookupValue": "01/02/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -180,
+        120
+      ],
+      "id": "3d1896b5-7a56-442f-b839-66f1fde20f33",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9a841a8-ec30-409b-b57e-eef05ed79505",
+              "name": "={{ $json.KPI }}",
+              "value": "={{ $json.Valor }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        120
+      ],
+      "id": "cfbd89cc-6b5f-466a-8702-d9092d673c7c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "EBITDTA"
+            },
+            {
+              "fieldToAggregate": "PPD"
+            },
+            {
+              "fieldToAggregate": "OEE"
+            },
+            {
+              "fieldToAggregate": "sum_valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        260,
+        120
+      ],
+      "id": "cf52ea6a-34ad-491a-a821-bd1b7cc95b69",
+      "name": "Aggregate1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "89216f33-5f03-41b7-9b09-267b7617710d",
+  "activeVersionId": "89216f33-5f03-41b7-9b09-267b7617710d",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-06T17:09:59.822Z",
+      "createdAt": "2025-07-06T17:09:59.822Z",
+      "role": "workflow:owner",
+      "workflowId": "9I9XoSgXDeOhUnGj",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "89216f33-5f03-41b7-9b09-267b7617710d",
+    "workflowId": "9I9XoSgXDeOhUnGj",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "9e2f6be4-6a2d-455c-9146-cd4ac7f35f6b",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -400,
+          120
+        ],
+        "id": "16e165cb-7db1-4f09-839d-f3d24e226d16",
+        "name": "Webhook",
+        "webhookId": "9e2f6be4-6a2d-455c-9146-cd4ac7f35f6b"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"ebitda\": \"{{ $json.EBITDTA[0] +\"$\"}}\",\n  \"forecast\": \"{{ $json.PPD[0] +\"%\"}}\",\n  \"oee\": \"{{ $json.OEE[0] +\"%\"}}\",\n  \"delays\": \"{{ $json.sum_valor[0] +\"$\"}}\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.3,
+        "position": [
+          480,
+          120
+        ],
+        "id": "9dccc3e8-cd50-4479-b2aa-27d4faa0ca91",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Estrategicos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Fecha",
+                "lookupValue": "01/02/2025"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          -180,
+          120
+        ],
+        "id": "3d1896b5-7a56-442f-b839-66f1fde20f33",
+        "name": "Get row(s) in sheet2",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c9a841a8-ec30-409b-b57e-eef05ed79505",
+                "name": "={{ $json.KPI }}",
+                "value": "={{ $json.Valor }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          40,
+          120
+        ],
+        "id": "cfbd89cc-6b5f-466a-8702-d9092d673c7c",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "EBITDTA"
+              },
+              {
+                "fieldToAggregate": "PPD"
+              },
+              {
+                "fieldToAggregate": "OEE"
+              },
+              {
+                "fieldToAggregate": "sum_valor"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          260,
+          120
+        ],
+        "id": "cf52ea6a-34ad-491a-a821-bd1b7cc95b69",
+        "name": "Aggregate1"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet2": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Aggregate1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
