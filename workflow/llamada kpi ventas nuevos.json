@@ -1,0 +1,399 @@
+{
+  "updatedAt": "2025-07-16T19:31:24.000Z",
+  "createdAt": "2025-07-16T15:45:35.408Z",
+  "id": "UpBXF8p4twXjvMLG",
+  "name": "llamada kpi ventas nuevos",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"volume\":\"{{ $json.VVMM[0]}}\" ,\n  \"otif\":\"{{ $json.OTIF[0] }}\" ,\n  \"aov\":\"{{ $json.AOV[0]}}\" ,\n  \"forecast\":\"{{ $json.PPD[0] }}\" ,\n  \"orders\":\"{{ $json.QTY[0] }}\" ,\n  \"deliveryTime\":\"{{ $json.TME[0] }}\" ,\n  \"channel\":\"{{ $json.CTP[0] }}\" ,\n  \"discount\":\"{{ $json.DMA[0] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        680,
+        -40
+      ],
+      "id": "bda468e9-3881-4bc7-82c7-f3c300a0e17f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "31033854-5398-46c8-b4c6-6b649560f0ea",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        -40
+      ],
+      "id": "c042aab1-fe49-4b80-abc0-3354565499dd",
+      "name": "Webhook1",
+      "webhookId": "31033854-5398-46c8-b4c6-6b649560f0ea"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+          "mode": "list",
+          "cachedResultName": "Respuesta agentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2054870949,
+          "mode": "list",
+          "cachedResultName": "Kpis añadidos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=2054870949"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -20,
+        -40
+      ],
+      "id": "ee8315d6-5c24-42e3-9d19-44be38dc4b65",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "VVMM"
+            },
+            {
+              "fieldToAggregate": "OTIF"
+            },
+            {
+              "fieldToAggregate": "AOV"
+            },
+            {
+              "fieldToAggregate": "PPD"
+            },
+            {
+              "fieldToAggregate": "QTY"
+            },
+            {
+              "fieldToAggregate": "DMA"
+            },
+            {
+              "fieldToAggregate": "CTP"
+            },
+            {
+              "fieldToAggregate": "TME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -40
+      ],
+      "id": "109ed1fb-763c-442a-ae88-9a21a0f2cfdf",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "row_number",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -40
+      ],
+      "id": "f6fb39ac-0d49-4448-a02e-7c3558f4ded7",
+      "name": "Sort"
+    }
+  ],
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "35e2f788-6e7b-4a71-a0fe-6d58f1885e53",
+  "activeVersionId": "35e2f788-6e7b-4a71-a0fe-6d58f1885e53",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-16T15:45:35.611Z",
+      "createdAt": "2025-07-16T15:45:35.611Z",
+      "role": "workflow:owner",
+      "workflowId": "UpBXF8p4twXjvMLG",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "35e2f788-6e7b-4a71-a0fe-6d58f1885e53",
+    "workflowId": "UpBXF8p4twXjvMLG",
+    "nodes": [
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"volume\":\"{{ $json.VVMM[0]}}\" ,\n  \"otif\":\"{{ $json.OTIF[0] }}\" ,\n  \"aov\":\"{{ $json.AOV[0]}}\" ,\n  \"forecast\":\"{{ $json.PPD[0] }}\" ,\n  \"orders\":\"{{ $json.QTY[0] }}\" ,\n  \"deliveryTime\":\"{{ $json.TME[0] }}\" ,\n  \"channel\":\"{{ $json.CTP[0] }}\" ,\n  \"discount\":\"{{ $json.DMA[0] }}\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.3,
+        "position": [
+          680,
+          -40
+        ],
+        "id": "bda468e9-3881-4bc7-82c7-f3c300a0e17f",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "path": "31033854-5398-46c8-b4c6-6b649560f0ea",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -300,
+          -40
+        ],
+        "id": "c042aab1-fe49-4b80-abc0-3354565499dd",
+        "name": "Webhook1",
+        "webhookId": "31033854-5398-46c8-b4c6-6b649560f0ea"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+            "mode": "list",
+            "cachedResultName": "Respuesta agentes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 2054870949,
+            "mode": "list",
+            "cachedResultName": "Kpis añadidos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=2054870949"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          -20,
+          -40
+        ],
+        "id": "ee8315d6-5c24-42e3-9d19-44be38dc4b65",
+        "name": "Get row(s) in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "VVMM"
+              },
+              {
+                "fieldToAggregate": "OTIF"
+              },
+              {
+                "fieldToAggregate": "AOV"
+              },
+              {
+                "fieldToAggregate": "PPD"
+              },
+              {
+                "fieldToAggregate": "QTY"
+              },
+              {
+                "fieldToAggregate": "DMA"
+              },
+              {
+                "fieldToAggregate": "CTP"
+              },
+              {
+                "fieldToAggregate": "TME"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          460,
+          -40
+        ],
+        "id": "109ed1fb-763c-442a-ae88-9a21a0f2cfdf",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "row_number",
+                "order": "descending"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          200,
+          -40
+        ],
+        "id": "f6fb39ac-0d49-4448-a02e-7c3558f4ded7",
+        "name": "Sort"
+      }
+    ],
+    "connections": {
+      "Webhook1": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Sort",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [],
+          []
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
