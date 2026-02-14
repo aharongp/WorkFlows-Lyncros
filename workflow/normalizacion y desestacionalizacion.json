@@ -1,0 +1,574 @@
+{
+  "updatedAt": "2026-01-26T04:01:07.000Z",
+  "createdAt": "2026-01-22T00:42:08.099Z",
+  "id": "keyJ5tQ2kg2fP5ZW",
+  "name": "normalizacion y desestacionalizacion",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PERIODID3, PRDID, CUSTID, MONTH, YEAR, SEASON, CUSTREGION, CUSTGROUP, y, yhat, punitario, pindex, som, sov, zselloutcliente, scale_max, y_norm, yhat_norm, scale_is_zero",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        1088
+      ],
+      "id": "999e1242-49dd-482d-8acd-3748b616792d",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "field": "PERIODID3"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID, MONTH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        304
+      ],
+      "id": "562f835c-f258-4bc0-b067-f152f3264696",
+      "name": "pair_month_avg"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "field": "PERIODID3"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        480
+      ],
+      "id": "4f65e1e7-9f82-41bc-bb55-790a22668d8f",
+      "name": "pair_mean"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTID, PRDID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        320
+      ],
+      "id": "69dcd0bf-01e1-49bd-b8d3-fccc0f309d42",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5642c45f-3564-4835-ac26-24473f39f463",
+              "name": "pair_avg_y_norm",
+              "value": "={{ $json.average_y_norm }}",
+              "type": "number"
+            },
+            {
+              "id": "61c2f606-3685-44c1-b1f1-80ee35eade30",
+              "name": "n_periods",
+              "value": "={{ $json.count_PERIODID3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        480
+      ],
+      "id": "25b156fb-123a-49be-9953-0850ffcf77ad",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "s_pair"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        304
+      ],
+      "id": "4123c862-d545-48d5-aa84-10bfcc3d3452",
+      "name": "test s_pair"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "field": "PERIODID3"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTREGION, CUSTGROUP, MONTH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        752
+      ],
+      "id": "b3fadc02-b9ce-4f03-863c-0fa76bd431b7",
+      "name": "cluster_month_avg"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y_norm"
+            },
+            {
+              "field": "PERIODID3"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTREGION, CUSTGROUP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        928
+      ],
+      "id": "2c2efd9b-71b8-431a-8f16-8ae8ffd20570",
+      "name": "cluster_mean"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d4e79e3b-23b4-4daa-80b5-50e8987e6b6d",
+              "name": "cluster_avg_y_norm",
+              "value": "={{ $json.average_y_norm }}",
+              "type": "number"
+            },
+            {
+              "id": "b9a5a205-5d65-4fad-95b0-1956c1671afc",
+              "name": "cluster_n_periods",
+              "value": "={{ $json.count_PERIODID3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "CUSTREGION, CUSTGROUP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        928
+      ],
+      "id": "ae136c24-9f3a-40b5-898b-d7af5ffb84a3",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTREGION, CUSTGROUP",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1664,
+        768
+      ],
+      "id": "70d4ed44-e144-4493-a41c-63d9b622f7c4",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "s_cluster"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTREGION, CUSTGROUP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        816
+      ],
+      "id": "62ed60f7-20fc-4461-bc31-cca424b8bf2b",
+      "name": "test s_cluster"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTREGION, CUSTGROUP, MONTH",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2064,
+        592
+      ],
+      "id": "1661c0c1-007f-4abe-bc1d-de41525563af",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Nodo: s_final\n// Objetivo: Ponderar estacionalidad individual vs grupal (Shrinkage)\n\nreturn items.map(item => {\n  const r = item.json;\n  \n  // Parametros\n  const T = 12; // Ventana de tiempo (12 meses)\n  \n  // 1. Calcular Alpha (Peso de la historia individual)\n  const n = Number(r.n_periods ?? 0);\n  // Si n=0 (producto nuevo), confiamos 100% en el cluster\n  const alpha = T > 0 ? Math.min(1, n / T) : 0; \n\n  // 2. Recuperar Estacionalidades\n  // Si son null/0, asumimos 0 temporalmente, la protección viene al final\n  const s_pair = Number(r.s_pair ?? 0);\n  const s_cluster = Number(r.s_cluster ?? 0);\n\n  // 3. Fórmula de Shrinkage (Fórmula 241)\n  let s_final = (alpha * s_pair) + ((1 - alpha) * s_cluster);\n\n  // PROTECCIÓN CRÍTICA:\n  // Si después del cálculo s_final sigue siendo 0 (ej: nadie vende esto en Enero),\n  // forzamos un valor mínimo (EPSILON) en el siguiente paso, \n  // pero aquí devolvemos el valor calculado o un default de 1 si no hubo datos.\n  \n  // Si s_final es 0 exacto, significa que es un mes \"muerto\".\n  // Lo dejamos pasar como 0 aquí, pero lo atajamos en la división.\n  \n  return {\n    json: {\n      ...r,\n      alpha,\n      s_pair,\n      s_cluster,\n      s_final // Puede ser 0.05, 1.2, o 0.0\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        928
+      ],
+      "id": "dde084a1-1f65-46f3-b8e6-7125931ce615",
+      "name": "s_final"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const avg_month = Number(r.average_y_norm ?? 0);      // promedio y_norm del mes para el par\n  const avg_pair  = Number(r.pair_avg_y_norm ?? 0);     // promedio y_norm global del par\n\n  const denom = avg_pair > 0 ? avg_pair : 1e-9;\n\n  const s_pair = avg_month / denom;\n\n  return {\n    json: {\n      ...r,\n      s_pair\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        496
+      ],
+      "id": "83e323b5-9785-44f3-b848-b259c5149bb1",
+      "name": "s_pair"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const avg_month = Number(r.average_y_norm ?? 0);\n  const avg_cluster = Number(r.cluster_avg_y_norm ?? 0);\n\n  const denom = avg_cluster > 0 ? avg_cluster : 1e-9;\n\n  return {\n    json: {\n      ...r,\n      s_cluster: avg_month / denom\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        656
+      ],
+      "id": "776fae02-ba82-4ef7-a637-69ae46c9c717",
+      "name": "s_cluster"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Nodo: desestacionalizacion para 2.2\n// Fórmulas: 241 (última línea) y 247 (definición de r tilde)\n\n// Epsilon: Valor pequeño para evitar división por cero.\n// El documento sugiere un valor pequeño. 0.01 o 0.001 suele funcionar bien en Retail.\nconst EPSILON = 0.01; \n\nreturn items.map(item => {\n  const r = item.json;\n\n  // 1. Validar Inputs\n  const y_norm = Number(r.y_norm ?? 0);\n  let s = Number(r.s_final ?? 0); // Si es null, asumimos 0\n\n  // 2. Aplicar Epsilon al Denominador (Fórmula 241)\n  // Si la estacionalidad (s) es muy baja o cero, usamos EPSILON.\n  // Esto evita que y_deseason se vaya a Infinito.\n  if (s < EPSILON) {\n    s = EPSILON;\n  }\n\n  // 3. Calcular Demanda Desestacionalizada (r tilde)\n  const y_deseason = y_norm / s;\n\n  // 4. Protección final contra Infinity/NaN (por seguridad de n8n)\n  let safe_y_deseason = y_deseason;\n  if (!isFinite(y_deseason) || isNaN(y_deseason)) {\n    safe_y_deseason = 0; \n  }\n\n  return {\n    json: {\n      ...r,\n      // Guardamos la 's' usada realmente para audit\n      s_final_used: s,\n      y_deseason: safe_y_deseason\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1136
+      ],
+      "id": "b11b1859-ca39-42bb-9ef3-8b631282dc79",
+      "name": "desestacionalizacion para 2.2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTID, PRDID, MONTH",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2432,
+        1136
+      ],
+      "id": "a1d5c4d3-a03c-4194-a6fe-692e03b3aece",
+      "name": "Merge6"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "076b336c-bb30-464e-a1b9-b996e3bbb9f8",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        832,
+        1088
+      ]
+    }
+  ],
+  "connections": {
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "pair_month_avg",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "pair_mean",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "cluster_month_avg",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "cluster_mean",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pair_month_avg": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pair_mean": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "s_pair",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cluster_mean": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "cluster_month_avg": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "s_cluster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "s_final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "s_pair": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "s_cluster": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "s_final": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge6": {
+      "main": [
+        [
+          {
+            "node": "desestacionalizacion para 2.2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1afc5b12-bc80-411d-94cd-5b8b7060a459",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-22T00:42:08.224Z",
+      "createdAt": "2026-01-22T00:42:08.224Z",
+      "role": "workflow:owner",
+      "workflowId": "keyJ5tQ2kg2fP5ZW",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
