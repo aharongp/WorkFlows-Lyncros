@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-14T22:49:34.884Z",
+  "updatedAt": "2026-02-14T23:03:29.000Z",
   "createdAt": "2026-02-14T22:49:34.884Z",
   "id": "Z3ax9dkUZgLc3AvHFyawH",
   "name": "My workflow 2",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {},
@@ -16,9 +16,59 @@
       ],
       "id": "f20d9c9a-6877-4ed2-b27e-fd750945418d",
       "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1e8507fe-3d0b-456a-ad5c-72893d9a21a9",
+      "name": "When chat message received",
+      "webhookId": "7a062834-554f-4280-ab38-f4ebd301ff8a"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "783aff15-36f8-4ccc-90f1-1c4e23b72bf4",
+      "name": "AI Agent"
     }
   ],
-  "connections": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
@@ -26,7 +76,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "eca4860e-f359-4ae4-9150-63ea83fe3a92",
+  "versionId": "70339679-2196-41c4-97d5-76bb7bbf78a1",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
