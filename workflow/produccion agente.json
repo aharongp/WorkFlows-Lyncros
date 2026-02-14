@@ -1,0 +1,535 @@
+{
+  "updatedAt": "2025-07-07T01:56:02.000Z",
+  "createdAt": "2025-07-07T01:49:52.036Z",
+  "id": "T1v7hzmyFGpg93Gp",
+  "name": "produccion agente",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "889578b4-d005-4126-aed2-df6c4edbddc3",
+              "name": "={{ $json.KPI }}",
+              "value": "={{ $json.Valor }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        -140
+      ],
+      "id": "60bdadbf-91ef-4353-a697-38e7a9b8c8b3",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "PP"
+            },
+            {
+              "fieldToAggregate": "CFI"
+            },
+            {
+              "fieldToAggregate": "TCP"
+            },
+            {
+              "fieldToAggregate": "OEE"
+            },
+            {
+              "fieldToAggregate": "TPNP"
+            },
+            {
+              "fieldToAggregate": "UL"
+            },
+            {
+              "fieldToAggregate": "TF"
+            },
+            {
+              "fieldToAggregate": "LTA"
+            },
+            {
+              "fieldToAggregate": "RII"
+            },
+            {
+              "fieldToAggregate": "SSO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        740,
+        -140
+      ],
+      "id": "e595dde4-b615-412c-968a-11e9403b803b",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1246746953,
+          "mode": "list",
+          "cachedResultName": "Produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1246746953"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Fecha",
+              "lookupValue": "01/02/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        320,
+        -140
+      ],
+      "id": "f392be6f-a83d-4fc3-b258-28dfc51ee801",
+      "name": "Get row(s) in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        60,
+        -140
+      ],
+      "id": "11e10d6d-98cc-4c01-a66c-8f3a52be9183",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1cdc5b62-d203-468c-8134-fce914bb49fd",
+              "name": "PP",
+              "value": "={{ $json.PP[0] }}%",
+              "type": "string"
+            },
+            {
+              "id": "4e4fbe34-d5bd-4b14-a7b9-966dc55d28f6",
+              "name": "CFI",
+              "value": "={{ $json.CFI[0] }}%",
+              "type": "string"
+            },
+            {
+              "id": "3d2eac17-9cca-414d-803c-2b88bc582e59",
+              "name": "TCP",
+              "value": "={{ $json.TCP[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "8424c3af-9dca-4385-a0ab-4bd694191b11",
+              "name": "OEE",
+              "value": "={{ $json.OEE[0] }}%",
+              "type": "string"
+            },
+            {
+              "id": "1674c106-991f-4634-8c36-9106e35c0afe",
+              "name": "TPNP",
+              "value": "={{ $json.TPNP[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "ebeea65c-aa0d-4497-a9d4-18065d5f5f2f",
+              "name": "UL",
+              "value": "={{ $json.UL[0] }}%",
+              "type": "string"
+            },
+            {
+              "id": "21dcf6c6-2af0-427c-8baf-ec5d4070c1b0",
+              "name": "TF",
+              "value": "={{ $json.TF[0] }}%",
+              "type": "string"
+            },
+            {
+              "id": "dad5c709-ca8b-4648-a483-25c73e4f27bc",
+              "name": "LTA",
+              "value": "={{ $json.LTA[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "0cc74a32-76ed-43d0-b8a5-a03e5d1124c9",
+              "name": "RII",
+              "value": "={{ $json.RII[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "8326a96d-6752-43b7-aec0-19c4131601ce",
+              "name": "SSO",
+              "value": "={{ $json.SSO[0] }}%",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        -140
+      ],
+      "id": "b6087bfd-81ff-4944-8294-91a5afa80eae",
+      "name": "Edit Fields8"
+    }
+  ],
+  "connections": {
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d8bedf55-1bfa-4e6e-8b4d-b9fb02354e8a",
+  "activeVersionId": "d8bedf55-1bfa-4e6e-8b4d-b9fb02354e8a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-07-07T01:49:52.049Z",
+      "createdAt": "2025-07-07T01:49:52.049Z",
+      "role": "workflow:owner",
+      "workflowId": "T1v7hzmyFGpg93Gp",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "d8bedf55-1bfa-4e6e-8b4d-b9fb02354e8a",
+    "workflowId": "T1v7hzmyFGpg93Gp",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "889578b4-d005-4126-aed2-df6c4edbddc3",
+                "name": "={{ $json.KPI }}",
+                "value": "={{ $json.Valor }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          520,
+          -140
+        ],
+        "id": "60bdadbf-91ef-4353-a697-38e7a9b8c8b3",
+        "name": "Edit Fields4"
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "PP"
+              },
+              {
+                "fieldToAggregate": "CFI"
+              },
+              {
+                "fieldToAggregate": "TCP"
+              },
+              {
+                "fieldToAggregate": "OEE"
+              },
+              {
+                "fieldToAggregate": "TPNP"
+              },
+              {
+                "fieldToAggregate": "UL"
+              },
+              {
+                "fieldToAggregate": "TF"
+              },
+              {
+                "fieldToAggregate": "LTA"
+              },
+              {
+                "fieldToAggregate": "RII"
+              },
+              {
+                "fieldToAggregate": "SSO"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          740,
+          -140
+        ],
+        "id": "e595dde4-b615-412c-968a-11e9403b803b",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1246746953,
+            "mode": "list",
+            "cachedResultName": "Produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1246746953"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Fecha",
+                "lookupValue": "01/02/2025"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          320,
+          -140
+        ],
+        "id": "f392be6f-a83d-4fc3-b258-28dfc51ee801",
+        "name": "Get row(s) in sheet4",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          60,
+          -140
+        ],
+        "id": "11e10d6d-98cc-4c01-a66c-8f3a52be9183",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1cdc5b62-d203-468c-8134-fce914bb49fd",
+                "name": "PP",
+                "value": "={{ $json.PP[0] }}%",
+                "type": "string"
+              },
+              {
+                "id": "4e4fbe34-d5bd-4b14-a7b9-966dc55d28f6",
+                "name": "CFI",
+                "value": "={{ $json.CFI[0] }}%",
+                "type": "string"
+              },
+              {
+                "id": "3d2eac17-9cca-414d-803c-2b88bc582e59",
+                "name": "TCP",
+                "value": "={{ $json.TCP[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "8424c3af-9dca-4385-a0ab-4bd694191b11",
+                "name": "OEE",
+                "value": "={{ $json.OEE[0] }}%",
+                "type": "string"
+              },
+              {
+                "id": "1674c106-991f-4634-8c36-9106e35c0afe",
+                "name": "TPNP",
+                "value": "={{ $json.TPNP[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "ebeea65c-aa0d-4497-a9d4-18065d5f5f2f",
+                "name": "UL",
+                "value": "={{ $json.UL[0] }}%",
+                "type": "string"
+              },
+              {
+                "id": "21dcf6c6-2af0-427c-8baf-ec5d4070c1b0",
+                "name": "TF",
+                "value": "={{ $json.TF[0] }}%",
+                "type": "string"
+              },
+              {
+                "id": "dad5c709-ca8b-4648-a483-25c73e4f27bc",
+                "name": "LTA",
+                "value": "={{ $json.LTA[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "0cc74a32-76ed-43d0-b8a5-a03e5d1124c9",
+                "name": "RII",
+                "value": "={{ $json.RII[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "8326a96d-6752-43b7-aec0-19c4131601ce",
+                "name": "SSO",
+                "value": "={{ $json.SSO[0] }}%",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          960,
+          -140
+        ],
+        "id": "b6087bfd-81ff-4944-8294-91a5afa80eae",
+        "name": "Edit Fields8"
+      }
+    ],
+    "connections": {
+      "Edit Fields4": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields8",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet4": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
