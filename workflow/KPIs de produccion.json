@@ -1,0 +1,3836 @@
+{
+  "updatedAt": "2025-06-30T05:52:49.000Z",
+  "createdAt": "2025-06-30T05:51:42.661Z",
+  "id": "kQWg58REUF5XADmH",
+  "name": "KPIs de produccion",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "KPI\n\nPrecisión de planificación",
+        "height": 240,
+        "width": 520,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -120
+      ],
+      "id": "ba4e974f-cff9-4639-82e2-9088333a423d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtiene todos los items que vienen del nodo anterior (tu Excel)\nconst items = $input.all();\n\nlet sumaCantidadProducida = 0;\nlet sumaCantidadPlanificada = 0;\n\n// Itera sobre cada fila del Excel para sumar los valores\nfor (const item of items) {\n  // Asegúrate que los nombres 'CantidadProducida' y 'CantidadPlanificada'\n  // coinciden EXACTAMENTE con los encabezados de tu columna en Excel.\n\n  // Se usa parseFloat para convertir el texto a número.\n  // Se usa || 0 para evitar errores si una celda está vacía o no es un número válido.\n  sumaCantidadProducida += parseFloat(item.json.CantidadProducida) || 0;\n  sumaCantidadPlanificada += parseFloat(item.json.CantidadPlanificada) || 0;\n}\n\n// Objeto para guardar el resultado final\nconst resultado = {\n  PrecisionPlanificacion: 0\n};\n\n// Se realiza el cálculo final, evitando la división por cero\nif (sumaCantidadPlanificada > 0) {\n  let precisionCalculada = (100 * sumaCantidadProducida) / sumaCantidadPlanificada;\n\n  // Redondea a dos decimales\n  resultado.PrecisionPlanificacion = parseFloat(precisionCalculada.toFixed(2));\n}\n\n// El nodo devuelve un único item con el resultado.\n// Este resultado podrá ser usado por los siguientes nodos en tu workflow.\nreturn [{\n  json: resultado\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        -40
+      ],
+      "id": "ff222cff-f851-4ab1-8cdf-d89bc91f1d06",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "\n  {\n    \"ProductID\": \"HAR-BLAN-LEUD-1KG\",\n    \"Dia\": 1,\n    \"Mes\": 2,\n    \"Año\": 2025\n  }\n"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1700,
+        680
+      ],
+      "id": "43551ad9-768d-4d64-aee9-1d27ccf95c75",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "function restarDias(fechaExtraida, dias, año ){\n  let partesFecha = fechaExtraida.split(\"/\");\n  let dia = parseInt(partesFecha[0]);\n  let mes = parseInt(partesFecha[1]) - 1; // Los meses en JavaScript son 0-11\n  let anio = parseInt(partesFecha[2]);\n  \n  // Crear un objeto de fecha\n  let fecha = new Date(anio, mes, dia);\n  \n  // Obtener el día actual\n  let diaActual = fecha.getDate();\n  console.log(`Día actual: ${diaActual}`); // Muestra el día actual\n  \n  // Restar un día\n  fecha.setDate(diaActual - dias);\n  \n  fecha.setFullYear(fecha.getFullYear() - año);\n\n  \n  // Convertir de nuevo a formato DD/MM/AAAA\n  let diaNuevo = String(fecha.getDate()).padStart(2, '0');\n  let mesNuevo = String(fecha.getMonth() + 1).padStart(2, '0'); // Ajustar el mes\n  let anioNuevo = fecha.getFullYear();\n  \n  return `${diaNuevo}/${mesNuevo}/${anioNuevo}`;\n}\n\n\n\nlet fechaStr = `${$input.first().json.Dia}/${$input.first().json.Mes}/${$input.first().json.Año}`;\n\nlet fechaActual =restarDias(fechaStr,0,0)\n\nlet fechaRest1Año0 =restarDias(fechaStr,1,0)\nlet fechaRest2Año0 =restarDias(fechaStr,2,0)\nlet fechaRest3Año0 =restarDias(fechaStr,3,0)\nlet fechaRest4Año0 =restarDias(fechaStr,4,0)\nlet fechaRest5Año0 =restarDias(fechaStr,5,0)\nlet fechaRest6Año0 =restarDias(fechaStr,6,0)\nlet fechaRest7Año0 =restarDias(fechaStr,7,0)\n\n\n\n\n\nreturn [{ \n  fechaActual: fechaActual,\n  fechaSemAnt:[\n   fechaRest1Año0,\n   fechaRest2Año0,\n   fechaRest3Año0,\n   fechaRest4Año0,\n   fechaRest5Año0,\n   fechaRest6Año0,\n   fechaRest7Año0],\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        680
+      ],
+      "id": "cbfc8abf-a412-4530-b9ca-7782cec210b9",
+      "name": "Extraer fechas"
+    },
+    {
+      "parameters": {
+        "jsCode": "function getRandomDecimal(min, max) {\n    return Math.random() * (max - min) + min;\n}\nlet randomNumber = getRandomDecimal(80, 99);\n\n\n\nreturn {\"PPD\": randomNumber};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        260
+      ],
+      "id": "fc3d83f6-7fbc-409b-acb3-4c82338193a1",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nCumplimiento de fecha de inicio",
+        "height": 240,
+        "width": 740
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        180
+      ],
+      "id": "7ce40945-77b3-4f85-af79-76de5a248639",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nTiempo de ciclo de producción",
+        "height": 240,
+        "width": 520,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        480
+      ],
+      "id": "75487a7c-9e01-4469-a724-93585a0daf35",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nlet totalMs = 0;\nlet validCount = 0;\n\n// Función para parsear fechas tipo \"27/01/2025 13:58\"\nfunction parseCustomDate(dateStr) {\n  const [datePart, timePart] = dateStr.split(' ');\n  const [day, month, year] = datePart.split('/').map(Number);\n  const [hours, minutes] = timePart.split(':').map(Number);\n  return new Date(year, month - 1, day, hours, minutes);\n}\n\n// Formatea duración en ms a \"X horas Y minutos\"\nfunction formatDurationToHoursMinutes(ms) {\n  const totalMinutes = Math.floor(ms / (1000 * 60));\n  const hours = Math.floor(totalMinutes / 60);\n  const minutes = totalMinutes % 60;\n  return { hours, minutes };\n}\n\nfor (const item of items) {\n  const { OrdenProduccionID, FechaRealInicio, FechaRealFin } = item.json;\n\n  let durationMs = null;\n  let formatted = null;\n\n  if (FechaRealInicio && FechaRealFin) {\n    const start = parseCustomDate(FechaRealInicio);\n    const end = parseCustomDate(FechaRealFin);\n\n    durationMs = end - start;\n\n    // Ignorar negativos o fechas inválidas\n    if (durationMs >= 0) {\n      const { hours, minutes } = formatDurationToHoursMinutes(durationMs);\n      formatted = `${hours} horas ${minutes} minutos`;\n\n      totalMs += durationMs;\n      validCount++;\n\n      results.push({\n        json: {\n          OrdenProduccionID,\n          FechaRealInicio,\n          FechaRealFin,\n          Duracion: formatted\n        }\n      });\n    }\n  }\n}\n\n// Cálculo del promedio\nif (validCount > 0) {\n  const avgMs = totalMs / validCount;\n  const { hours, minutes } = formatDurationToHoursMinutes(avgMs);\n\n  results.push({\n    json: {\n      Summary: true,\n      DuracionPromedio: `${hours}h.${minutes}min`\n    }\n  });\n} else {\n  results.push({\n    json: {\n      Summary: true,\n      DuracionPromedio: `0 horas 0 minutos`\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        60,
+        560
+      ],
+      "id": "82e0c241-ccc4-4312-8992-8c948d82684b",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nEficiencia real media",
+        "height": 240,
+        "width": 520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        780
+      ],
+      "id": "b2473dd9-7494-48fc-8ae0-88c94ccbbfad",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Asume que 'items' es un array de objetos, donde cada objeto tiene una propiedad 'EficienciaReal'\n// que puede ser un número o una cadena (string) que representa un número.\n// Por ejemplo: [{EficienciaReal: \"85\"}, {EficienciaReal: 92}, {EficienciaReal: \"78.5\"}]\n\nconst eficienciaRealValores = items.map(item => {\n  // Asegurarse de que el valor exista y luego intentar convertirlo a número.\n  // Si item.json.EficienciaReal es un string, Number() lo convertirá.\n  // Si no es un número válido (ej. \"abc\"), Number() devolverá NaN.\n  return Number(item.json.EficienciaReal);\n});\n\n// Filtra los valores que no son números válidos (NaN)\nconst numerosValidos = eficienciaRealValores.filter(valor => typeof valor === 'number' && !isNaN(valor));\n\nlet promedioEficienciaReal = 0;\n\nif (numerosValidos.length > 0) {\n  const sumaEficienciaReal = numerosValidos.reduce((acumulador, valorActual) => acumulador + valorActual, 0);\n  promedioEficienciaReal = sumaEficienciaReal / numerosValidos.length;\n}\n\n// Devuelve el resultado como un nuevo item\nreturn [{\n  json: {\n    promedioEficienciaReal: promedioEficienciaReal\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        860
+      ],
+      "id": "7fa16a43-2312-4a68-8659-08517086462c",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "TiempoParadaNoPlanificadaMin"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        1160
+      ],
+      "id": "814352bd-2880-4b08-b9a2-4b09bb91a516",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nTiempo de parada no planificada",
+        "height": 240,
+        "width": 520,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1080
+      ],
+      "id": "c9949562-bbd7-493c-8756-1a6c9dda3a0f",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nTasa de fallos / retrabajos",
+        "height": 240,
+        "width": 520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1380
+      ],
+      "id": "4c4844ed-9a85-4827-9a3e-17d6600a349a",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d5a0371-d018-4570-947c-9242662272da",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaActual }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "91471483-0765-4342-a925-52846b883fc1",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[0] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "12f8474d-8fdc-4466-92ed-5256d5f644fe",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[1] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b459293f-e55f-43e2-b484-2f605de3e727",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[2] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "3f7635ca-b8fa-4686-8a1f-931c4a812f16",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[3] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "09f885d0-1779-41d2-a1c3-8fc4311ddf7e",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[4] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "7b7af9bd-75e3-47da-9d91-e04c273772f8",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[5] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "54b43a3c-8921-4d40-9bc4-4239cc8bc706",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[6] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        680
+      ],
+      "id": "c7066353-1050-45c2-9caa-a36888daccf2",
+      "name": "Filtrar semana anterior"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtiene todos los items que vienen del nodo anterior\nconst items = $input.all();\n\nconsole.log('--- INICIO DE EJECUCIÓN DEL NODO DE CÁLCULO DE USO ---');\nconsole.log(`Cantidad total de items recibidos: ${items.length}`);\n\nif (items.length === 0) {\n  console.warn('¡Advertencia! No se recibieron items del nodo anterior. El cálculo resultará en cero.');\n  return [{\n    json: {\n      PromedioUsoSemanal: 0,\n      DiasEvaluados: 0,\n      MensajeDepuracion: \"No se recibieron datos de entrada.\"\n    }\n  }];\n}\n\n// Constante para el uso máximo posible en minutos por día (12 horas = 720 minutos)\nconst USO_POSIBLE_MINUTOS = 720;\n\n// Objeto para acumular los minutos de uso por cada día del mes\n// Ej: { \"12\": 340, \"13\": 200 }\nconst minutosPorDia = {};\n\n/**\n * Función auxiliar para parsear cadenas de fecha/hora a objetos Date.\n * Espera el formato DD/MM/YYYY HH:MM:SS o DD/MM/YYYY HH:MM.\n * @param {string} dateStr La cadena de fecha y hora.\n * @returns {Date | null} Un objeto Date si es válido, de lo contrario null.\n */\nfunction parseDateTime(dateStr) {\n  if (!dateStr || typeof dateStr !== 'string') {\n    return null;\n  }\n  const parts = dateStr.split(' ');\n  if (parts.length !== 2) {\n    return null; // Formato incorrecto (no tiene fecha y hora separadas por espacio)\n  }\n\n  const [datePart, timePart] = parts;\n  const [day, month, year] = datePart.split('/').map(Number);\n  // Modificación aquí: Dividimos el tiempo y establecemos segundos a 0 si no existen\n  const timeComponents = timePart.split(':').map(Number);\n  const hour = timeComponents[0];\n  const minute = timeComponents[1];\n  const second = timeComponents[2] || 0; // Si no hay segundos, se asume 0\n\n  // Valida que los componentes sean números válidos\n  if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hour) || isNaN(minute) || isNaN(second)) {\n    return null;\n  }\n\n  // Los meses en JavaScript Date son base 0 (Enero es 0, Diciembre es 11)\n  const date = new Date(year, month - 1, day, hour, minute, second);\n\n  // Valida si la fecha es realmente válida después de la creación (ej: 30 de Febrero)\n  if (isNaN(date.getTime())) {\n    return null;\n  }\n  return date;\n}\n\n\n// Itera sobre cada item (fila) de los datos de entrada\nlet processedItemsCount = 0;\nfor (const item of items) {\n  const inicioStr = item.json?.FechaRealInicio;\n  const finStr = item.json?.FechaRealFin;\n\n  console.log(`DEBUG: Cadenas de fecha del item ${processedItemsCount + 1}: Inicio='${inicioStr}', Fin='${finStr}'`);\n\n\n  // Si alguna de las cadenas de fecha no existe, salta este item.\n  if (!inicioStr || !finStr) {\n    console.warn(`Saltando item ${processedItemsCount + 1}: Una o ambas cadenas de fecha son nulas/vacías. Inicio='${inicioStr}', Fin='${finStr}'`);\n    processedItemsCount++;\n    continue;\n  }\n\n  // Intenta parsear las cadenas a objetos Date\n  const inicio = parseDateTime(inicioStr);\n  const fin = parseDateTime(finStr);\n\n  // Si el parseo falló (devuelve null o Invalid Date), salta el item.\n  if (!inicio || !fin || isNaN(inicio.getTime()) || isNaN(fin.getTime())) {\n    console.warn(`Saltando item ${processedItemsCount + 1}: El parseo de fecha falló. Verificar formato \"DD/MM/YYYY HH:MM:SS\" o \"DD/MM/YYYY HH:MM\". Inicio parseado: ${inicio}, Fin parseado: ${fin}`);\n    processedItemsCount++;\n    continue;\n  }\n\n  // Asegura que la fecha de fin no sea anterior a la de inicio\n  if (fin.getTime() < inicio.getTime()) {\n    console.warn(`Saltando item ${processedItemsCount + 1}: FechaRealFin (${finStr}) es anterior a FechaRealInicio (${inicioStr}).`);\n    processedItemsCount++;\n    continue;\n  }\n\n  // Extrae el número de día del mes (ej: 12)\n  const dia = inicio.getDate();\n\n  // Calcula la duración en minutos\n  const duracionMinutos = (fin.getTime() - inicio.getTime()) / (1000 * 60);\n\n  console.log(`DEBUG: Item ${processedItemsCount + 1} procesado: Día=${dia}, Duración=${duracionMinutos.toFixed(2)} minutos.`);\n\n  // Acumula la duración para el día correspondiente\n  if (!minutosPorDia[dia]) {\n    minutosPorDia[dia] = 0;\n  }\n  minutosPorDia[dia] += duracionMinutos;\n  processedItemsCount++;\n}\n\nconsole.log(`Total de items iterados: ${processedItemsCount}`);\nconsole.log('Minutos acumulados por día (raw):', minutosPorDia);\n\n\n// Variables para calcular el promedio de uso semanal\nlet totalPorcentajeAcumulado = 0;\nlet diasConDatos = 0;\nconst resultadosDetalladosPorDia = []; // Array para almacenar los resultados de cada día\n\n// Calcular el porcentaje de uso por día\nfor (const [dia, minutosUsados] of Object.entries(minutosPorDia)) {\n  const porcentajeUso = (minutosUsados * 100) / USO_POSIBLE_MINUTOS;\n\n  totalPorcentajeAcumulado += porcentajeUso;\n  diasConDatos++;\n\n  console.log(`DEBUG: Cálculo por día - Día ${dia}: Minutos Usados=${minutosUsados.toFixed(2)}, Porcentaje Uso=${porcentajeUso.toFixed(2)}%`);\n\n  // Añade el resultado de cada día al array, formateando a 2 decimales y convirtiendo a número\n  resultadosDetalladosPorDia.push({\n    json: {\n      Dia: Number(dia), // Asegura que el día sea un número, no una cadena\n      MinutosUsados: parseFloat(minutosUsados.toFixed(2)), // Redondea a 2 decimales y convierte a número\n      PorcentajeUso: parseFloat(porcentajeUso.toFixed(2)) // Redondea a 2 decimales y convierte a número\n    }\n  });\n}\n\n// Calcular el promedio de uso semanal\nconst promedioUsoSemanal = diasConDatos > 0 ? (totalPorcentajeAcumulado / diasConDatos) : 0;\n\n\n\n// Añade el promedio semanal y la cantidad de días evaluados como un item separado\n// Esto asegura que siempre se devuelva un resultado, incluso si no hubo datos válidos.\nresultadosDetalladosPorDia.push({\n  json: {\n    PromedioUsoSemanal: parseFloat(promedioUsoSemanal.toFixed(2)), // Redondea a 2 decimales y convierte a número\n    DiasEvaluados: diasConDatos,\n  }\n});\n\nconsole.log('--- FIN DE EJECUCIÓN DEL NODO DE CÁLCULO DE USO ---');\n\n// Devuelve el array completo de resultados\nreturn {\"promedioUso\": promedioUsoSemanal.toFixed(2)};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        1760
+      ],
+      "id": "4ca9c0e6-ca1a-439e-b271-69090bad4c50",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 501630710,
+          "mode": "list",
+          "cachedResultName": "OrdenesProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=501630710"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProductoID",
+              "lookupValue": "={{ $('When Executed by Another Workflow').item.json.ProductID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1220,
+        680
+      ],
+      "id": "32c9308a-eea2-4ee1-b718-21061ac36249",
+      "name": "Extraer OrdenesProduccion",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1157211533,
+          "mode": "list",
+          "cachedResultName": "ResultadosCalidadLote",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=1157211533"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1160,
+        1100
+      ],
+      "id": "2b4f3d05-39b2-4287-a95f-d229396a2cc8",
+      "name": "Extraer ResultadosCalidadLote",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nUtilización de línea (%)",
+        "height": 240,
+        "width": 520,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1680
+      ],
+      "id": "9b7ccc01-a8e3-4302-a86b-fda3cc1c69c0",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "jsCode": "let total = 0;\nlet noConformes = 0;\n\nfor (const item of items) {\n  const { Resultado, ControlCalidadID } = item.json;\n\n  if (ControlCalidadID != null) {\n    total++;\n\n    if (Resultado && Resultado.toLowerCase() === \"no conforme\") {\n      noConformes++;\n    }\n  }\n}\n\nconst porcentajeNoConformes = total > 0 ? (noConformes * 100) / total : 0;\n\nreturn [\n  {\n    json: {\n      TotalControles: total,\n      TotalNoConformes: noConformes,\n      PorcentajeNoConformes: Number(porcentajeNoConformes.toFixed(2))\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        1480
+      ],
+      "id": "ce550bde-d45d-41b4-863b-712b54f690cb",
+      "name": "Code6"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nLead time de abastecimiento",
+        "height": 240,
+        "width": 520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1980
+      ],
+      "id": "cac1d998-d0e4-4245-a717-fa8631c52218",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "jsCode": "function parseDate(dateString) {\n  // Convierte a objeto Date válido si está en formato \"dd/mm/yyyy HH:mm\"\n  const parts = dateString.split(\" \");\n  const dateParts = parts[0].split(\"/\");\n  const timeParts = parts[1] ? parts[1].split(\":\") : [\"00\", \"00\"];\n\n  return new Date(\n    parseInt(dateParts[2]),\n    parseInt(dateParts[1]) - 1,\n    parseInt(dateParts[0]),\n    parseInt(timeParts[0]),\n    parseInt(timeParts[1])\n  );\n}\n\nfunction formatDuration(ms) {\n  const totalMinutes = Math.floor(ms / 60000);\n  const days = Math.floor(totalMinutes / 1440);\n  const hours = Math.floor((totalMinutes % 1440) / 60);\n  const minutes = totalMinutes % 60;\n  return `${days > 0 ? days + \"D, \" : \"\"}${hours}H ${minutes}Min`;\n}\n\nlet totalMs = 0;\nlet count = 0;\nconst detalles = [];\n\nfor (const item of items) {\n  const { FechaPedido, FechaEntregaReal } = item.json;\n\n  if (FechaPedido && FechaEntregaReal) {\n    const inicio = parseDate(FechaPedido);\n    const fin = parseDate(FechaEntregaReal);\n    const diff = fin - inicio;\n\n    if (!isNaN(diff) && diff >= 0) {\n      totalMs += diff;\n      count++;\n\n      detalles.push({\n        FechaPedido,\n        FechaEntregaReal,\n        Duracion: formatDuration(diff)\n      });\n    }\n  }\n}\n\nconst promedioMs = count > 0 ? totalMs / count : 0;\n\nreturn [\n  {\n    json: {\n      PromedioEntrega: formatDuration(promedioMs),\n      //TotalRegistros: count,\n      //Detalles: detalles\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        2060
+      ],
+      "id": "3198675d-1bf0-4015-be1d-5095ad18abc0",
+      "name": "Code7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d5a0371-d018-4570-947c-9242662272da",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaActual }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "91471483-0765-4342-a925-52846b883fc1",
+              "leftValue": "=",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[0] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "12f8474d-8fdc-4466-92ed-5256d5f644fe",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[1] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b459293f-e55f-43e2-b484-2f605de3e727",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[2] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "3f7635ca-b8fa-4686-8a1f-931c4a812f16",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[3] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "09f885d0-1779-41d2-a1c3-8fc4311ddf7e",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[4] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "7b7af9bd-75e3-47da-9d91-e04c273772f8",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[5] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "54b43a3c-8921-4d40-9bc4-4239cc8bc706",
+              "leftValue": "={{ $json.FechaPedido }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[6] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -980,
+        1300
+      ],
+      "id": "5faf20ee-29ea-4976-b77c-13438f1533de",
+      "name": "Filtrar semana anterior1"
+    },
+    {
+      "parameters": {
+        "content": "KPI\n\nRotación de inventario de insumos",
+        "height": 240,
+        "width": 520,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        2280
+      ],
+      "id": "99552b83-3b77-4ff7-b154-64595efad0ee",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "jsCode": "let totalCantidad = 0;\nlet totalStock = 0;\nlet countStock = 0;\n\nfor (const item of items) {\n  const cantidadStr = item.json.Cantidad;\n  const stockStr = item.json.StockResultante;\n\n  const cantidad = parseFloat(cantidadStr);\n  const stock = parseFloat(stockStr);\n\n  if (!isNaN(cantidad)) {\n    totalCantidad += cantidad; // Respeta negativos\n  }\n\n  if (!isNaN(stock)) {\n    totalStock += stock;\n    countStock++;\n  }\n}\n\nconst promedioStock = countStock > 0 ? totalStock / countStock : 0;\nconst resultado = promedioStock !== 0 ? totalCantidad / promedioStock : null;\n\nreturn [\n  {\n    json: {\n      TotalCantidad: totalCantidad.toFixed(2),\n      PromedioStockResultante: promedioStock.toFixed(2),\n      ResultadoFinal: resultado !== null ? \"x\"+resultado.toFixed(2)  : null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        2360
+      ],
+      "id": "aa627d4f-c05a-435c-9867-a23ff7e77656",
+      "name": "Code9"
+    },
+    {
+      "parameters": {
+        "jsCode": "function obtenerMesesAnoAnterior(fechaStr) {\n  // Extraer día, mes y año de la fecha\n  const partes = fechaStr.split(\"/\");\n  const dia = parseInt(partes[0]);\n  const mes = parseInt(partes[1]) - 1; // JavaScript usa meses de 0 a 11\n  const anio = parseInt(partes[2]);\n\n  // Crear fecha base\n  const fecha = new Date(anio, mes, dia);\n\n  // Restar un año\n  fecha.setFullYear(fecha.getFullYear() - 1);\n  const anioAnterior = fecha.getFullYear();\n\n  // Generar meses del año anterior\n  const meses = [];\n  for (let i = 0; i < 12; i++) {\n    const mesFormateado = String(i + 1).padStart(2, '0');\n    meses.push(`${mesFormateado}/${anioAnterior}`);\n  }\n\n  return meses;\n}\n\n// Fecha de entrada en formato DD/MM/AAAA\nconst fechaStr = `${$input.first().json.Dia}/${$input.first().json.Mes}/${$input.first().json.Año}`;\n\n// Obtener meses del año anterior\nconst mesesAnoAnterior = obtenerMesesAnoAnterior(fechaStr);\n\n// Retornar resultado\nreturn [\n  {\n    json: {\n      FechaOriginal: fechaStr,\n      MesesAnoAnterior: mesesAnoAnterior\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        840
+      ],
+      "id": "6869d232-10d3-44a9-8c91-f39b9a998ea9",
+      "name": "Extraer fechas4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 735153486,
+          "mode": "list",
+          "cachedResultName": "OrdenesCompraInsumos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=735153486"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1160,
+        1300
+      ],
+      "id": "b3202341-6ac7-41ca-8b7c-96f0a35023fa",
+      "name": "Extraer OrdenesCompraInsumos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2094296849,
+          "mode": "list",
+          "cachedResultName": "InventarioInsumos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=2094296849"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1160,
+        1500
+      ],
+      "id": "253ff8dd-3735-491d-9613-7e7fc4b2a100",
+      "name": "Extraer InventarioInsumos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 501630710,
+          "mode": "list",
+          "cachedResultName": "OrdenesProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=501630710"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "LineaProduccionID",
+              "lookupValue": "={{ $('When Executed by Another Workflow').item.json.LineaProduccionID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1180,
+        880
+      ],
+      "id": "02ff0c31-b0cb-48f6-b767-bde9dacb6751",
+      "name": "Extraer OrdenesProduccion1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d5a0371-d018-4570-947c-9242662272da",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaActual }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "91471483-0765-4342-a925-52846b883fc1",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[0] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "12f8474d-8fdc-4466-92ed-5256d5f644fe",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[1] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b459293f-e55f-43e2-b484-2f605de3e727",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[2] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "3f7635ca-b8fa-4686-8a1f-931c4a812f16",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[3] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "09f885d0-1779-41d2-a1c3-8fc4311ddf7e",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[4] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "7b7af9bd-75e3-47da-9d91-e04c273772f8",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[5] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "54b43a3c-8921-4d40-9bc4-4239cc8bc706",
+              "leftValue": "={{ $json.FechaRealInicio }}",
+              "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[6] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -980,
+        880
+      ],
+      "id": "a9bdd05e-d7f1-47b8-83e5-56db37e2b74c",
+      "name": "Filtrar semana anterior2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dfd42dff-77c2-49b6-b7de-e884d9ee8950",
+              "name": "CFI",
+              "value": "={{ $json.PPD.round(2) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        300,
+        260
+      ],
+      "id": "ecbd00ec-1aa2-4e35-b707-9f5e4e2face0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82a4acf5-cb31-4f22-84f3-f72200ec38d7",
+              "name": "DuracionPromedio",
+              "value": "={{ $json.DuracionPromedio }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        560
+      ],
+      "id": "e2550e71-ecb0-4df5-b6d0-8797f2d1230e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "77e3101e-d1cc-4051-b8a0-d9f92509099c",
+              "name": "promedioEficienciaReal",
+              "value": "={{ $json.promedioEficienciaReal.round(1)/10 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        300,
+        860
+      ],
+      "id": "ee90fad9-7db5-4e42-a93e-0701428fda1b",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "jsCode": "function getRandomDecimal(min, max) {\n    return Math.random() * (max - min) + min;\n}\nlet randomNumber = getRandomDecimal(80, 99);\n\n\n\nreturn {\"PPD\": randomNumber};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        2600
+      ],
+      "id": "9c05e6ee-7d7a-4d8f-93ac-6da85ccbd10b",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dfd42dff-77c2-49b6-b7de-e884d9ee8950",
+              "name": "SSO",
+              "value": "={{ $json.PPD.round(2) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        2600
+      ],
+      "id": "c2cb0128-5940-4b85-b873-7d43233c35fd",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.PrecisionPlanificacion }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        280,
+        -40
+      ],
+      "id": "ed3d62cc-7e61-411b-be76-84ada1cc0e69",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1989736725,
+          "mode": "list",
+          "cachedResultName": "CFI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1989736725"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.CFI }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        500,
+        260
+      ],
+      "id": "1ff4cb80-d082-46bc-b166-96be70293d3a",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1293313229,
+          "mode": "list",
+          "cachedResultName": "TCP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1293313229"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "valor": "={{ $json.DuracionPromedio }}",
+            "fecha": "01/02/2025"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        540,
+        560
+      ],
+      "id": "95a83548-ae28-4b72-a17f-d02748c84df3",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 453456937,
+          "mode": "list",
+          "cachedResultName": "OEE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=453456937"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.promedioEficienciaReal }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        520,
+        860
+      ],
+      "id": "b91db7aa-237f-4ec0-b898-36ae775eb494",
+      "name": "Append or update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 169683322,
+          "mode": "list",
+          "cachedResultName": "TPNP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=169683322"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.average_TiempoParadaNoPlanificadaMin }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        320,
+        1160
+      ],
+      "id": "08ed96f6-a3a0-40c6-88d8-483d37cf9deb",
+      "name": "Append or update row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1666457538,
+          "mode": "list",
+          "cachedResultName": "TF",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1666457538"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.PorcentajeNoConformes }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        320,
+        1480
+      ],
+      "id": "13dfa0ef-2463-46ac-bc25-5c39cf8b62d8",
+      "name": "Append or update row in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 218124565,
+          "mode": "list",
+          "cachedResultName": "LTA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=218124565"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.PromedioEntrega }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        300,
+        2060
+      ],
+      "id": "231d5c0d-cf8e-4621-86e0-f9a29f034f0e",
+      "name": "Append or update row in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1822373962,
+          "mode": "list",
+          "cachedResultName": "UL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1822373962"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.promedioUso }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        320,
+        1760
+      ],
+      "id": "30813501-759a-41d5-a475-e3f1b159a984",
+      "name": "Append or update row in sheet7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1561846676,
+          "mode": "list",
+          "cachedResultName": "RII",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1561846676"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.ResultadoFinal }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        300,
+        2360
+      ],
+      "id": "3269a7aa-7665-4a9b-9e97-12363f882914",
+      "name": "Append or update row in sheet8",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+          "mode": "list",
+          "cachedResultName": "KPIs de produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1989736725,
+          "mode": "list",
+          "cachedResultName": "CFI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1989736725"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "01/02/2025",
+            "valor": "={{ $json.SSO }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        360,
+        2600
+      ],
+      "id": "1a5d22e9-9337-49d5-a1d2-a1388a74d218",
+      "name": "Append or update row in sheet9",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Extraer fechas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extraer fechas4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer fechas": {
+      "main": [
+        [
+          {
+            "node": "Extraer OrdenesProduccion",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extraer ResultadosCalidadLote",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extraer OrdenesCompraInsumos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extraer OrdenesProduccion1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar semana anterior": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer OrdenesProduccion": {
+      "main": [
+        [
+          {
+            "node": "Filtrar semana anterior",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer ResultadosCalidadLote": {
+      "main": [
+        [
+          {
+            "node": "Code6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code6": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code7": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar semana anterior1": {
+      "main": [
+        [
+          {
+            "node": "Code7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer fechas4": {
+      "main": [
+        [
+          {
+            "node": "Extraer InventarioInsumos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code9": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer OrdenesCompraInsumos": {
+      "main": [
+        [
+          {
+            "node": "Filtrar semana anterior1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer InventarioInsumos": {
+      "main": [
+        [
+          {
+            "node": "Code9",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer OrdenesProduccion1": {
+      "main": [
+        [
+          {
+            "node": "Filtrar semana anterior2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar semana anterior2": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "ProductID": "HAR-BLAN-LEUD-1KG",
+          "Dia": 1,
+          "Mes": 2,
+          "Año": 2025,
+          "LineaProduccionID": "LINPROD-HAR-01"
+        }
+      }
+    ]
+  },
+  "versionId": "63cf672f-3637-475b-9506-4b359091b366",
+  "activeVersionId": "63cf672f-3637-475b-9506-4b359091b366",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T05:51:42.668Z",
+      "createdAt": "2025-06-30T05:51:42.668Z",
+      "role": "workflow:owner",
+      "workflowId": "kQWg58REUF5XADmH",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "63cf672f-3637-475b-9506-4b359091b366",
+    "workflowId": "kQWg58REUF5XADmH",
+    "nodes": [
+      {
+        "parameters": {
+          "content": "KPI\n\nPrecisión de planificación",
+          "height": 240,
+          "width": 520,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          -120
+        ],
+        "id": "ba4e974f-cff9-4639-82e2-9088333a423d",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Obtiene todos los items que vienen del nodo anterior (tu Excel)\nconst items = $input.all();\n\nlet sumaCantidadProducida = 0;\nlet sumaCantidadPlanificada = 0;\n\n// Itera sobre cada fila del Excel para sumar los valores\nfor (const item of items) {\n  // Asegúrate que los nombres 'CantidadProducida' y 'CantidadPlanificada'\n  // coinciden EXACTAMENTE con los encabezados de tu columna en Excel.\n\n  // Se usa parseFloat para convertir el texto a número.\n  // Se usa || 0 para evitar errores si una celda está vacía o no es un número válido.\n  sumaCantidadProducida += parseFloat(item.json.CantidadProducida) || 0;\n  sumaCantidadPlanificada += parseFloat(item.json.CantidadPlanificada) || 0;\n}\n\n// Objeto para guardar el resultado final\nconst resultado = {\n  PrecisionPlanificacion: 0\n};\n\n// Se realiza el cálculo final, evitando la división por cero\nif (sumaCantidadPlanificada > 0) {\n  let precisionCalculada = (100 * sumaCantidadProducida) / sumaCantidadPlanificada;\n\n  // Redondea a dos decimales\n  resultado.PrecisionPlanificacion = parseFloat(precisionCalculada.toFixed(2));\n}\n\n// El nodo devuelve un único item con el resultado.\n// Este resultado podrá ser usado por los siguientes nodos en tu workflow.\nreturn [{\n  json: resultado\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          120,
+          -40
+        ],
+        "id": "ff222cff-f851-4ab1-8cdf-d89bc91f1d06",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "inputSource": "jsonExample",
+          "jsonExample": "\n  {\n    \"ProductID\": \"HAR-BLAN-LEUD-1KG\",\n    \"Dia\": 1,\n    \"Mes\": 2,\n    \"Año\": 2025\n  }\n"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -1700,
+          680
+        ],
+        "id": "43551ad9-768d-4d64-aee9-1d27ccf95c75",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "jsCode": "function restarDias(fechaExtraida, dias, año ){\n  let partesFecha = fechaExtraida.split(\"/\");\n  let dia = parseInt(partesFecha[0]);\n  let mes = parseInt(partesFecha[1]) - 1; // Los meses en JavaScript son 0-11\n  let anio = parseInt(partesFecha[2]);\n  \n  // Crear un objeto de fecha\n  let fecha = new Date(anio, mes, dia);\n  \n  // Obtener el día actual\n  let diaActual = fecha.getDate();\n  console.log(`Día actual: ${diaActual}`); // Muestra el día actual\n  \n  // Restar un día\n  fecha.setDate(diaActual - dias);\n  \n  fecha.setFullYear(fecha.getFullYear() - año);\n\n  \n  // Convertir de nuevo a formato DD/MM/AAAA\n  let diaNuevo = String(fecha.getDate()).padStart(2, '0');\n  let mesNuevo = String(fecha.getMonth() + 1).padStart(2, '0'); // Ajustar el mes\n  let anioNuevo = fecha.getFullYear();\n  \n  return `${diaNuevo}/${mesNuevo}/${anioNuevo}`;\n}\n\n\n\nlet fechaStr = `${$input.first().json.Dia}/${$input.first().json.Mes}/${$input.first().json.Año}`;\n\nlet fechaActual =restarDias(fechaStr,0,0)\n\nlet fechaRest1Año0 =restarDias(fechaStr,1,0)\nlet fechaRest2Año0 =restarDias(fechaStr,2,0)\nlet fechaRest3Año0 =restarDias(fechaStr,3,0)\nlet fechaRest4Año0 =restarDias(fechaStr,4,0)\nlet fechaRest5Año0 =restarDias(fechaStr,5,0)\nlet fechaRest6Año0 =restarDias(fechaStr,6,0)\nlet fechaRest7Año0 =restarDias(fechaStr,7,0)\n\n\n\n\n\nreturn [{ \n  fechaActual: fechaActual,\n  fechaSemAnt:[\n   fechaRest1Año0,\n   fechaRest2Año0,\n   fechaRest3Año0,\n   fechaRest4Año0,\n   fechaRest5Año0,\n   fechaRest6Año0,\n   fechaRest7Año0],\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1440,
+          680
+        ],
+        "id": "cbfc8abf-a412-4530-b9ca-7782cec210b9",
+        "name": "Extraer fechas"
+      },
+      {
+        "parameters": {
+          "jsCode": "function getRandomDecimal(min, max) {\n    return Math.random() * (max - min) + min;\n}\nlet randomNumber = getRandomDecimal(80, 99);\n\n\n\nreturn {\"PPD\": randomNumber};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          80,
+          260
+        ],
+        "id": "fc3d83f6-7fbc-409b-acb3-4c82338193a1",
+        "name": "Code1"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nCumplimiento de fecha de inicio",
+          "height": 240,
+          "width": 740
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          180
+        ],
+        "id": "7ce40945-77b3-4f85-af79-76de5a248639",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nTiempo de ciclo de producción",
+          "height": 240,
+          "width": 520,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          480
+        ],
+        "id": "75487a7c-9e01-4469-a724-93585a0daf35",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "jsCode": "const results = [];\nlet totalMs = 0;\nlet validCount = 0;\n\n// Función para parsear fechas tipo \"27/01/2025 13:58\"\nfunction parseCustomDate(dateStr) {\n  const [datePart, timePart] = dateStr.split(' ');\n  const [day, month, year] = datePart.split('/').map(Number);\n  const [hours, minutes] = timePart.split(':').map(Number);\n  return new Date(year, month - 1, day, hours, minutes);\n}\n\n// Formatea duración en ms a \"X horas Y minutos\"\nfunction formatDurationToHoursMinutes(ms) {\n  const totalMinutes = Math.floor(ms / (1000 * 60));\n  const hours = Math.floor(totalMinutes / 60);\n  const minutes = totalMinutes % 60;\n  return { hours, minutes };\n}\n\nfor (const item of items) {\n  const { OrdenProduccionID, FechaRealInicio, FechaRealFin } = item.json;\n\n  let durationMs = null;\n  let formatted = null;\n\n  if (FechaRealInicio && FechaRealFin) {\n    const start = parseCustomDate(FechaRealInicio);\n    const end = parseCustomDate(FechaRealFin);\n\n    durationMs = end - start;\n\n    // Ignorar negativos o fechas inválidas\n    if (durationMs >= 0) {\n      const { hours, minutes } = formatDurationToHoursMinutes(durationMs);\n      formatted = `${hours} horas ${minutes} minutos`;\n\n      totalMs += durationMs;\n      validCount++;\n\n      results.push({\n        json: {\n          OrdenProduccionID,\n          FechaRealInicio,\n          FechaRealFin,\n          Duracion: formatted\n        }\n      });\n    }\n  }\n}\n\n// Cálculo del promedio\nif (validCount > 0) {\n  const avgMs = totalMs / validCount;\n  const { hours, minutes } = formatDurationToHoursMinutes(avgMs);\n\n  results.push({\n    json: {\n      Summary: true,\n      DuracionPromedio: `${hours}h.${minutes}min`\n    }\n  });\n} else {\n  results.push({\n    json: {\n      Summary: true,\n      DuracionPromedio: `0 horas 0 minutos`\n    }\n  });\n}\n\nreturn results;\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          60,
+          560
+        ],
+        "id": "82e0c241-ccc4-4312-8992-8c948d82684b",
+        "name": "Code2"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nEficiencia real media",
+          "height": 240,
+          "width": 520
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          780
+        ],
+        "id": "b2473dd9-7494-48fc-8ae0-88c94ccbbfad",
+        "name": "Sticky Note6"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Asume que 'items' es un array de objetos, donde cada objeto tiene una propiedad 'EficienciaReal'\n// que puede ser un número o una cadena (string) que representa un número.\n// Por ejemplo: [{EficienciaReal: \"85\"}, {EficienciaReal: 92}, {EficienciaReal: \"78.5\"}]\n\nconst eficienciaRealValores = items.map(item => {\n  // Asegurarse de que el valor exista y luego intentar convertirlo a número.\n  // Si item.json.EficienciaReal es un string, Number() lo convertirá.\n  // Si no es un número válido (ej. \"abc\"), Number() devolverá NaN.\n  return Number(item.json.EficienciaReal);\n});\n\n// Filtra los valores que no son números válidos (NaN)\nconst numerosValidos = eficienciaRealValores.filter(valor => typeof valor === 'number' && !isNaN(valor));\n\nlet promedioEficienciaReal = 0;\n\nif (numerosValidos.length > 0) {\n  const sumaEficienciaReal = numerosValidos.reduce((acumulador, valorActual) => acumulador + valorActual, 0);\n  promedioEficienciaReal = sumaEficienciaReal / numerosValidos.length;\n}\n\n// Devuelve el resultado como un nuevo item\nreturn [{\n  json: {\n    promedioEficienciaReal: promedioEficienciaReal\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          80,
+          860
+        ],
+        "id": "7fa16a43-2312-4a68-8659-08517086462c",
+        "name": "Code3"
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "TiempoParadaNoPlanificadaMin"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          120,
+          1160
+        ],
+        "id": "814352bd-2880-4b08-b9a2-4b09bb91a516",
+        "name": "Summarize"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nTiempo de parada no planificada",
+          "height": 240,
+          "width": 520,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          1080
+        ],
+        "id": "c9949562-bbd7-493c-8756-1a6c9dda3a0f",
+        "name": "Sticky Note7"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nTasa de fallos / retrabajos",
+          "height": 240,
+          "width": 520
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          1380
+        ],
+        "id": "4c4844ed-9a85-4827-9a3e-17d6600a349a",
+        "name": "Sticky Note8"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "8d5a0371-d018-4570-947c-9242662272da",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaActual }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "91471483-0765-4342-a925-52846b883fc1",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[0] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "12f8474d-8fdc-4466-92ed-5256d5f644fe",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[1] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "b459293f-e55f-43e2-b484-2f605de3e727",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[2] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "3f7635ca-b8fa-4686-8a1f-931c4a812f16",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[3] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "09f885d0-1779-41d2-a1c3-8fc4311ddf7e",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[4] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "7b7af9bd-75e3-47da-9d91-e04c273772f8",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[5] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "54b43a3c-8921-4d40-9bc4-4239cc8bc706",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[6] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -1040,
+          680
+        ],
+        "id": "c7066353-1050-45c2-9caa-a36888daccf2",
+        "name": "Filtrar semana anterior"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Obtiene todos los items que vienen del nodo anterior\nconst items = $input.all();\n\nconsole.log('--- INICIO DE EJECUCIÓN DEL NODO DE CÁLCULO DE USO ---');\nconsole.log(`Cantidad total de items recibidos: ${items.length}`);\n\nif (items.length === 0) {\n  console.warn('¡Advertencia! No se recibieron items del nodo anterior. El cálculo resultará en cero.');\n  return [{\n    json: {\n      PromedioUsoSemanal: 0,\n      DiasEvaluados: 0,\n      MensajeDepuracion: \"No se recibieron datos de entrada.\"\n    }\n  }];\n}\n\n// Constante para el uso máximo posible en minutos por día (12 horas = 720 minutos)\nconst USO_POSIBLE_MINUTOS = 720;\n\n// Objeto para acumular los minutos de uso por cada día del mes\n// Ej: { \"12\": 340, \"13\": 200 }\nconst minutosPorDia = {};\n\n/**\n * Función auxiliar para parsear cadenas de fecha/hora a objetos Date.\n * Espera el formato DD/MM/YYYY HH:MM:SS o DD/MM/YYYY HH:MM.\n * @param {string} dateStr La cadena de fecha y hora.\n * @returns {Date | null} Un objeto Date si es válido, de lo contrario null.\n */\nfunction parseDateTime(dateStr) {\n  if (!dateStr || typeof dateStr !== 'string') {\n    return null;\n  }\n  const parts = dateStr.split(' ');\n  if (parts.length !== 2) {\n    return null; // Formato incorrecto (no tiene fecha y hora separadas por espacio)\n  }\n\n  const [datePart, timePart] = parts;\n  const [day, month, year] = datePart.split('/').map(Number);\n  // Modificación aquí: Dividimos el tiempo y establecemos segundos a 0 si no existen\n  const timeComponents = timePart.split(':').map(Number);\n  const hour = timeComponents[0];\n  const minute = timeComponents[1];\n  const second = timeComponents[2] || 0; // Si no hay segundos, se asume 0\n\n  // Valida que los componentes sean números válidos\n  if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hour) || isNaN(minute) || isNaN(second)) {\n    return null;\n  }\n\n  // Los meses en JavaScript Date son base 0 (Enero es 0, Diciembre es 11)\n  const date = new Date(year, month - 1, day, hour, minute, second);\n\n  // Valida si la fecha es realmente válida después de la creación (ej: 30 de Febrero)\n  if (isNaN(date.getTime())) {\n    return null;\n  }\n  return date;\n}\n\n\n// Itera sobre cada item (fila) de los datos de entrada\nlet processedItemsCount = 0;\nfor (const item of items) {\n  const inicioStr = item.json?.FechaRealInicio;\n  const finStr = item.json?.FechaRealFin;\n\n  console.log(`DEBUG: Cadenas de fecha del item ${processedItemsCount + 1}: Inicio='${inicioStr}', Fin='${finStr}'`);\n\n\n  // Si alguna de las cadenas de fecha no existe, salta este item.\n  if (!inicioStr || !finStr) {\n    console.warn(`Saltando item ${processedItemsCount + 1}: Una o ambas cadenas de fecha son nulas/vacías. Inicio='${inicioStr}', Fin='${finStr}'`);\n    processedItemsCount++;\n    continue;\n  }\n\n  // Intenta parsear las cadenas a objetos Date\n  const inicio = parseDateTime(inicioStr);\n  const fin = parseDateTime(finStr);\n\n  // Si el parseo falló (devuelve null o Invalid Date), salta el item.\n  if (!inicio || !fin || isNaN(inicio.getTime()) || isNaN(fin.getTime())) {\n    console.warn(`Saltando item ${processedItemsCount + 1}: El parseo de fecha falló. Verificar formato \"DD/MM/YYYY HH:MM:SS\" o \"DD/MM/YYYY HH:MM\". Inicio parseado: ${inicio}, Fin parseado: ${fin}`);\n    processedItemsCount++;\n    continue;\n  }\n\n  // Asegura que la fecha de fin no sea anterior a la de inicio\n  if (fin.getTime() < inicio.getTime()) {\n    console.warn(`Saltando item ${processedItemsCount + 1}: FechaRealFin (${finStr}) es anterior a FechaRealInicio (${inicioStr}).`);\n    processedItemsCount++;\n    continue;\n  }\n\n  // Extrae el número de día del mes (ej: 12)\n  const dia = inicio.getDate();\n\n  // Calcula la duración en minutos\n  const duracionMinutos = (fin.getTime() - inicio.getTime()) / (1000 * 60);\n\n  console.log(`DEBUG: Item ${processedItemsCount + 1} procesado: Día=${dia}, Duración=${duracionMinutos.toFixed(2)} minutos.`);\n\n  // Acumula la duración para el día correspondiente\n  if (!minutosPorDia[dia]) {\n    minutosPorDia[dia] = 0;\n  }\n  minutosPorDia[dia] += duracionMinutos;\n  processedItemsCount++;\n}\n\nconsole.log(`Total de items iterados: ${processedItemsCount}`);\nconsole.log('Minutos acumulados por día (raw):', minutosPorDia);\n\n\n// Variables para calcular el promedio de uso semanal\nlet totalPorcentajeAcumulado = 0;\nlet diasConDatos = 0;\nconst resultadosDetalladosPorDia = []; // Array para almacenar los resultados de cada día\n\n// Calcular el porcentaje de uso por día\nfor (const [dia, minutosUsados] of Object.entries(minutosPorDia)) {\n  const porcentajeUso = (minutosUsados * 100) / USO_POSIBLE_MINUTOS;\n\n  totalPorcentajeAcumulado += porcentajeUso;\n  diasConDatos++;\n\n  console.log(`DEBUG: Cálculo por día - Día ${dia}: Minutos Usados=${minutosUsados.toFixed(2)}, Porcentaje Uso=${porcentajeUso.toFixed(2)}%`);\n\n  // Añade el resultado de cada día al array, formateando a 2 decimales y convirtiendo a número\n  resultadosDetalladosPorDia.push({\n    json: {\n      Dia: Number(dia), // Asegura que el día sea un número, no una cadena\n      MinutosUsados: parseFloat(minutosUsados.toFixed(2)), // Redondea a 2 decimales y convierte a número\n      PorcentajeUso: parseFloat(porcentajeUso.toFixed(2)) // Redondea a 2 decimales y convierte a número\n    }\n  });\n}\n\n// Calcular el promedio de uso semanal\nconst promedioUsoSemanal = diasConDatos > 0 ? (totalPorcentajeAcumulado / diasConDatos) : 0;\n\n\n\n// Añade el promedio semanal y la cantidad de días evaluados como un item separado\n// Esto asegura que siempre se devuelva un resultado, incluso si no hubo datos válidos.\nresultadosDetalladosPorDia.push({\n  json: {\n    PromedioUsoSemanal: parseFloat(promedioUsoSemanal.toFixed(2)), // Redondea a 2 decimales y convierte a número\n    DiasEvaluados: diasConDatos,\n  }\n});\n\nconsole.log('--- FIN DE EJECUCIÓN DEL NODO DE CÁLCULO DE USO ---');\n\n// Devuelve el array completo de resultados\nreturn {\"promedioUso\": promedioUsoSemanal.toFixed(2)};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          140,
+          1760
+        ],
+        "id": "4ca9c0e6-ca1a-439e-b271-69090bad4c50",
+        "name": "Code5"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 501630710,
+            "mode": "list",
+            "cachedResultName": "OrdenesProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=501630710"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProductoID",
+                "lookupValue": "={{ $('When Executed by Another Workflow').item.json.ProductID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1220,
+          680
+        ],
+        "id": "32c9308a-eea2-4ee1-b718-21061ac36249",
+        "name": "Extraer OrdenesProduccion",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1157211533,
+            "mode": "list",
+            "cachedResultName": "ResultadosCalidadLote",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=1157211533"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1160,
+          1100
+        ],
+        "id": "2b4f3d05-39b2-4287-a95f-d229396a2cc8",
+        "name": "Extraer ResultadosCalidadLote",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nUtilización de línea (%)",
+          "height": 240,
+          "width": 520,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          1680
+        ],
+        "id": "9b7ccc01-a8e3-4302-a86b-fda3cc1c69c0",
+        "name": "Sticky Note9"
+      },
+      {
+        "parameters": {
+          "jsCode": "let total = 0;\nlet noConformes = 0;\n\nfor (const item of items) {\n  const { Resultado, ControlCalidadID } = item.json;\n\n  if (ControlCalidadID != null) {\n    total++;\n\n    if (Resultado && Resultado.toLowerCase() === \"no conforme\") {\n      noConformes++;\n    }\n  }\n}\n\nconst porcentajeNoConformes = total > 0 ? (noConformes * 100) / total : 0;\n\nreturn [\n  {\n    json: {\n      TotalControles: total,\n      TotalNoConformes: noConformes,\n      PorcentajeNoConformes: Number(porcentajeNoConformes.toFixed(2))\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          120,
+          1480
+        ],
+        "id": "ce550bde-d45d-41b4-863b-712b54f690cb",
+        "name": "Code6"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nLead time de abastecimiento",
+          "height": 240,
+          "width": 520
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          1980
+        ],
+        "id": "cac1d998-d0e4-4245-a717-fa8631c52218",
+        "name": "Sticky Note11"
+      },
+      {
+        "parameters": {
+          "jsCode": "function parseDate(dateString) {\n  // Convierte a objeto Date válido si está en formato \"dd/mm/yyyy HH:mm\"\n  const parts = dateString.split(\" \");\n  const dateParts = parts[0].split(\"/\");\n  const timeParts = parts[1] ? parts[1].split(\":\") : [\"00\", \"00\"];\n\n  return new Date(\n    parseInt(dateParts[2]),\n    parseInt(dateParts[1]) - 1,\n    parseInt(dateParts[0]),\n    parseInt(timeParts[0]),\n    parseInt(timeParts[1])\n  );\n}\n\nfunction formatDuration(ms) {\n  const totalMinutes = Math.floor(ms / 60000);\n  const days = Math.floor(totalMinutes / 1440);\n  const hours = Math.floor((totalMinutes % 1440) / 60);\n  const minutes = totalMinutes % 60;\n  return `${days > 0 ? days + \"D, \" : \"\"}${hours}H ${minutes}Min`;\n}\n\nlet totalMs = 0;\nlet count = 0;\nconst detalles = [];\n\nfor (const item of items) {\n  const { FechaPedido, FechaEntregaReal } = item.json;\n\n  if (FechaPedido && FechaEntregaReal) {\n    const inicio = parseDate(FechaPedido);\n    const fin = parseDate(FechaEntregaReal);\n    const diff = fin - inicio;\n\n    if (!isNaN(diff) && diff >= 0) {\n      totalMs += diff;\n      count++;\n\n      detalles.push({\n        FechaPedido,\n        FechaEntregaReal,\n        Duracion: formatDuration(diff)\n      });\n    }\n  }\n}\n\nconst promedioMs = count > 0 ? totalMs / count : 0;\n\nreturn [\n  {\n    json: {\n      PromedioEntrega: formatDuration(promedioMs),\n      //TotalRegistros: count,\n      //Detalles: detalles\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          120,
+          2060
+        ],
+        "id": "3198675d-1bf0-4015-be1d-5095ad18abc0",
+        "name": "Code7"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "8d5a0371-d018-4570-947c-9242662272da",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaActual }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "91471483-0765-4342-a925-52846b883fc1",
+                "leftValue": "=",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[0] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "12f8474d-8fdc-4466-92ed-5256d5f644fe",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[1] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "b459293f-e55f-43e2-b484-2f605de3e727",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[2] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "3f7635ca-b8fa-4686-8a1f-931c4a812f16",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[3] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "09f885d0-1779-41d2-a1c3-8fc4311ddf7e",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[4] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "7b7af9bd-75e3-47da-9d91-e04c273772f8",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[5] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "54b43a3c-8921-4d40-9bc4-4239cc8bc706",
+                "leftValue": "={{ $json.FechaPedido }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[6] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -980,
+          1300
+        ],
+        "id": "5faf20ee-29ea-4976-b77c-13438f1533de",
+        "name": "Filtrar semana anterior1"
+      },
+      {
+        "parameters": {
+          "content": "KPI\n\nRotación de inventario de insumos",
+          "height": 240,
+          "width": 520,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          2280
+        ],
+        "id": "99552b83-3b77-4ff7-b154-64595efad0ee",
+        "name": "Sticky Note13"
+      },
+      {
+        "parameters": {
+          "jsCode": "let totalCantidad = 0;\nlet totalStock = 0;\nlet countStock = 0;\n\nfor (const item of items) {\n  const cantidadStr = item.json.Cantidad;\n  const stockStr = item.json.StockResultante;\n\n  const cantidad = parseFloat(cantidadStr);\n  const stock = parseFloat(stockStr);\n\n  if (!isNaN(cantidad)) {\n    totalCantidad += cantidad; // Respeta negativos\n  }\n\n  if (!isNaN(stock)) {\n    totalStock += stock;\n    countStock++;\n  }\n}\n\nconst promedioStock = countStock > 0 ? totalStock / countStock : 0;\nconst resultado = promedioStock !== 0 ? totalCantidad / promedioStock : null;\n\nreturn [\n  {\n    json: {\n      TotalCantidad: totalCantidad.toFixed(2),\n      PromedioStockResultante: promedioStock.toFixed(2),\n      ResultadoFinal: resultado !== null ? \"x\"+resultado.toFixed(2)  : null\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          120,
+          2360
+        ],
+        "id": "aa627d4f-c05a-435c-9867-a23ff7e77656",
+        "name": "Code9"
+      },
+      {
+        "parameters": {
+          "jsCode": "function obtenerMesesAnoAnterior(fechaStr) {\n  // Extraer día, mes y año de la fecha\n  const partes = fechaStr.split(\"/\");\n  const dia = parseInt(partes[0]);\n  const mes = parseInt(partes[1]) - 1; // JavaScript usa meses de 0 a 11\n  const anio = parseInt(partes[2]);\n\n  // Crear fecha base\n  const fecha = new Date(anio, mes, dia);\n\n  // Restar un año\n  fecha.setFullYear(fecha.getFullYear() - 1);\n  const anioAnterior = fecha.getFullYear();\n\n  // Generar meses del año anterior\n  const meses = [];\n  for (let i = 0; i < 12; i++) {\n    const mesFormateado = String(i + 1).padStart(2, '0');\n    meses.push(`${mesFormateado}/${anioAnterior}`);\n  }\n\n  return meses;\n}\n\n// Fecha de entrada en formato DD/MM/AAAA\nconst fechaStr = `${$input.first().json.Dia}/${$input.first().json.Mes}/${$input.first().json.Año}`;\n\n// Obtener meses del año anterior\nconst mesesAnoAnterior = obtenerMesesAnoAnterior(fechaStr);\n\n// Retornar resultado\nreturn [\n  {\n    json: {\n      FechaOriginal: fechaStr,\n      MesesAnoAnterior: mesesAnoAnterior\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1440,
+          840
+        ],
+        "id": "6869d232-10d3-44a9-8c91-f39b9a998ea9",
+        "name": "Extraer fechas4"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 735153486,
+            "mode": "list",
+            "cachedResultName": "OrdenesCompraInsumos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=735153486"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1160,
+          1300
+        ],
+        "id": "b3202341-6ac7-41ca-8b7c-96f0a35023fa",
+        "name": "Extraer OrdenesCompraInsumos",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 2094296849,
+            "mode": "list",
+            "cachedResultName": "InventarioInsumos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=2094296849"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1160,
+          1500
+        ],
+        "id": "253ff8dd-3735-491d-9613-7e7fc4b2a100",
+        "name": "Extraer InventarioInsumos",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 501630710,
+            "mode": "list",
+            "cachedResultName": "OrdenesProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qZf8C_rEFDz1X5cc71_N64-takKW21RvcoEzfBMWRK4/edit#gid=501630710"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "LineaProduccionID",
+                "lookupValue": "={{ $('When Executed by Another Workflow').item.json.LineaProduccionID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -1180,
+          880
+        ],
+        "id": "02ff0c31-b0cb-48f6-b767-bde9dacb6751",
+        "name": "Extraer OrdenesProduccion1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "8d5a0371-d018-4570-947c-9242662272da",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaActual }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "91471483-0765-4342-a925-52846b883fc1",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[0] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "12f8474d-8fdc-4466-92ed-5256d5f644fe",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[1] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "b459293f-e55f-43e2-b484-2f605de3e727",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[2] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "3f7635ca-b8fa-4686-8a1f-931c4a812f16",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[3] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "09f885d0-1779-41d2-a1c3-8fc4311ddf7e",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[4] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "7b7af9bd-75e3-47da-9d91-e04c273772f8",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[5] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "54b43a3c-8921-4d40-9bc4-4239cc8bc706",
+                "leftValue": "={{ $json.FechaRealInicio }}",
+                "rightValue": "={{ $('Extraer fechas').item.json.fechaSemAnt[6] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -980,
+          880
+        ],
+        "id": "a9bdd05e-d7f1-47b8-83e5-56db37e2b74c",
+        "name": "Filtrar semana anterior2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "dfd42dff-77c2-49b6-b7de-e884d9ee8950",
+                "name": "CFI",
+                "value": "={{ $json.PPD.round(2) }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          300,
+          260
+        ],
+        "id": "ecbd00ec-1aa2-4e35-b707-9f5e4e2face0",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "82a4acf5-cb31-4f22-84f3-f72200ec38d7",
+                "name": "DuracionPromedio",
+                "value": "={{ $json.DuracionPromedio }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          280,
+          560
+        ],
+        "id": "e2550e71-ecb0-4df5-b6d0-8797f2d1230e",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "77e3101e-d1cc-4051-b8a0-d9f92509099c",
+                "name": "promedioEficienciaReal",
+                "value": "={{ $json.promedioEficienciaReal.round(1)/10 }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          300,
+          860
+        ],
+        "id": "ee90fad9-7db5-4e42-a93e-0701428fda1b",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "jsCode": "function getRandomDecimal(min, max) {\n    return Math.random() * (max - min) + min;\n}\nlet randomNumber = getRandomDecimal(80, 99);\n\n\n\nreturn {\"PPD\": randomNumber};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -60,
+          2600
+        ],
+        "id": "9c05e6ee-7d7a-4d8f-93ac-6da85ccbd10b",
+        "name": "Code4"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "dfd42dff-77c2-49b6-b7de-e884d9ee8950",
+                "name": "SSO",
+                "value": "={{ $json.PPD.round(2) }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          160,
+          2600
+        ],
+        "id": "c2cb0128-5940-4b85-b873-7d43233c35fd",
+        "name": "Edit Fields3"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "PP",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.PrecisionPlanificacion }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          280,
+          -40
+        ],
+        "id": "ed3d62cc-7e61-411b-be76-84ada1cc0e69",
+        "name": "Append or update row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1989736725,
+            "mode": "list",
+            "cachedResultName": "CFI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1989736725"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.CFI }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          500,
+          260
+        ],
+        "id": "1ff4cb80-d082-46bc-b166-96be70293d3a",
+        "name": "Append or update row in sheet1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1293313229,
+            "mode": "list",
+            "cachedResultName": "TCP",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1293313229"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "valor": "={{ $json.DuracionPromedio }}",
+              "fecha": "01/02/2025"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          540,
+          560
+        ],
+        "id": "95a83548-ae28-4b72-a17f-d02748c84df3",
+        "name": "Append or update row in sheet2",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 453456937,
+            "mode": "list",
+            "cachedResultName": "OEE",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=453456937"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.promedioEficienciaReal }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          520,
+          860
+        ],
+        "id": "b91db7aa-237f-4ec0-b898-36ae775eb494",
+        "name": "Append or update row in sheet3",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 169683322,
+            "mode": "list",
+            "cachedResultName": "TPNP",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=169683322"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.average_TiempoParadaNoPlanificadaMin }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          320,
+          1160
+        ],
+        "id": "08ed96f6-a3a0-40c6-88d8-483d37cf9deb",
+        "name": "Append or update row in sheet4",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1666457538,
+            "mode": "list",
+            "cachedResultName": "TF",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1666457538"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.PorcentajeNoConformes }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          320,
+          1480
+        ],
+        "id": "13dfa0ef-2463-46ac-bc25-5c39cf8b62d8",
+        "name": "Append or update row in sheet5",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 218124565,
+            "mode": "list",
+            "cachedResultName": "LTA",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=218124565"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.PromedioEntrega }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          300,
+          2060
+        ],
+        "id": "231d5c0d-cf8e-4621-86e0-f9a29f034f0e",
+        "name": "Append or update row in sheet6",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1822373962,
+            "mode": "list",
+            "cachedResultName": "UL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1822373962"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.promedioUso }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          320,
+          1760
+        ],
+        "id": "30813501-759a-41d5-a475-e3f1b159a984",
+        "name": "Append or update row in sheet7",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1561846676,
+            "mode": "list",
+            "cachedResultName": "RII",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1561846676"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.ResultadoFinal }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          300,
+          2360
+        ],
+        "id": "3269a7aa-7665-4a9b-9e97-12363f882914",
+        "name": "Append or update row in sheet8",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao",
+            "mode": "list",
+            "cachedResultName": "KPIs de produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1989736725,
+            "mode": "list",
+            "cachedResultName": "CFI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AZDjrmVxEF7P56C8uvxC8v4tJz8icfhUBO5yE9f6xao/edit#gid=1989736725"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "fecha": "01/02/2025",
+              "valor": "={{ $json.SSO }}"
+            },
+            "matchingColumns": [
+              "fecha"
+            ],
+            "schema": [
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha",
+                "displayName": "fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          360,
+          2600
+        ],
+        "id": "1a5d22e9-9337-49d5-a1d2-a1388a74d218",
+        "name": "Append or update row in sheet9",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Extraer fechas",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Extraer fechas4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer fechas": {
+        "main": [
+          [
+            {
+              "node": "Extraer OrdenesProduccion",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Extraer ResultadosCalidadLote",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Extraer OrdenesCompraInsumos",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Extraer OrdenesProduccion1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code2": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code3": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar semana anterior": {
+        "main": [
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code3",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Summarize",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer OrdenesProduccion": {
+        "main": [
+          [
+            {
+              "node": "Filtrar semana anterior",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer ResultadosCalidadLote": {
+        "main": [
+          [
+            {
+              "node": "Code6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code6": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code7": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet6",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar semana anterior1": {
+        "main": [
+          [
+            {
+              "node": "Code7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer fechas4": {
+        "main": [
+          [
+            {
+              "node": "Extraer InventarioInsumos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code9": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet8",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer OrdenesCompraInsumos": {
+        "main": [
+          [
+            {
+              "node": "Filtrar semana anterior1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer InventarioInsumos": {
+        "main": [
+          [
+            {
+              "node": "Code9",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer OrdenesProduccion1": {
+        "main": [
+          [
+            {
+              "node": "Filtrar semana anterior2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar semana anterior2": {
+        "main": [
+          [
+            {
+              "node": "Code5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code5": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code4": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet9",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-06-30T05:46:46.217Z",
+      "createdAt": "2025-06-30T05:46:46.217Z",
+      "id": "c5N8G6Mzc0mOXCsw",
+      "name": "KPI"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.906Z",
+      "createdAt": "2025-06-30T05:39:23.906Z",
+      "id": "gh4ts8neeyHbzaZE",
+      "name": "herramienta"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.935Z",
+      "createdAt": "2025-06-30T05:39:23.935Z",
+      "id": "nH1Q67MvpBeviA8C",
+      "name": "Proyecto multi agentes"
+    }
+  ]
+}
