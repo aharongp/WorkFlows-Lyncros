@@ -1,0 +1,578 @@
+{
+  "updatedAt": "2026-02-14T03:35:25.081Z",
+  "createdAt": "2026-01-28T18:47:45.743Z",
+  "id": "Sy3gbsiwhmCvdu68",
+  "name": "correcto completo",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        800
+      ],
+      "id": "551dd98e-40d9-4c8e-b410-74c16a705f81",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTID, PRDID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4080,
+        880
+      ],
+      "id": "06f44d7a-b498-44ba-8e45-5659db047e9a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2976,
+        752
+      ],
+      "id": "2cb914e0-befa-42de-aa57-8d1363d799f5",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl",
+          "mode": "list",
+          "cachedResultName": "dataset_mrp (2).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "70k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1952,
+        656
+      ],
+      "id": "d97390b2-b793-4d41-9fad-3fa411266c73",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M",
+          "mode": "list",
+          "cachedResultName": "propuesta2_dataset_mrp (1).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "4k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1936,
+        896
+      ],
+      "id": "45db81e7-1692-4bcd-83b2-aa64b64f84d9",
+      "name": "Download file4",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2192,
+        736
+      ],
+      "id": "384a8bcd-341a-4f71-ab7b-b7687d0e81e8",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); // Clientes (4k)\nlet transactions = [];          // Ventas (70k)\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Usa coma ,)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Usa punto y coma ;)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            // Clave: PRDID + CUSTID\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\n\nfor (const txn of transactions) {\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    // Variable para guardar el valor encontrado (foreAct)\n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Lógica de Fecha Dinámica: 2025-06-01 -> \"25-Jun\"\n        if (txn.PERIODID3) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2); // \"25\"\n                const monthNum = parts[1];           // \"06\"\n                const monthName = monthMap[monthNum];// \"Jun\"\n                \n                if (monthName) {\n                    const dynamicColumn = `${yearShort}-${monthName}`; // \"25-Jun\"\n                    // Intentamos sacar el valor. Si es undefined o vacío, queda null\n                    const val = refData[dynamicColumn];\n                    if (val !== undefined && val !== null && val !== \"\") {\n                        foreActValue = val;\n                    }\n                }\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO ---\n    // SOLO agregamos la fila al resultado si encontramos un valor para foreAct.\n    // Esto elimina automáticamente:\n    // 1. Clientes que no existen en el archivo 4k.\n    // 2. Fechas viejas (2020) que no están en el archivo 4k.\n    if (foreActValue !== null) {\n        \n        const mergedItem = { ...txn };\n        \n        // Agregamos los datos encontrados\n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        mergedItem['foreAct'] = foreActValue; // Aquí está el renombre que pediste\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        768
+      ],
+      "id": "a5bac08d-cf2a-4ac7-8c4b-a6165624119e",
+      "name": "leer documentos1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "baec95ad-9631-49fa-9499-14353f531a82",
+              "name": "PERIODID3",
+              "value": "={{ $json.PERIODID3 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2576,
+        736
+      ],
+      "id": "25d40403-e8a0-49d5-900b-9bfdd2e2a484",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "PERIODID3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        752
+      ],
+      "id": "1853c959-1e68-4c77-afbc-4879660a3810",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl",
+          "mode": "list",
+          "cachedResultName": "dataset_mrp (2).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1NROHOGZw-TfIswD5YrRM-SGgJe-T55Sl/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "70k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3392,
+        704
+      ],
+      "id": "d6e1e7ac-7598-48a8-aaf3-5fd68f530c59",
+      "name": "Download file5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M",
+          "mode": "list",
+          "cachedResultName": "propuesta2_dataset_mrp (1).csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1lGFPwDNtA0U9bLMsukYGRgqeKAHhHW6M/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "4k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3408,
+        880
+      ],
+      "id": "50252231-ea1c-4566-aec7-715102613e56",
+      "name": "Download file6",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YDXrgVq9dh5QCcVj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3600,
+        864
+      ],
+      "id": "38e384b3-a11f-45fd-9194-22ae6cca3207",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\nconst monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];\n\n// 0. RECIBIR PARÁMETROS DEL FRONTEND\nconst inputParams = items[0].json || {};\nconst TARGET_PERIOD = inputParams.target_period || null; // Ej: \"2025-05-01\" (El mes a corregir)\n\n// 1. CALCULAR FECHAS CLAVE (La Magia del Lag)\nlet DATA_PERIOD_FILTER = null; // La fecha de los datos que vamos a leer (Mes anterior)\nlet FORECAST_COL_NAME = null;  // La columna del forecast que vamos a buscar (Mes target)\n\nif (TARGET_PERIOD) {\n    // A. Calcular Mes de Datos (Target - 1 Mes)\n    // Asumimos formato YYYY-MM-DD\n    const parts = TARGET_PERIOD.split('-');\n    const year = parseInt(parts[0]);\n    const month = parseInt(parts[1]) - 1; // 0-11\n    const day = parseInt(parts[2]);\n\n    const targetDate = new Date(year, month, day);\n    \n    // Retrocedemos 1 mes para buscar los datos reales (Sellout/Precio del mes pasado)\n    const dataDate = new Date(year, month, day);\n    dataDate.setMonth(dataDate.getMonth() - 1);\n    \n    // Reconstruimos el string YYYY-MM-DD para filtrar el archivo 70k\n    const prevYear = dataDate.getFullYear();\n    const prevMonth = (dataDate.getMonth() + 1).toString().padStart(2, '0');\n    const prevDay = dataDate.getDate().toString().padStart(2, '0');\n    DATA_PERIOD_FILTER = `${prevYear}-${prevMonth}-${prevDay}`; // Ej: \"2025-04-01\"\n\n    // B. Calcular Nombre de Columna del Forecast (El mes Target: \"25-May\")\n    const targetYearShort = targetDate.getFullYear().toString().slice(2);\n    const targetMonthName = monthsShort[targetDate.getMonth()];\n    FORECAST_COL_NAME = `${targetYearShort}-${targetMonthName}`; // Ej: \"25-May\"\n    \n    // Debug (Puedes verlo en el output de n8n)\n    console.log(`Target: ${TARGET_PERIOD} | Usando Datos de: ${DATA_PERIOD_FILTER} | Buscando Forecast: ${FORECAST_COL_NAME}`);\n}\n\n// --- 2. LECTURA Y PARSEO ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Datos Reales)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Forecasts)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 3. CRUCE INTELIGENTE ---\nconst results = [];\n\nfor (const txn of transactions) {\n    // A. FILTRO DE DATOS: Buscamos solo las filas del MES ANTERIOR\n    if (DATA_PERIOD_FILTER && txn.PERIODID3 !== DATA_PERIOD_FILTER) {\n        continue; \n    }\n\n    // Leemos los Drivers del mes pasado\n    let p_index_str = txn['PINDEX'] || \"1.0\";\n    let z_sellout_str = txn['ZSELLOUTCLIENTE'] || \"0\";\n\n    const p_index = parseFloat(p_index_str.toString().replace(',', '.'));\n    const z_sellout = parseFloat(z_sellout_str.toString().replace(',', '.'));\n\n    // B. BÚSQUEDA DEL FORECAST: Buscamos el forecast del MES TARGET\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Usamos directamente el nombre de columna calculado al inicio\n        if (FORECAST_COL_NAME) {\n            const val = refData[FORECAST_COL_NAME];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = parseFloat(val.toString().replace(',', '.'));\n            }\n        }\n    }\n\n    // --- 4. OUTPUT FINAL ---\n    if (foreActValue !== null) {\n        const mergedItem = { ...txn };\n        \n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        \n        // AQUÍ ESTÁ LA CLAVE:\n        // foreAct es del Futuro (Target)\n        // PINDEX/ZSELLOUT son del Pasado (Datos recientes)\n        mergedItem['foreAct'] = foreActValue; \n        mergedItem['PINDEX'] = p_index;\n        mergedItem['ZSELLOUTCLIENTE'] = z_sellout;\n        // AGREGAR ESTO: Pasamos la venta real del mes de los datos (Abril)\n        mergedItem['LAST_MONTH_SALE'] = parseFloat(txn['ADJUSTEDACTUALSQTY'] || 0);\n        // Metadata útil para entender qué pasó\n        mergedItem['_meta_data_period'] = DATA_PERIOD_FILTER;\n        mergedItem['_meta_forecast_col'] = FORECAST_COL_NAME;\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val) val = val.replace(/^[\"']|[\"']$/g, '');\n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3856,
+        944
+      ],
+      "id": "3a5e64c9-b0c5-44fd-bcf5-ca7b73458531",
+      "name": "leer documentos2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "547848bf-5f11-4a16-888a-cb5f3c04137f",
+              "name": "target_period",
+              "value": "={{ $json.PERIODID3 }}",
+              "type": "string"
+            },
+            {
+              "id": "ea2200fe-169e-4a9d-96b1-74e2b99d5ada",
+              "name": "forecast_offset",
+              "value": 1,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3216,
+        768
+      ],
+      "id": "533c92ba-a1b3-4445-a036-29fc9ba19955",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "1ALfp7WCaqyNPuHE",
+          "mode": "list",
+          "cachedResultName": "clientes clasificados",
+          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/1ALfp7WCaqyNPuHE"
+        },
+        "limit": 1000
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3856,
+        800
+      ],
+      "id": "e212900a-5531-4bc1-bed6-f1cee298c5f2",
+      "name": "Get row(s)1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN AVANZADA ---\nconst PARAMS = {\n    ELASTICITY_PRICE: 1.5,      // Sensibilidad al precio\n    STOCK_PRESSURE_FACTOR: 0.8, // Reacción ante quiebres de stock\n    BIAS_CORRECTION: 1.0,       // Corrección total del error histórico\n    MOMENTUM_FACTOR: 0.65       // Peso de la inercia del mes anterior\n};\n\n// --- 1. PRE-PROCESAMIENTO: AGREGACIÓN DE DUPLICADOS ---\n// Unificamos filas que tengan mismo CUSTID y PRDID\nconst aggregatedItems = {};\n\nfor (const item of items) {\n    const r = item.json;\n    const key = `${r.CUSTID}_${r.PRDID}`;\n\n    if (!aggregatedItems[key]) {\n        // Inicializamos con el primer registro encontrado\n        aggregatedItems[key] = { ...r };\n        aggregatedItems[key]._count = 1;\n        // Aseguramos números\n        aggregatedItems[key].ZSELLOUTCLIENTE = parseFloat(r.ZSELLOUTCLIENTE || 0);\n        aggregatedItems[key].PINDEX = parseFloat(r.PINDEX || 0);\n        aggregatedItems[key].LAST_MONTH_SALE = parseFloat(r.LAST_MONTH_SALE || 0);\n        aggregatedItems[key].foreAct = parseFloat(r.foreAct || 0);\n    } else {\n        // Si ya existe, acumulamos\n        aggregatedItems[key]._count += 1;\n        // Sumamos Sellout (Venta total de todas las tiendas)\n        aggregatedItems[key].ZSELLOUTCLIENTE += parseFloat(r.ZSELLOUTCLIENTE || 0);\n        // Sumamos Pindex para luego promediar\n        aggregatedItems[key].PINDEX += parseFloat(r.PINDEX || 0);\n    }\n}\n\n// Convertimos de vuelta a array y promediamos PINDEX\n// AQUÍ SE DEFINE uniqueItems (Esta era la línea que faltaba)\nconst uniqueItems = Object.values(aggregatedItems).map(r => {\n    if (r._count > 1) {\n        r.PINDEX = r.PINDEX / r._count; // Promedio simple\n    }\n    return { json: r };\n});\n\n// --- 2. MODELO CORRECTOR BIDIRECCIONAL ---\nreturn uniqueItems.map(item => {\n    const r = item.json;\n\n    // A. INPUTS\n    const fcst_original = parseFloat(r.foreAct || 0);\n    const sellout_units = parseFloat(r.ZSELLOUTCLIENTE || 0); \n    const p_index = parseFloat(r.PINDEX || 1.0);\n    const bias_historico = parseFloat(r.BIAS || 0);\n    const last_month_sale = parseFloat(r.LAST_MONTH_SALE || 0);\n    const status = r.STATUS || 'STABLE';\n\n    if (fcst_original === 0) return item;\n\n    // B. CAP DINÁMICO\n    let MAX_CAP = 0.40;\n    if (status === 'CRITICAL') MAX_CAP = 3.0;     \n    if (status === 'OPPORTUNITY') MAX_CAP = 1.0;  \n\n    // C. DRIVERS\n\n    // 1. Precio\n    const price_delta = (1.0 - p_index) * PARAMS.ELASTICITY_PRICE;\n\n    // 2. Sellout (Bidireccional)\n    let sellout_delta = 0;\n    if (sellout_units > 0) {\n        const ratio = sellout_units / fcst_original;\n        \n        // Sube si falta stock\n        if (ratio > 1.10) {\n            sellout_delta = (ratio - 1.0) * PARAMS.STOCK_PRESSURE_FACTOR;\n        }\n        // Baja si sobra stock (Sellout < 30% del forecast)\n        else if (ratio < 0.30) {\n            sellout_delta = (ratio - 1.0) * 0.5;\n        }\n    }\n\n    // 3. Bias\n    let bias_delta = 0;\n    if (Math.abs(bias_historico) > 0.05) {\n        bias_delta = -(bias_historico) * PARAMS.BIAS_CORRECTION;\n    }\n\n    // 4. Momentum / Inercia (Bidireccional)\n    let momentum_delta = 0;\n    if (last_month_sale > 0) {\n        const momentum_ratio = last_month_sale / fcst_original;\n        \n        // Sube si venimos de vender mucho\n        if (momentum_ratio > 1.20) {\n            momentum_delta = (momentum_ratio - 1.0) * PARAMS.MOMENTUM_FACTOR;\n        }\n        // Baja si la venta se desplomó o el forecast es irrealista\n        else if (momentum_ratio < 0.60) {\n            momentum_delta = (momentum_ratio - 1.0) * PARAMS.MOMENTUM_FACTOR;\n        }\n    }\n\n    // D. RESULTADO\n    let total_delta = price_delta + sellout_delta + bias_delta + momentum_delta;\n\n    // Aplicar Cap\n    if (total_delta > MAX_CAP) total_delta = MAX_CAP;\n    if (total_delta < -MAX_CAP) total_delta = -MAX_CAP;\n\n    const fcst_new = Math.round(fcst_original * (1 + total_delta));\n\n    // Explicación\n    const drivers = [];\n    if (Math.abs(price_delta) > 0.01) drivers.push(`Precio ${(price_delta*100).toFixed(0)}%`);\n    if (Math.abs(sellout_delta) > 0.01) drivers.push(`Sellout ${(sellout_delta*100).toFixed(0)}%`);\n    if (Math.abs(bias_delta) > 0.01) drivers.push(`Bias ${(bias_delta*100).toFixed(0)}%`);\n    if (Math.abs(momentum_delta) > 0.01) drivers.push(`Inercia ${(momentum_delta*100).toFixed(0)}%`);\n\n    return {\n        json: {\n            ...r,\n            MODEL_forecast_original: Math.round(fcst_original),\n            MODEL_forecast_corrected: fcst_new,\n            MODEL_delta_pct: (total_delta * 100).toFixed(1) + '%',\n            MODEL_drivers: drivers.join(', '),\n            _debug_momentum_ratio: (last_month_sale / fcst_original).toFixed(2)\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        560
+      ],
+      "id": "cf1bc2f1-ed27-4465-9f60-130180502d63",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "output corrector completo",
+        "options": {
+          "delimiter": ","
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3216,
+        496
+      ],
+      "id": "57af306c-7d15-40c1-8bbb-a344da6dd4b2",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN AVANZADA ---\nconst PARAMS = {\n    ELASTICITY_PRICE: 1.5,      // Sensibilidad al precio\n    STOCK_PRESSURE_FACTOR: 0.8, // Reacción ante quiebres de stock\n    BIAS_CORRECTION: 1.0,       // Corrección total del error histórico\n    MOMENTUM_FACTOR: 0.65       // Peso de la inercia del mes anterior\n};\n\n// --- 1. PRE-PROCESAMIENTO: AGREGACIÓN DE DUPLICADOS ---\n// Unificamos filas que tengan mismo CUSTID y PRDID\nconst aggregatedItems = {};\n\nfor (const item of items) {\n    const r = item.json;\n    const key = `${r.CUSTID}_${r.PRDID}`;\n\n    if (!aggregatedItems[key]) {\n        // Inicializamos con el primer registro encontrado\n        aggregatedItems[key] = { ...r };\n        aggregatedItems[key]._count = 1;\n        // Aseguramos números\n        aggregatedItems[key].ZSELLOUTCLIENTE = parseFloat(r.ZSELLOUTCLIENTE || 0);\n        aggregatedItems[key].PINDEX = parseFloat(r.PINDEX || 0);\n        aggregatedItems[key].LAST_MONTH_SALE = parseFloat(r.LAST_MONTH_SALE || 0);\n        aggregatedItems[key].foreAct = parseFloat(r.foreAct || 0);\n    } else {\n        // Si ya existe, acumulamos\n        aggregatedItems[key]._count += 1;\n        // Sumamos Sellout (Venta total de todas las tiendas)\n        aggregatedItems[key].ZSELLOUTCLIENTE += parseFloat(r.ZSELLOUTCLIENTE || 0);\n        // Sumamos Pindex para luego promediar\n        aggregatedItems[key].PINDEX += parseFloat(r.PINDEX || 0);\n    }\n}\n\n// Convertimos de vuelta a array y promediamos PINDEX\n// AQUÍ SE DEFINE uniqueItems (Esta era la línea que faltaba)\nconst uniqueItems = Object.values(aggregatedItems).map(r => {\n    if (r._count > 1) {\n        r.PINDEX = r.PINDEX / r._count; // Promedio simple\n    }\n    return { json: r };\n});\n\n// --- 2. MODELO CORRECTOR BIDIRECCIONAL ---\nreturn uniqueItems.map(item => {\n    const r = item.json;\n\n    // A. INPUTS\n    const fcst_original = parseFloat(r.foreAct || 0);\n    const sellout_units = parseFloat(r.ZSELLOUTCLIENTE || 0); \n    const p_index = parseFloat(r.PINDEX || 1.0);\n    const bias_historico = parseFloat(r.BIAS || 0);\n    const last_month_sale = parseFloat(r.LAST_MONTH_SALE || 0);\n    const status = r.STATUS || 'STABLE';\n\n    if (fcst_original <= 0) return item;\n\n    // B. CAP DINÁMICO\n    let MAX_CAP = 0.80;\n    if (status === 'CRITICAL') MAX_CAP = 3.0;      \n    if (status === 'OPPORTUNITY') MAX_CAP = 1.0;  \n    if (status === 'CHAOS') MAX_CAP = 2.0;  \n\n    // C. DRIVERS\n    const price_delta = (1.0 - p_index) * PARAMS.ELASTICITY_PRICE;\n\n    let sellout_delta = 0;\n    if (sellout_units > 0) {\n        const ratio = sellout_units / fcst_original;\n        if (ratio > 1.10) {\n            sellout_delta = (ratio - 1.0) * PARAMS.STOCK_PRESSURE_FACTOR;\n        } else if (ratio < 0.30) {\n            sellout_delta = (ratio - 1.0) * 0.5;\n        }\n    }\n\n    // AJUSTE BIAS: Si el bias es positivo (sobre-pronóstico), reducimos. \n    // Pero limitamos el impacto del bias negativo para que no mate el forecast.\n    let bias_delta = 0;\n    if (Math.abs(bias_historico) > 0.05) {\n        // Usamos una función para que bias extremos no den deltas de -800%\n        // Si bias es 8, el delta será -0.8 (reducción fuerte pero controlada)\n        bias_delta = -(bias_historico / (1 + Math.abs(bias_historico))) * PARAMS.BIAS_CORRECTION;\n    }\n\n    let momentum_delta = 0;\n    if (last_month_sale > 0) {\n        const momentum_ratio = last_month_sale / fcst_original;\n        momentum_delta = (momentum_ratio - 1.0) * PARAMS.MOMENTUM_FACTOR;\n    }\n\n    // D. RESULTADO Y PROTECCIÓN DE NEGATIVOS\n    const raw_delta = price_delta + sellout_delta + bias_delta + momentum_delta;\n    \n    // Aplicar Cap\n    let capped_delta = raw_delta;\n    if (capped_delta > MAX_CAP) capped_delta = MAX_CAP;\n    if (capped_delta < -0.95) capped_delta = -0.95; // Nunca reducir más del 95%\n    \n    // Segunda capa de seguridad: el CAP por Status\n    if (capped_delta < -MAX_CAP) capped_delta = -MAX_CAP;\n\n    // CÁLCULO FINAL (Math.max asegura que el piso sea 0)\n    const fcst_corrected = Math.max(0, Math.round(fcst_original * (1 + capped_delta)));\n    const fcst_no_cap = Math.max(0, Math.round(fcst_original * (1 + raw_delta)));\n\n    // Explicación\n    const drivers = [];\n    if (Math.abs(price_delta) > 0.01) drivers.push(`Precio ${(price_delta*100).toFixed(0)}%`);\n    if (Math.abs(sellout_delta) > 0.01) drivers.push(`Sellout ${(sellout_delta*100).toFixed(0)}%`);\n    if (Math.abs(bias_delta) > 0.01) drivers.push(`Bias ${(bias_delta*100).toFixed(0)}%`);\n    if (Math.abs(momentum_delta) > 0.01) drivers.push(`Inercia ${(momentum_delta*100).toFixed(0)}%`);\n\n    return {\n        json: {\n            ...r,\n            MODEL_forecast_original: Math.round(fcst_original),\n            MODEL_forecast_corrected: fcst_corrected,\n            MODEL_forecast_no_cap: fcst_no_cap,\n            MODEL_delta_pct: (capped_delta * 100).toFixed(1) + '%',\n            MODEL_raw_delta_pct: (raw_delta * 100).toFixed(1) + '%',\n            MODEL_drivers: drivers.join(', '),\n            _debug_status: status\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4272,
+        880
+      ],
+      "id": "1a013156-e081-4240-9d84-ec571ac8784d",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file4": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "leer documentos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leer documentos1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file5": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file6": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "leer documentos2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leer documentos2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Download file5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "35a9a7c0-0d7a-4074-8b68-51663eb2d04c",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-28T18:47:45.753Z",
+      "createdAt": "2026-01-28T18:47:45.753Z",
+      "role": "workflow:owner",
+      "workflowId": "Sy3gbsiwhmCvdu68",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
