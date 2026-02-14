@@ -1,0 +1,641 @@
+{
+  "updatedAt": "2025-07-07T00:02:02.000Z",
+  "createdAt": "2025-06-30T05:56:48.947Z",
+  "id": "LS0i0Tkh3rH3QV8E",
+  "name": "Estrategico consolidado",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        -80
+      ],
+      "id": "3d113ec1-08bd-47a8-8f2f-b1ac8e75a4bd",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        120
+      ],
+      "id": "8f54591d-1813-4437-9be4-470def05e852",
+      "name": "Summarize1"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        320
+      ],
+      "id": "8db2de37-dd71-4149-9fee-14e8a8c3bb0b",
+      "name": "Summarize2"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "valor"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        520
+      ],
+      "id": "575ea082-9c78-46e3-b4e2-611ab4133fa0",
+      "name": "Summarize3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e392713c-7280-4977-b13a-a72884bbfa9a",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"EBITDTA\",   \"valor\":\"{{ $json.sum_valor }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -80
+      ],
+      "id": "d28efc85-4bd2-4861-93ba-240633b3605c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f73d7e3c-2dfb-4ba4-874d-2c8615b2ae28",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"PPD\",   \"valor\":\"{{ $json.average_valor.round(2) }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        120
+      ],
+      "id": "488424d8-f961-425a-8b31-b02e1017acca",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "38a05367-2353-44b4-a9f6-e047db191b72",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"OEE\",   \"valor\":\"{{ $json.average_valor.round(2) }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        320
+      ],
+      "id": "97267792-b748-44dc-84d3-984ad5d38e2f",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a09269f1-a28a-466f-b721-4b42c5b78144",
+              "name": "kpi",
+              "value": "={   \"kpi\": \"sum_valor\",   \"valor\":\"{{ $json.sum_valor }}\" }",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        520
+      ],
+      "id": "7a2f0a97-5d26-4e3f-83dc-de632cbf214d",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        240
+      ],
+      "id": "ef01be08-db47-4bec-bd41-dc2b52f6380f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc",
+          "mode": "list",
+          "cachedResultName": "KPIs estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "EBITDA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "1/2/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -200,
+        -80
+      ],
+      "id": "7113f219-139d-4775-a31a-412d202d99b6",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc",
+          "mode": "list",
+          "cachedResultName": "KPIs estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1184344417,
+          "mode": "list",
+          "cachedResultName": "PPD",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit#gid=1184344417"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "1/2/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -200,
+        120
+      ],
+      "id": "f991ad3e-8146-4f01-9fbf-a854932ca579",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc",
+          "mode": "list",
+          "cachedResultName": "KPIs estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1895243722,
+          "mode": "list",
+          "cachedResultName": "OEE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit#gid=1895243722"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "1/2/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -200,
+        320
+      ],
+      "id": "ded873d0-5f42-48a1-b3bc-fd4cd411321d",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc",
+          "mode": "list",
+          "cachedResultName": "KPIs estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 90485296,
+          "mode": "list",
+          "cachedResultName": "CPR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14_2J1LJSRSF4ovdr4aQmc65xPfhyot9javtv9PMAwTc/edit#gid=90485296"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "fecha",
+              "lookupValue": "1/2/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -200,
+        520
+      ],
+      "id": "6c60268f-cd87-4eb6-bf61-6faee7709585",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "KPI": "={{ $json.kpi.kpi }}",
+            "Valor": "={{ $json.kpi.valor }}",
+            "Fecha": "01/02/2025"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "KPI",
+              "displayName": "KPI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        700,
+        260
+      ],
+      "id": "3c164dcd-7768-42ca-a033-0215d6fe74b2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        220
+      ],
+      "id": "7a295438-2358-44f9-a1d2-327fd6a89af6",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Summarize1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Summarize2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Summarize3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8c8c89a0-bea1-4a91-acc4-b91c9dde4052",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T05:56:48.953Z",
+      "createdAt": "2025-06-30T05:56:48.953Z",
+      "role": "workflow:owner",
+      "workflowId": "LS0i0Tkh3rH3QV8E",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
