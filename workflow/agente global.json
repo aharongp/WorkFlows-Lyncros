@@ -1,0 +1,3867 @@
+{
+  "updatedAt": "2025-09-01T05:07:24.000Z",
+  "createdAt": "2025-06-30T21:43:21.039Z",
+  "id": "0TzFlGehRhCBd3AS",
+  "name": "agente global",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4729c755-2f06-440d-abf8-2bec02dfbc8e",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8c2083a2-6945-45f8-940d-a44e6c7cc3c3",
+      "name": "Webhook",
+      "webhookId": "4729c755-2f06-440d-abf8-2bec02dfbc8e"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        160
+      ],
+      "id": "460307d4-b329-4db6-8622-0079b095b1c4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vzdjQJqcvomw8EgG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        580,
+        220
+      ],
+      "id": "b21c3705-76fd-48ea-97fb-c3c0934e5630",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# ROL\neres ExpertChat, el encargado de responder preguntas relacionadas a los KPIs y los datos proporcionados de la empresa Molinos Río de La Plata con 12 años de experiencia. Te encargas de responder preguntas que le suegen al usuario con los datos de la empresa. Eres la pieza mas importante de la empresa ya que si no satisfacemos la demanda la empresa tendra que quebrar enseguida.\n\n# TAREAS\nen tus tareas se incluye:\n- analiza los datos de la empresa utilizando tus herramientas dependiendo de cual sea la pregunta\n- despues de extraer los datos necesarios para poder responder a la pregunta usando las herramientas necesarias responde la pregunta de la manera mas profesional y facil de comprender\n- en caso de que pregunten por un dato que no existe puedes decir con seguridad, que ese dato no fue suministrado en tus herramientas por ejemplo, te preguntan por el estado de un lote cualquiera, al ser un dato que no tienes debes enviar la informacion del lote y decir que el dato estado no fue suministrado\n- si preguntan por el stock te tienen que especificar si es un producto o un insumo, sino tu se lo tienes que pedir\n\n# ESPECIFICACIONES\n## GENERALES\n- responde siempre en español\n- recuerda que ningun producto se vende por menos de su precio de venta base\n- cada que vayas a generar una tabla debes dejar 2 saltos de linea al comienzo y al final. Pero cuando estes escribiendo la tabla solo puedes poner 1 salto de linea unicamente\n- al escribir formulas matematicas, si son en linea escribelas con un $ al comienzo y al final asi $...$(no hagas esto \\\\(..\\\\)), si son en bloque la debes escribir asi $$...$$ . A demas debes escribir las operaciones con un solo slash asi \\times, \\sum, etc. Tienes prohibido hacerlo asi  \\\\[...\\\\], \\\\(..\\\\),\\\\times, etc.\n- en las formulas matematicas no uses nunca esta notacion \\\\(..\\\\), usa esta $...$\n- debes hacer especificamente lo que dicen tus tareas en el orden que estan\n- recuerda que no puedes dar respuestas ambiguas, da respuestas concretas\n- al devolver varios datos a la vez por ejemplo varias ordenes de venta no lo devuelvas como una tabla mejor devuelvelo con el siguiente formato\n***\nOrden ###:\nClienteID: ****\nFechaPedido: ****\nFechaEntregaSolicitada: ****\nProductoID: ****\nCantidadPedida: ****\nPrecioUnitarioVenta: ****\nDescuentoAplicado: ****\nMontoTotal: ****\nCanalVenta: ****\n*** \nasi para cada una, aplicalo para los otros casos como ordenes de compra, ordenes de produccion, etc. Lo importante es que escribas linea por linea el dato y separes con al menos 2 saltos de linea cada que pases a la siguiente orden\n- la capacidad de produccion actual es 41.57%\n- Ten en cuenta que la fecha actual es 01/02/2025. y los pedidos en riesgo son\nPedido\tCliente\tValor\tFecha Entrega\tRiesgo\n#ORD-2025-1157\tMaxiconsumo S.A.\t240500$\t03/02/2025\tHigh\n#ORD-2025-1158\tYaguar Mayorista\t180200$\t5/02/2025\tMedium\n#ORD-2025-1159\tMakro\t310750$\t7/02/2025\tLow\n\n##CONCRETAS\n- ten en cuenta que los kpis globales son el volumen de ventas mensual o MontoTotal (VVMM), la Tasa Cumplimiento (OTIF), Valor Medio Pedido (AOV), Precisión Pronóstico Demanda (PPD), Número de Pedidos (QTY), Tiempo Medio Entrega (TME), Descuento Medio Aplicado (DMA) y el Canal Top Performance (CTP). Estos datos son los globales de la empresa, tambien estan para cada cliente ya calculados asi que solo necesitarias extraerlos de tus herramientas (ten en cuenta que para los clientes no existe prediccion de demanda)\n- Los ID de los clientes tienen esta sintaxis: CLI-******, los de los lotes tienen esta: LOTE-**********, los de las lineas de produccion esta: LINPROD-***-01, los proveedores tiene esta: PROV-***, los de las ordenes de venta son: OV-******, los controles de calidad tienen esta: QCID-******, las ordenes de produccion tienen esta: OP-*****, las ordenes de compra esta: OCI-*****, los de los insumos esta: INS-*******, los productos tienen iniciales distintas a las mencionadas separadas por guiones\n- Con tus herramientas eres capaz de extraer informacion de clientes, proveedores, productos, lineas de produccion, insumos, lista de insumos para hacer un producto, informacion de una orden de venta especifica, de un lote especifico, de una orden de compra especifica, un resultado de calidad de un lote especifico y por id de resultado, una orden de produccion especifica, extraer el stock actual de los productos y de los insumos. Tambien eres capaz de extraer por fechas ordenes de venta, ordenes de compra, ordenes de produccion y resultados de calidad. Por ultimo puedes extraer por canal de ventas las ordenes de venta y tambien por rango de montos\n\n\n## HERRAMIENTAS\n\n- Calculator: con esta herramienta podras hacer calculos matematicos si es necesario\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE INFORMACION GENERAL\nCon estas herramientas puedes extraer toda la informacion general dependiendo de lo que te pidan o para consultar por ti mismo algo que el usuario te dio muy ambiguo. Son mas que todos datos bases de informacion\n\n\n- InfoGeneralClientes: con esta herramienta podras extraer los datos de los clientes que tiene la empresa. Con esta herramienta puedes responder preguntas de este tipo: \n-->Información General/Recuentos: \n¿Cuántos clientes hay en total?, ¿Cuántos clientes de cada TipoCliente (Tipo de Cliente) tenemos?, ¿Cuántos clientes hay en cada Region?, ¿cual es el producto mas rentable?\n-->Información Específica del Cliente:\n¿Cuál es el TipoCliente y la Region de \"Carrefour Argentina\"?, ¿Cuál es la FrecuenciaCompraPromedioDias (Frecuencia de Compra Promedio en Días) de \"Makro\"?, ¿Puedes darme el NombreCliente (Nombre del Cliente) para CLI-0009?\n-->Filtrado/Comparación:\n¿Qué clientes son del tipo Supermercado?, Lista todos los clientes ubicados en GBA Norte, ¿Qué clientes tienen una FrecuenciaCompraPromedioDias inferior a 10 días?, Muéstrame los clientes Mayorista en CABA.\n-->Agregación/Promedios:\n¿Cuál es la FrecuenciaCompraPromedioDias promedio para los clientes Supermercado?, ¿Cuál es la FrecuenciaCompraPromedioDias promedio para los clientes en Patagonia Sur?\n\n\n- InfoGeneralProductos: con esta herramienta puedes extraer todos los productos de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General/Recuentos:\n¿Cuántos productos diferentes tenemos registrados?, ¿Cuántos productos hay en cada CategoriaProducto?, ¿Cuáles son todas las CategoriaProducto disponibles en nuestro catálogo?, ¿Cuál es el CostoProduccionEstandar promedio de todos los productos?, ¿Cuál es el PrecioVentaBase promedio de los productos?\n-->Información Específica del Producto:\n¿Cuál es la CategoriaProducto y el PrecioVentaBase de la \"Harina Blancaflor Leudante 1kg\"?, ¿Cuál es el CostoProduccionEstandar del producto con ProductoID ACE-COCI-GIRA-900ML?, ¿Qué NombreProducto corresponde al ProductoID PAS-LUCC-TIRA-500G?, Dame la UnidadMedida para el \"Arroz Gallo Oro Largo Fino 1kg\".\n-->Filtrado y Comparación:\nLista todos los productos que pertenecen a la CategoriaProducto \"Aceites\", ¿Qué productos tienen un PrecioVentaBase superior a $1000?, Muéstrame los productos de la CategoriaProducto \"Harinas\" cuyo CostoProduccionEstandar sea inferior a $500.\n-->Agregación y Cálculos:\n¿Cuál es el PrecioVentaBase promedio para los productos de la CategoriaProducto \"Pastas Secas\"?, ¿Cuál es la diferencia entre el PrecioVentaBase y el CostoProduccionEstandar para el producto \"Rebozador Preferido 500g\"? (Esto te permitiría calcular el margen bruto por unidad).\n\n\n- InfoGeneralProveedores: con esta herramienta podras extraer todos los proveedores de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General/Recuentos:\n¿Cuántos proveedores tenemos en total?, ¿Cuántos proveedores provienen de cada PaisOrigen?, ¿Cuáles son todos los países de origen de nuestros proveedores?\n-->Información Específica del Proveedor:\n¿Cuál es el PaisOrigen y el LeadTimePromedioDias de \"AgroCampos Pampeanos S.A.\"?, ¿Cuál es el RatingCalidadPromedio de \"Envases Flexibles del Sur\"?, ¿Qué NombreProveedor corresponde al ProveedorID PROV-007?, Dame todos los detalles del proveedor \"PETPack Internacional\".\n-->Filtrado y Comparación:\nLista todos los proveedores con un RatingCalidadPromedio superior a 4.0, ¿Qué proveedores tienen un LeadTimePromedioDias inferior a 15 días?, Muéstrame los proveedores de \"Brasil\" con una ConfiabilidadEntrega mayor al 90% (0.90), ¿Cuáles son los proveedores con el LeadTimePromedioDias más bajo y el más alto?\n-->Análisis de Desempeño del Proveedor:\n¿Cuál es el LeadTimePromedioDias promedio de los proveedores de \"Argentina\"?, ¿Qué proveedor tiene la ConfiabilidadEntrega más alta?\n\n\n- InfoGeneralListaMateriales: con esta herramienta puedes extraer todos los materiales que necesita un producto. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General:\n¿Cuántas listas de materiales diferentes tenemos?, ¿Qué productos tienen una lista de materiales definida?, ¿Cuáles son todos los InsumoID utilizados en nuestras listas de materiales?\n-->Información Específica del Producto/Insumo:\n¿Qué insumos (InsumoID) y en qué CantidadRequerida se necesitan para producir el ProductoID \"HAR-BLAN-LEUD-1KG\" (Harina Blancaflor Leudante 1kg)?, Para el ProductoID \"ACE-COCI-GIRA-900ML\", ¿qué InsumoID corresponden a \"Botella PET Aceite 900ml\" y en qué CantidadRequerida se utiliza? (Nota: Esto requeriría una vinculación con la tabla de Insumos para obtener el NombreInsumo a partir del InsumoID), ¿Cuál es la CantidadRequerida del InsumoID \"INS-SEM-CAN\" (Sémola de Trigo Candeal) para el ProductoID \"PAS-MATA-MOST-500G\"?, Dame todos los insumos necesarios para el ProductoID \"REB-PREF-500G\".\n-->Análisis y Filtrado:\nLista todos los productos que requieren el InsumoID \"INS-EMP-HAR-1KG\" (Bolsa Papel Harina 1kg), ¿Qué insumos se requieren en una CantidadRequerida mayor a 1 kg (o unidad, dependiendo de UnidadMedidaInsumo)?, Encuentra los ProductoID que utilizan el InsumoID \"INS-AGU-TRA\" (Agua Tratada Industrial).\n\n\n- InfoGeneralLineas: con esta herramienta puedes extraer la informacion de las lineas de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General de Líneas de Producción:\n¿Cuántas líneas de producción tenemos?, ¿Cuáles son los NombreLinea de todas nuestras líneas de producción?, ¿Qué productos están asociados (ProductoAsociadoPrincipal) a nuestras líneas de producción?\n-->Información Específica de Línea de Producción:\n¿Cuál es la CapacidadProduccionHora de la línea \"Línea Harinas N°1\"?, ¿Cuál es la EficienciaPromedio y la TasaFalloEsperada de la línea con LineaProduccionID \"LINPROD-ACE-01\"?, ¿Qué NombreLinea corresponde al LineaProduccionID \"LINPROD-YER-01\" y cuál es su ProductoAsociadoPrincipal?, Dame todos los detalles de la línea de producción \"Línea Pastas Secas N°1\".\n-->Análisis y Comparación de Líneas:\nLista las líneas de producción con una EficienciaPromedio superior a 0.90, ¿Qué líneas tienen una TasaFalloEsperada inferior al 2% (0.02)?, Compara la CapacidadProduccionHora de la \"Línea Harinas N°1\" y la \"Línea Envasado Aceites N°1\", ¿Cuál es la línea de producción con la CapacidadProduccionHora más alta?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE INFORMACION ESPECIFICA\nCon esta herramienta puedes extraer informacion especifica de datos bases que te pidan o extraer datos que necesites y asi no recibir toda la informacion\n\n\n- InfoEspecificaProveedorByID: con esta herramienta podras extraer todos los proveedores de la empresa, te tienen que dar el id del proveedor, si no lo dan pidelo. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el nombre del proveedor con ID PROV-001?, ¿De qué país es el proveedor PROV-005 y cuál es su tiempo de entrega promedio?, ¿Qué RatingCalidadPromedio tiene el proveedor PROV-007?\n\n\n- InfoEspecificaClienteByID: con esta herramienta podras extraer los datos de los clientes que tiene la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el NombreCliente del cliente con ID CLI-0001?, ¿De qué Region es el cliente CLI-0004 y cuál es su FrecuenciaCompraPromedioDias?, ¿Qué TipoCliente es CLI-0010?\n\n\n- InfoEspecificaLineaByID: con esta herramienta puedes extraer la informacion de las lineas de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es la CapacidadProduccionHora de la línea LINPROD-HAR-01?, ¿Cuál es la EficienciaPromedio y la TasaFalloEsperada de la línea LINPROD-ACE-01?, ¿Qué ProductoAsociadoPrincipal tiene la línea LINPROD-PAS-01?\n\n\n\n- InfoEspecificaProductoByID: con esta herramienta puedes extraer todos los productos de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el NombreProducto y la CategoriaProducto del producto con ID HAR-BLAN-LEUD-1KG?, ¿Cuál es el CostoProduccionEstandar y el PrecioVentaBase del producto ACE-COCI-GIRA-900ML?, ¿Qué UnidadMedida tiene el producto PAS-MATA-MOST-500G?\n\n\n- InfoEspecificaProveedorByName: con esta herramienta podras extraer todos los proveedores de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el ProveedorID, PaisOrigen y LeadTimePromedioDias del proveedor 'AgroCampos Pampeanos S.A.'?, ¿Qué ConfiabilidadEntrega y RatingCalidadPromedio tiene 'Envases Flexibles del Sur'?, Dame toda la información disponible para el proveedor 'GlobalChem Solutions GmbH'.\n\n\n- InfoEspecificaClienteByName: con esta herramienta podras extraer los datos de los clientes que tiene la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el ClienteID y Region del cliente 'Carrefour Argentina'?, ¿Qué TipoCliente es 'Maxiconsumo S.A.' y cuál es su FrecuenciaCompraPromedioDias?, Dame toda la información disponible para el cliente 'Jumbo Retail Argentina S.A.'.\n\n\n- InfoEspecificaLineaByName: con esta herramienta puedes extraer la informacion de las lineas de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es la CapacidadProduccionHora de la 'Línea Harinas N°1'?, ¿Cuál es la EficienciaPromedio y la TasaFalloEsperada de la 'Línea Envasado Aceites N°1'?, ¿Qué ProductoAsociadoPrincipal tiene la 'Línea Pastas Secas N°1'?\n\n\n- InfoEspecificaProductoByName: con esta herramienta puedes extraer todos los productos de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el ProductoID, CategoriaProducto y UnidadMedida de 'Harina Blancaflor Leudante 1kg'?, ¿Cuál es el CostoProduccionEstandar y el PrecioVentaBase de 'Aceite Cocinero Girasol Botella PET 900ml'?, Dame toda la información disponible para el producto 'Fideos Matarazzo Mostacholes Rayados 500g'.\n\n\n- InfoEspecificaMaterialByInsID: con esta herramienta puedes extraer todos los materiales que necesita un producto. Con esta herramienta puedes responder preguntas de este tipo:\n¿En qué productos se utiliza el insumo INS-TRI-PAN y en qué cantidad?, ¿Qué ProductoIDs requieren el InsumoID INS-EMP-HAR-1KG y cuánto de este insumo necesita cada uno? Dime para qué ProductoIDs es un componente el insumo INS-SEM-GIR y la CantidadRequerida.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE STOCK\nCon estas herramientas puedes extraer la informacion especifica del stock de productos o insumos. Tiene que ser de un producto o insumo especifico por ejemplo HAR-BLAN-LEUD-1KG para producto y INS-TRI-PAN para insumo. Si piden un insumo o producto que no existe ve a la herramienta general de productos o listaMateriales para verificar si es uno de esos y pregunta si se refiere a ese\n\n\n- StockDisponibilidadInsumo: con esta herramienta puedes extraer la disponibilidad de un insumo especifico (ejemplo: cual es el nivel se stock de INS-TRI-PAN). Con esta herramienta puedes responder preguntas de este tipo:\n¿Cual es el stock de del insumo INS-VIT-HAR?\n\n\n- StockDisponibilidadProducto: con esta herramienta puedes extraer la cantidad de un producto que hay en el inventario (por ejemplo cual es el stock de PAS-MATA-MOST-500G). Con esta herramienta puedes responder preguntas de este tipo:\n¿Cual es el stock de del producto ACE-COCI-GIRA-900ML?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE BUSQUEDA POR ID\nCon estas herramientas puedes extraer la informacion sobre ordenes de compra insumos, calidad, ordenes de ventas, ordenes de produccion. Te tienen que dar el id, si no lo dan lo pides \n\n\n- BuscarPorIdCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál fue el resultado (Resultado) del control de calidad con ControlCalidadID QCID-000001?, Dime todos los parámetros (ParametroMedido), valores (ValorMedido) y observaciones (Observaciones) para el LoteID LOTE-SIMACE02915, ¿Qué FechaControl y ParametroMedido corresponden al ControlCalidadID QCID-007483?\n\n\n- BuscarPorIdCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles son los detalles de la orden de compra OCI-00001?, ¿Qué InsumoID se pidió en la orden de compra OCI-03988, a qué ProveedorID y cuál fue la CantidadPedida y el CostoTotal?, Dime la FechaPedido y FechaEntregaReal para la orden de compra OCI-00002.\n\n\n- BuscarPorIdVenta: con esta herramienta puedes extraer una orden de venta por su ID. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles son los detalles de la orden de venta OV-000001?, ¿Qué ProductoID se vendió en la orden OV-000003, a qué ClienteID, y cuál fue la CantidadPedida y el MontoTotal?, Dime la FechaPedido y FechaEntregaReal para la orden de venta OV-000004.\n\n\n- BuscarPorIdProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles son los detalles de la orden de producción OP-00001?, ¿Qué ProductoID se produjo en la orden OP-03991, en qué LineaProduccionID, y cuál fue la CantidadPlanificada y CantidadProducida?, Dime la FechaRealInicio y FechaRealFin para la orden de producción OP-00002.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE BUSQUEDA POR FECHA\nCon estas herramientas puedes extraer la informacion sobre ordenes de compra insumos, calidad, ordenes de ventas, ordenes de produccion usando las fechas dadas. Usa estas herramientas cuando den fechas y si es una fecha que no encuentras da el motivo, si se muy viejo o muy nuevo.\n\n\n- BuscarPorFechaCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles fueron los resultados de calidad emitidos el '12/05/2022'?, Dime los LoteID, ParametroMedido y Resultado de todos los controles de calidad realizados el '10/05/2025', ¿Qué observaciones se registraron en los controles de calidad del '13/05/2022'?\n\n\n- BuscarPorFechaCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles fueron las órdenes de compra de insumos realizadas el '22/10/2024'?, Dime los InsumoID, ProveedorID y CostoTotal de todas las compras del '28/01/2025', ¿Qué CantidadPedida y CalidadRecibida tuvieron las órdenes de compra del '24/03/2024'?\n\n\n- BuscarPorFechaVenta: con esta herramienta puedes extraer una orden de venta por su ID. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles fueron las órdenes de venta registradas el '12/05/2022'?, Dime los ClienteID, ProductoID, CantidadPedida y MontoTotal de todas las ventas del '10/05/2025', ¿Qué CanalVenta tuvieron las órdenes de venta del '13/05/2025'?\n\n\n- BuscarPorFechaProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto. Con esta herramienta puedes responder preguntas de este tipo:\n¿Qué órdenes de producción se realizaron el '12/05/2022'?, Dime las CantidadProducida y EficienciaReal de las órdenes de producción del '08/05/2025', ¿Qué ProductoID se produjeron el '09/05/2025'?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE KPIS GLOBALES\nCon estas herramientas vas a poder extraer toda la info relacionada a los KPIs globales de la empresa. Son preguntas relacionadas a los kpi VVMM, OTIF, AOV, QTY, TME, DMA, CTP\n\n\n- KpisGlobalEstrategicos: este herramienta te permite extraer un KPI estrategico global actual y anterior. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el EBITDTA actual y el anterior?, ¿Cuál es el PPD (Productividad de Producción por Día) y OEE (Eficiencia General de los Equipos) más reciente y el anterior?, Dime el valor actual y anterior de todos los KPI estratégicos globales, Comparar el sum_valor actual con el anterior\n\n\n- KpisGlobalVentas: con esta herramienta puedes extraer los registos de cada mes un kpi global de las ventas. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cómo evolucionó el valor medio de pedido en el último mes?, ¿Qué canal de ventas (CTP) aportó el mayor monto el mes pasado?, ¿Cuál fue el ValorMedioPedido para cada Mes?, ¿Cómo evolucionó el MontoTotalVentas a lo largo de los meses registrados?, ¿Qué CTP_MayorMonto (Canal de Venta con Mayor Monto) se registró en cada Mes?, ¿Cuál fue la TasaDevolucion en el último mes registrado?, ¿Cuál es el DescuentoTotalAplicado en el mes de '2024-06'?, Dame todos los KPI de ventas para el mes '2025-01'\n\n\n- KpisGlobalProduccion: con esta herramienta puedes extraer un kpi global de la produccion actual y anterior. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el PPD (Productividad de Producción por Día) y OEE (Eficiencia General de los Equipos) para el último mes registrado?, ¿Cómo evolucionó la TasaDefectos a lo largo de los meses?, ¿Cuál fue el TiempoInactividadPromedioMin en el mes de '2024-06' y en el mes anterior?, Dame todos los KPI de producción para el mes '2025-01', Comparar el PPD de '2024-05' con el de '2024-06'.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE KPIS DE CLIENTES\nCon estas herramientas vas a poder extraer toda la info relacionada a los KPIs de los clientes. Son preguntas relacionadas a los kpi VVMM, OTIF, AOV, QTY, TME, DMA, CTP\n\n\n- KPIsGlobalesVentasPorCliente: con esta herramienta puedes extraer todos los kpis globales de un cliente especifico. Con esta herramienta puedes responder preguntas de este tipo: \nextrae todos los kpis del cliente CLI-0003 de este mes, ¿Cuál fue el MontoTotalVentas y CantidadTotalProductosVendidos de 'Carrefour Argentina' en cada Mes?, Dime el NumeroPedidos y ValorMedioPedido para el ClienteID CLI-0005 a lo largo del tiempo, ¿Cómo evolucionaron los KPI de ventas (Monto Total, Cantidad Total, Número de Pedidos, Valor Medio) para 'Makro'?, Dame todos los KPI de ventas por cliente para el ClienteID CLI-0001 en el mes '2024-06'\n\n\n- KPIEspecificoParaClientes: con esta herramienta puedes extraer un solo kpi pero de todos los clientes. Con esta herramienta puedes responder preguntas de este tipo:\nextrae el AOV de todos los clientes de este mes, ¿Cuál es el MontoTotalVentas (VVMM) del mes de 2025-02?, ¿Cuál es el Tiempo Medio Entrega  de todos los clientes en el mes más reciente?, ¿Qué CanalVentaPrincipal (CTP) utilizó cada cliente en el mes más reciente?\"\n\n\n- KPIPorProductoCliente: con esta herramienta puedes extraer un kpi de un cliente en un producto, un kpi especifico (siempre escrito por sus siglas) de todos cada cliente con cada producto. Con esta herramienta puedes responder preguntas de este tipo: \nel VVMM del cliente CLI-0001 para el producto PAS-MATA-MOST-500G, el AOV del cliente CLI-0002 para el producto HAR-FAVO-000-1KG\n\n\n- KPIPorProducto: con esta herramienta puedes extraer los datos de un kpi especifico usando un producto. Extrae un kpi de un producto pero de todos los clientes. Con esta herramienta puedes responder preguntas de este tipo:\ncual es el DMA del producto ARR-GALL-ORO-1KG?, el AOV para HAR-FAVO-000-1KG\n\n\n\n\n\n\n\n\n## NO PUEDES HACER ESTO MAL\n- no puedes devolver un codigo que resuelva el problema, siempre debe ser en el formato del ejemplo\n- el json debe tener siempre las mismas variables\n- las fechas debes ponderlas exactamente como las piden, si dicen 27/12/2024, pones eso, no debes poner 27-12-2024\n- recuerda que si no sabes la respuesta no la respondas y explica de manera profesional porque no puedes responder. Si preguntan por algun dato que este relacionado con tu funcion pero no encuentras el dato que preguntan, responder que no puedes encontrar ese dato y que pudo pasar\n- no puedes devolver doble backslash en las formulas matematicas. debes escribirlas estrictamente asi si son en linea escribelas con un $ al comienzo y al final asi $...$(no hagas esto \\\\(..\\\\)), si son en bloque la debes escribir asi $$...$$ . A demas debes escribir las operaciones con un solo slash asi \\times, \\sum, etc. Tienes prohibido hacerlo asi  \\\\[...\\\\], \\\\(..\\\\),\\\\times, etc.\n- en las formulas matematicas no uses nunca esta notacion \\\\(..\\\\), usa esta $...$\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1672,
+        0
+      ],
+      "id": "a2f9fdda-4915-43e2-9745-b52889b3074c",
+      "name": "Agente global"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        3280,
+        0
+      ],
+      "id": "7eb8cffe-9569-4534-b966-d96617d0cc97",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a811af4d-67ff-47d0-91e6-14461a36dcd7",
+              "name": "chatInput",
+              "value": "={{ $json.body.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "c285a76e-f5c6-42af-a67a-fea9cb8d994c",
+              "name": "sessionId",
+              "value": "={{ $json.body.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "1c4983f6-9b93-4d9b-b5a2-8315df909fe3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1960,
+        460
+      ],
+      "id": "1ec4d65e-953c-4325-a44a-51fcd983eca8",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KpisGlobalVentas: con esta herramienta puedes extraer los registos de cada mes un kpi global de las ventas (por ejemplo: ¿Cómo evolucionó el valor medio de pedido en el último mes? o ¿Qué canal de ventas (CTP) aportó el mayor monto el mes pasado?) ",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1199409120,
+          "mode": "list",
+          "cachedResultName": "Ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1199409120"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "KPI",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui van las siglas del kpi (ejemplo: VVMM)`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2740,
+        420
+      ],
+      "id": "62ca5113-aa24-4c53-b896-b60b77927f11",
+      "name": "KPIs de ventas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KpisGlobalEstrategicos: este herramienta te permite extraer un KPI estrategico global actual y anterior",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Estrategicos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "KPI",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui van las siglas del kpi (ejemplo: EBITDA)`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2540,
+        420
+      ],
+      "id": "c1bb53ba-5dba-40be-a6c3-65e96315a8aa",
+      "name": "KPIs estrategicos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KpisGlobalProduccion: con esta herramienta puedes extraer un kpi global de la produccion actual y anterior",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1246746953,
+          "mode": "list",
+          "cachedResultName": "Produccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1246746953"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "KPI",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui van las siglas del kpi (ejemplo: OEE)`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2640,
+        520
+      ],
+      "id": "ae2f054e-d279-4603-8f02-30f012b81974",
+      "name": "KPIs de produccion",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KPIsGlobalesVentasPorCliente: con esta herramienta puedes extraer todos los kpis globales de un cliente especifico (ejemplo: extrae todos los kpis del cliente CLI-0003 de este mes)",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 173760484,
+          "mode": "list",
+          "cachedResultName": "Ventas por cliente",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=173760484"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ClienteID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2540,
+        760
+      ],
+      "id": "d5e13276-5948-4786-9dd2-e2ffd0e51b50",
+      "name": "KPIs de ventas de cliente",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE KPIS GLOBALES",
+        "height": 340,
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2500,
+        320
+      ],
+      "id": "174d909f-bd11-49b2-8869-44d55ca37938",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KPIEspecificoParaClientes: con esta herramienta puedes extraer un solo kpis global de todos los clientes (por ejemplo: extrae el AOV de todos los clientes de este mes) ",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+          "mode": "list",
+          "cachedResultName": "Kpis consolidados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 173760484,
+          "mode": "list",
+          "cachedResultName": "Ventas por cliente",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=173760484"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "KPI",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2600,
+        900
+      ],
+      "id": "c427ca82-3a64-42b0-b10c-2eba33d8e738",
+      "name": "KPI de ventas especifico de clientes",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "StockDisponibilidadProducto: con esta herramienta puedes extraer la cantidad de un producto que hay en el inventario (por ejemplo cual es el stock de PAS-MATA-MOST-500G)",
+        "workflowId": {
+          "__rl": true,
+          "value": "pTcmAhDc6lvDeQ0r",
+          "mode": "list",
+          "cachedResultName": "disponibilidad.csv"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ProductoID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ProductoID', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "ProductoID"
+          ],
+          "schema": [
+            {
+              "id": "ProductoID",
+              "displayName": "ProductoID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1780,
+        480
+      ],
+      "id": "50519912-165f-4873-abf3-0f61b98f9b61",
+      "name": "disponibilidad producto"
+    },
+    {
+      "parameters": {
+        "description": "StockDisponibilidadInsumo: con esta herramienta puedes extraer la disponibilidad de un insumo especifico (ejemplo: cual es el nivel se stock de INS-TRI-PAN)",
+        "workflowId": {
+          "__rl": true,
+          "value": "MIgAwcdr5odDb0IC",
+          "mode": "list",
+          "cachedResultName": "DisponibilidadInsumo.csv"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "InsumoID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('InsumoID', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "InsumoID"
+          ],
+          "schema": [
+            {
+              "id": "InsumoID",
+              "displayName": "InsumoID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1660,
+        460
+      ],
+      "id": "a0a9112d-77d3-486a-b206-dfc7f4a1ae22",
+      "name": "Disponibilidad Insumo"
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE STOCK",
+        "height": 280,
+        "width": 340,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        380
+      ],
+      "id": "5a719b63-70c0-4f85-8292-96a99dd34db1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE INFORMACION GENERAL",
+        "height": 440,
+        "width": 440,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        180
+      ],
+      "id": "60106586-503e-45f6-86fc-e1360a600462",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE BUSQUEDA POR ID",
+        "height": 380,
+        "width": 360,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        460
+      ],
+      "id": "58aba490-0c8d-4043-b020-ddb783e7052d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorIdVenta: con esta herramienta puedes extraer una orden de venta por su ID",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1904553983,
+          "mode": "list",
+          "cachedResultName": "OrdenesVenta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1904553983"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "OrdenVentaID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2140,
+        700
+      ],
+      "id": "679ad34d-c133-4580-b9a5-de2a32baa61c",
+      "name": "Orden Venta",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorIdProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 501630710,
+          "mode": "list",
+          "cachedResultName": "OrdenesProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=501630710"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProductoID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2300,
+        700
+      ],
+      "id": "7bcb186d-4551-49f7-bd8a-186952eaf9c6",
+      "name": "orden Produccion",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorIdCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1157211533,
+          "mode": "list",
+          "cachedResultName": "ResultadosCalidadLote",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1157211533"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ControlCalidadID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2140,
+        560
+      ],
+      "id": "02d95651-c180-4996-acfc-7627a04ec712",
+      "name": "Resultado Calidad",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE KPIS DE CLIENTES",
+        "height": 380,
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2500,
+        680
+      ],
+      "id": "7841fb2f-cbc8-4050-be61-d06cb0edd31c",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoGeneralClientes: con esta herramienta podras extraer los datos de los clientes que tiene la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1044932044,
+          "mode": "list",
+          "cachedResultName": "Clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1044932044"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1120,
+        300
+      ],
+      "id": "7387dafb-ca30-4093-bb58-99544dabdfdb",
+      "name": "clientes",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoGeneralProductos: con esta herramienta puedes extraer todos los productos de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923592231,
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1400,
+        300
+      ],
+      "id": "c19a5ae2-65fd-4b51-bc59-bcfb15fa3a6d",
+      "name": "productos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoGeneralProveedores: con esta herramienta podras extraer todos los proveedores de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1609370961,
+          "mode": "list",
+          "cachedResultName": "Proveedores",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1609370961"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1120,
+        460
+      ],
+      "id": "f6a7f91f-27a8-46b2-8081-24a4e4448793",
+      "name": "proveedores",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoGeneralLineas: con esta herramienta puedes extraer la informacion de las lineas de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1625954007,
+          "mode": "list",
+          "cachedResultName": "LineasProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1625954007"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1400,
+        460
+      ],
+      "id": "e24b5296-ba45-4761-b1e8-d983087f1336",
+      "name": "lineas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorIdCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 735153486,
+          "mode": "list",
+          "cachedResultName": "OrdenesCompraInsumos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=735153486"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "OrdenCompraID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2300,
+        560
+      ],
+      "id": "6f0fe9a9-9eab-4ae9-85b4-43059fe358e4",
+      "name": "orden Compra",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE INFORMACION ESPECIFICA",
+        "height": 620,
+        "width": 540,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        980,
+        660
+      ],
+      "id": "496e5977-3bcb-4d75-8092-c2061514fd7b",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaProductoByName: con esta herramienta puedes extraer todos los productos de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923592231,
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "NombreProducto",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1420,
+        920
+      ],
+      "id": "5bdbe09a-559b-4a91-a989-5b326bd36be1",
+      "name": "producto por nombre",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaLineaByID: con esta herramienta puedes extraer la informacion de las lineas de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1625954007,
+          "mode": "list",
+          "cachedResultName": "LineasProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1625954007"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "LineaProduccionID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1300,
+        740
+      ],
+      "id": "0a4ec5a2-5bf6-4ed0-ac5f-d0073d65f475",
+      "name": "linea por ID",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaLineaByName: con esta herramienta puedes extraer la informacion de las lineas de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1625954007,
+          "mode": "list",
+          "cachedResultName": "LineasProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1625954007"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "LineaProduccionID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1300,
+        920
+      ],
+      "id": "a1b26b21-479c-4d3e-9897-37c43ed4b44e",
+      "name": "linea por nombre",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaProductoByID: con esta herramienta puedes extraer todos los productos de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923592231,
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProductoID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1420,
+        740
+      ],
+      "id": "fe97fe60-ec93-4a4d-8bb4-a74a657c2b83",
+      "name": "producto por ID",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaClienteByID: con esta herramienta podras extraer los datos de los clientes que tiene la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1044932044,
+          "mode": "list",
+          "cachedResultName": "Clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1044932044"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1160,
+        740
+      ],
+      "id": "5a5d0b2b-e357-4225-86a5-9c44bf281352",
+      "name": "cliente por ID",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaClienteByName: con esta herramienta podras extraer los datos de los clientes que tiene la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1044932044,
+          "mode": "list",
+          "cachedResultName": "Clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1044932044"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1160,
+        920
+      ],
+      "id": "3e48b2df-437d-493f-b628-8eae8f8e2294",
+      "name": "cliente por nombre",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaProveedorByID: con esta herramienta podras extraer todos los proveedores de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1609370961,
+          "mode": "list",
+          "cachedResultName": "Proveedores",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1609370961"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProveedorID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1020,
+        740
+      ],
+      "id": "4cdea60c-d20f-43b4-9000-ff00322ff1b0",
+      "name": "proveedor por ID",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=InfoEspecificaProveedorByName: con esta herramienta podras extraer todos los proveedores de la empresa",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1609370961,
+          "mode": "list",
+          "cachedResultName": "Proveedores",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1609370961"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "NombreProveedor",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1020,
+        920
+      ],
+      "id": "232f8cf4-ba04-4f5d-9389-6db6c09bc9c6",
+      "name": "proveedor por nombre",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "InfoEspecificaMaterialByInsID: con esta herramienta puedes extraer todos los materiales que necesita un producto",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 262449362,
+          "mode": "list",
+          "cachedResultName": "ListaMateriales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=262449362"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "InsumoID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1020,
+        1120
+      ],
+      "id": "cfcb5007-e1cc-42ed-ac84-934b247d4ab8",
+      "name": "Material por insumo",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "InfoGeneralListaMateriales: con esta herramienta puedes extraer todos los materiales que necesita un producto",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 262449362,
+          "mode": "list",
+          "cachedResultName": "ListaMateriales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=262449362"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ProductoID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1260,
+        460
+      ],
+      "id": "23680409-83ba-4763-a8bf-dbc98dcca81b",
+      "name": "Lista Materiales",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HERRAMIENTAS DE BUSQUEDA POR FECHA",
+        "height": 380,
+        "width": 360,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        860
+      ],
+      "id": "1aa3271d-b66e-4e45-b44c-645eb948072e",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorFechaCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1157211533,
+          "mode": "list",
+          "cachedResultName": "ResultadosCalidadLote",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1157211533"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FechaControl",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2140,
+        960
+      ],
+      "id": "8f25b75c-9a2d-4d56-8e99-ec66f9425d28",
+      "name": "Resultados Calidad",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorFechaCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 735153486,
+          "mode": "list",
+          "cachedResultName": "OrdenesCompraInsumos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=735153486"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FechaPedido",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2300,
+        960
+      ],
+      "id": "899d50a3-7c75-4f88-9356-2eb2c8538d10",
+      "name": "ordenes Compras",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorFechaProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 501630710,
+          "mode": "list",
+          "cachedResultName": "OrdenesProduccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=501630710"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FechaPlanificadaInicio",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2300,
+        1100
+      ],
+      "id": "45dd7583-fa2e-48b7-bfc7-9ba4c5a7a439",
+      "name": "ordenes Produccion",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "BuscarPorFechaVenta: con esta herramienta puedes extraer una orden de venta por su ID",
+        "documentId": {
+          "__rl": true,
+          "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+          "mode": "list",
+          "cachedResultName": "Base de datos sintetica arreglada",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1904553983,
+          "mode": "list",
+          "cachedResultName": "OrdenesVenta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1904553983"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FechaPedido",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2140,
+        1100
+      ],
+      "id": "bf281891-f293-47e5-9a4a-c073f39d883f",
+      "name": "Ordenes Venta",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KPIPorProductoCliente: con esta herramienta puedes extraer un kpi especifico (siempre escrito por sus siglas) de todos cada cliente con cada producto. Por ejemplo el VVMM del cliente CLI-0001 para el producto PAS-MATA-MOST-500G",
+        "documentId": {
+          "__rl": true,
+          "value": "1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas por cliente",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sheet', ``, 'string') }}"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "=productoID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            },
+            {
+              "lookupColumn": "=ClienteID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2760,
+        740
+      ],
+      "id": "5e848aaa-0497-4a6a-83ac-20146839a8c7",
+      "name": "KPI por cliente y producto",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=KPIPorProducto: con esta herramienta puedes extraer un kpi especifico (siempre escrito por sus siglas) de todos cada cliente con cada producto. Por ejemplo el VVMM del cliente CLI-0001 para el producto PAS-MATA-MOST-500G",
+        "documentId": {
+          "__rl": true,
+          "value": "1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g",
+          "mode": "list",
+          "cachedResultName": "kpis de ventas por cliente",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sheet', ``, 'string') }}"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "=productoID",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2760,
+        920
+      ],
+      "id": "912ce8e6-8c94-477a-b158-cf690ab998d0",
+      "name": "KPI por producto",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente global": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Agente global",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs de ventas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs estrategicos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs de produccion": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs de ventas de cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPI de ventas especifico de clientes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "disponibilidad producto": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disponibilidad Insumo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orden Venta": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "orden Produccion": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resultado Calidad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clientes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "productos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proveedores": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lineas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "orden Compra": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista Materiales": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPI por cliente y producto": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proveedor por ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cliente por ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linea por ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "producto por ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proveedor por nombre": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cliente por nombre": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linea por nombre": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "producto por nombre": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Material por insumo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resultados Calidad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ordenes Compras": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ordenes Produccion": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ordenes Venta": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente global",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9db8c87a-db70-48c1-8b8b-e2e49994110a",
+  "activeVersionId": "9db8c87a-db70-48c1-8b8b-e2e49994110a",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T21:43:21.148Z",
+      "createdAt": "2025-06-30T21:43:21.148Z",
+      "role": "workflow:owner",
+      "workflowId": "0TzFlGehRhCBd3AS",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "9db8c87a-db70-48c1-8b8b-e2e49994110a",
+    "workflowId": "0TzFlGehRhCBd3AS",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "4729c755-2f06-440d-abf8-2bec02dfbc8e",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "8c2083a2-6945-45f8-940d-a44e6c7cc3c3",
+        "name": "Webhook",
+        "webhookId": "4729c755-2f06-440d-abf8-2bec02dfbc8e"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          420,
+          160
+        ],
+        "id": "460307d4-b329-4db6-8622-0079b095b1c4",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "vzdjQJqcvomw8EgG",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          580,
+          220
+        ],
+        "id": "b21c3705-76fd-48ea-97fb-c3c0934e5630",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "options": {
+            "systemMessage": "=# ROL\neres ExpertChat, el encargado de responder preguntas relacionadas a los KPIs y los datos proporcionados de la empresa Molinos Río de La Plata con 12 años de experiencia. Te encargas de responder preguntas que le suegen al usuario con los datos de la empresa. Eres la pieza mas importante de la empresa ya que si no satisfacemos la demanda la empresa tendra que quebrar enseguida.\n\n# TAREAS\nen tus tareas se incluye:\n- analiza los datos de la empresa utilizando tus herramientas dependiendo de cual sea la pregunta\n- despues de extraer los datos necesarios para poder responder a la pregunta usando las herramientas necesarias responde la pregunta de la manera mas profesional y facil de comprender\n- en caso de que pregunten por un dato que no existe puedes decir con seguridad, que ese dato no fue suministrado en tus herramientas por ejemplo, te preguntan por el estado de un lote cualquiera, al ser un dato que no tienes debes enviar la informacion del lote y decir que el dato estado no fue suministrado\n- si preguntan por el stock te tienen que especificar si es un producto o un insumo, sino tu se lo tienes que pedir\n\n# ESPECIFICACIONES\n## GENERALES\n- responde siempre en español\n- recuerda que ningun producto se vende por menos de su precio de venta base\n- cada que vayas a generar una tabla debes dejar 2 saltos de linea al comienzo y al final. Pero cuando estes escribiendo la tabla solo puedes poner 1 salto de linea unicamente\n- al escribir formulas matematicas, si son en linea escribelas con un $ al comienzo y al final asi $...$(no hagas esto \\\\(..\\\\)), si son en bloque la debes escribir asi $$...$$ . A demas debes escribir las operaciones con un solo slash asi \\times, \\sum, etc. Tienes prohibido hacerlo asi  \\\\[...\\\\], \\\\(..\\\\),\\\\times, etc.\n- en las formulas matematicas no uses nunca esta notacion \\\\(..\\\\), usa esta $...$\n- debes hacer especificamente lo que dicen tus tareas en el orden que estan\n- recuerda que no puedes dar respuestas ambiguas, da respuestas concretas\n- al devolver varios datos a la vez por ejemplo varias ordenes de venta no lo devuelvas como una tabla mejor devuelvelo con el siguiente formato\n***\nOrden ###:\nClienteID: ****\nFechaPedido: ****\nFechaEntregaSolicitada: ****\nProductoID: ****\nCantidadPedida: ****\nPrecioUnitarioVenta: ****\nDescuentoAplicado: ****\nMontoTotal: ****\nCanalVenta: ****\n*** \nasi para cada una, aplicalo para los otros casos como ordenes de compra, ordenes de produccion, etc. Lo importante es que escribas linea por linea el dato y separes con al menos 2 saltos de linea cada que pases a la siguiente orden\n- la capacidad de produccion actual es 41.57%\n- Ten en cuenta que la fecha actual es 01/02/2025. y los pedidos en riesgo son\nPedido\tCliente\tValor\tFecha Entrega\tRiesgo\n#ORD-2025-1157\tMaxiconsumo S.A.\t240500$\t03/02/2025\tHigh\n#ORD-2025-1158\tYaguar Mayorista\t180200$\t5/02/2025\tMedium\n#ORD-2025-1159\tMakro\t310750$\t7/02/2025\tLow\n\n##CONCRETAS\n- ten en cuenta que los kpis globales son el volumen de ventas mensual o MontoTotal (VVMM), la Tasa Cumplimiento (OTIF), Valor Medio Pedido (AOV), Precisión Pronóstico Demanda (PPD), Número de Pedidos (QTY), Tiempo Medio Entrega (TME), Descuento Medio Aplicado (DMA) y el Canal Top Performance (CTP). Estos datos son los globales de la empresa, tambien estan para cada cliente ya calculados asi que solo necesitarias extraerlos de tus herramientas (ten en cuenta que para los clientes no existe prediccion de demanda)\n- Los ID de los clientes tienen esta sintaxis: CLI-******, los de los lotes tienen esta: LOTE-**********, los de las lineas de produccion esta: LINPROD-***-01, los proveedores tiene esta: PROV-***, los de las ordenes de venta son: OV-******, los controles de calidad tienen esta: QCID-******, las ordenes de produccion tienen esta: OP-*****, las ordenes de compra esta: OCI-*****, los de los insumos esta: INS-*******, los productos tienen iniciales distintas a las mencionadas separadas por guiones\n- Con tus herramientas eres capaz de extraer informacion de clientes, proveedores, productos, lineas de produccion, insumos, lista de insumos para hacer un producto, informacion de una orden de venta especifica, de un lote especifico, de una orden de compra especifica, un resultado de calidad de un lote especifico y por id de resultado, una orden de produccion especifica, extraer el stock actual de los productos y de los insumos. Tambien eres capaz de extraer por fechas ordenes de venta, ordenes de compra, ordenes de produccion y resultados de calidad. Por ultimo puedes extraer por canal de ventas las ordenes de venta y tambien por rango de montos\n\n\n## HERRAMIENTAS\n\n- Calculator: con esta herramienta podras hacer calculos matematicos si es necesario\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE INFORMACION GENERAL\nCon estas herramientas puedes extraer toda la informacion general dependiendo de lo que te pidan o para consultar por ti mismo algo que el usuario te dio muy ambiguo. Son mas que todos datos bases de informacion\n\n\n- InfoGeneralClientes: con esta herramienta podras extraer los datos de los clientes que tiene la empresa. Con esta herramienta puedes responder preguntas de este tipo: \n-->Información General/Recuentos: \n¿Cuántos clientes hay en total?, ¿Cuántos clientes de cada TipoCliente (Tipo de Cliente) tenemos?, ¿Cuántos clientes hay en cada Region?, ¿cual es el producto mas rentable?\n-->Información Específica del Cliente:\n¿Cuál es el TipoCliente y la Region de \"Carrefour Argentina\"?, ¿Cuál es la FrecuenciaCompraPromedioDias (Frecuencia de Compra Promedio en Días) de \"Makro\"?, ¿Puedes darme el NombreCliente (Nombre del Cliente) para CLI-0009?\n-->Filtrado/Comparación:\n¿Qué clientes son del tipo Supermercado?, Lista todos los clientes ubicados en GBA Norte, ¿Qué clientes tienen una FrecuenciaCompraPromedioDias inferior a 10 días?, Muéstrame los clientes Mayorista en CABA.\n-->Agregación/Promedios:\n¿Cuál es la FrecuenciaCompraPromedioDias promedio para los clientes Supermercado?, ¿Cuál es la FrecuenciaCompraPromedioDias promedio para los clientes en Patagonia Sur?\n\n\n- InfoGeneralProductos: con esta herramienta puedes extraer todos los productos de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General/Recuentos:\n¿Cuántos productos diferentes tenemos registrados?, ¿Cuántos productos hay en cada CategoriaProducto?, ¿Cuáles son todas las CategoriaProducto disponibles en nuestro catálogo?, ¿Cuál es el CostoProduccionEstandar promedio de todos los productos?, ¿Cuál es el PrecioVentaBase promedio de los productos?\n-->Información Específica del Producto:\n¿Cuál es la CategoriaProducto y el PrecioVentaBase de la \"Harina Blancaflor Leudante 1kg\"?, ¿Cuál es el CostoProduccionEstandar del producto con ProductoID ACE-COCI-GIRA-900ML?, ¿Qué NombreProducto corresponde al ProductoID PAS-LUCC-TIRA-500G?, Dame la UnidadMedida para el \"Arroz Gallo Oro Largo Fino 1kg\".\n-->Filtrado y Comparación:\nLista todos los productos que pertenecen a la CategoriaProducto \"Aceites\", ¿Qué productos tienen un PrecioVentaBase superior a $1000?, Muéstrame los productos de la CategoriaProducto \"Harinas\" cuyo CostoProduccionEstandar sea inferior a $500.\n-->Agregación y Cálculos:\n¿Cuál es el PrecioVentaBase promedio para los productos de la CategoriaProducto \"Pastas Secas\"?, ¿Cuál es la diferencia entre el PrecioVentaBase y el CostoProduccionEstandar para el producto \"Rebozador Preferido 500g\"? (Esto te permitiría calcular el margen bruto por unidad).\n\n\n- InfoGeneralProveedores: con esta herramienta podras extraer todos los proveedores de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General/Recuentos:\n¿Cuántos proveedores tenemos en total?, ¿Cuántos proveedores provienen de cada PaisOrigen?, ¿Cuáles son todos los países de origen de nuestros proveedores?\n-->Información Específica del Proveedor:\n¿Cuál es el PaisOrigen y el LeadTimePromedioDias de \"AgroCampos Pampeanos S.A.\"?, ¿Cuál es el RatingCalidadPromedio de \"Envases Flexibles del Sur\"?, ¿Qué NombreProveedor corresponde al ProveedorID PROV-007?, Dame todos los detalles del proveedor \"PETPack Internacional\".\n-->Filtrado y Comparación:\nLista todos los proveedores con un RatingCalidadPromedio superior a 4.0, ¿Qué proveedores tienen un LeadTimePromedioDias inferior a 15 días?, Muéstrame los proveedores de \"Brasil\" con una ConfiabilidadEntrega mayor al 90% (0.90), ¿Cuáles son los proveedores con el LeadTimePromedioDias más bajo y el más alto?\n-->Análisis de Desempeño del Proveedor:\n¿Cuál es el LeadTimePromedioDias promedio de los proveedores de \"Argentina\"?, ¿Qué proveedor tiene la ConfiabilidadEntrega más alta?\n\n\n- InfoGeneralListaMateriales: con esta herramienta puedes extraer todos los materiales que necesita un producto. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General:\n¿Cuántas listas de materiales diferentes tenemos?, ¿Qué productos tienen una lista de materiales definida?, ¿Cuáles son todos los InsumoID utilizados en nuestras listas de materiales?\n-->Información Específica del Producto/Insumo:\n¿Qué insumos (InsumoID) y en qué CantidadRequerida se necesitan para producir el ProductoID \"HAR-BLAN-LEUD-1KG\" (Harina Blancaflor Leudante 1kg)?, Para el ProductoID \"ACE-COCI-GIRA-900ML\", ¿qué InsumoID corresponden a \"Botella PET Aceite 900ml\" y en qué CantidadRequerida se utiliza? (Nota: Esto requeriría una vinculación con la tabla de Insumos para obtener el NombreInsumo a partir del InsumoID), ¿Cuál es la CantidadRequerida del InsumoID \"INS-SEM-CAN\" (Sémola de Trigo Candeal) para el ProductoID \"PAS-MATA-MOST-500G\"?, Dame todos los insumos necesarios para el ProductoID \"REB-PREF-500G\".\n-->Análisis y Filtrado:\nLista todos los productos que requieren el InsumoID \"INS-EMP-HAR-1KG\" (Bolsa Papel Harina 1kg), ¿Qué insumos se requieren en una CantidadRequerida mayor a 1 kg (o unidad, dependiendo de UnidadMedidaInsumo)?, Encuentra los ProductoID que utilizan el InsumoID \"INS-AGU-TRA\" (Agua Tratada Industrial).\n\n\n- InfoGeneralLineas: con esta herramienta puedes extraer la informacion de las lineas de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n-->Información General de Líneas de Producción:\n¿Cuántas líneas de producción tenemos?, ¿Cuáles son los NombreLinea de todas nuestras líneas de producción?, ¿Qué productos están asociados (ProductoAsociadoPrincipal) a nuestras líneas de producción?\n-->Información Específica de Línea de Producción:\n¿Cuál es la CapacidadProduccionHora de la línea \"Línea Harinas N°1\"?, ¿Cuál es la EficienciaPromedio y la TasaFalloEsperada de la línea con LineaProduccionID \"LINPROD-ACE-01\"?, ¿Qué NombreLinea corresponde al LineaProduccionID \"LINPROD-YER-01\" y cuál es su ProductoAsociadoPrincipal?, Dame todos los detalles de la línea de producción \"Línea Pastas Secas N°1\".\n-->Análisis y Comparación de Líneas:\nLista las líneas de producción con una EficienciaPromedio superior a 0.90, ¿Qué líneas tienen una TasaFalloEsperada inferior al 2% (0.02)?, Compara la CapacidadProduccionHora de la \"Línea Harinas N°1\" y la \"Línea Envasado Aceites N°1\", ¿Cuál es la línea de producción con la CapacidadProduccionHora más alta?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE INFORMACION ESPECIFICA\nCon esta herramienta puedes extraer informacion especifica de datos bases que te pidan o extraer datos que necesites y asi no recibir toda la informacion\n\n\n- InfoEspecificaProveedorByID: con esta herramienta podras extraer todos los proveedores de la empresa, te tienen que dar el id del proveedor, si no lo dan pidelo. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el nombre del proveedor con ID PROV-001?, ¿De qué país es el proveedor PROV-005 y cuál es su tiempo de entrega promedio?, ¿Qué RatingCalidadPromedio tiene el proveedor PROV-007?\n\n\n- InfoEspecificaClienteByID: con esta herramienta podras extraer los datos de los clientes que tiene la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el NombreCliente del cliente con ID CLI-0001?, ¿De qué Region es el cliente CLI-0004 y cuál es su FrecuenciaCompraPromedioDias?, ¿Qué TipoCliente es CLI-0010?\n\n\n- InfoEspecificaLineaByID: con esta herramienta puedes extraer la informacion de las lineas de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es la CapacidadProduccionHora de la línea LINPROD-HAR-01?, ¿Cuál es la EficienciaPromedio y la TasaFalloEsperada de la línea LINPROD-ACE-01?, ¿Qué ProductoAsociadoPrincipal tiene la línea LINPROD-PAS-01?\n\n\n\n- InfoEspecificaProductoByID: con esta herramienta puedes extraer todos los productos de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el NombreProducto y la CategoriaProducto del producto con ID HAR-BLAN-LEUD-1KG?, ¿Cuál es el CostoProduccionEstandar y el PrecioVentaBase del producto ACE-COCI-GIRA-900ML?, ¿Qué UnidadMedida tiene el producto PAS-MATA-MOST-500G?\n\n\n- InfoEspecificaProveedorByName: con esta herramienta podras extraer todos los proveedores de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el ProveedorID, PaisOrigen y LeadTimePromedioDias del proveedor 'AgroCampos Pampeanos S.A.'?, ¿Qué ConfiabilidadEntrega y RatingCalidadPromedio tiene 'Envases Flexibles del Sur'?, Dame toda la información disponible para el proveedor 'GlobalChem Solutions GmbH'.\n\n\n- InfoEspecificaClienteByName: con esta herramienta podras extraer los datos de los clientes que tiene la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el ClienteID y Region del cliente 'Carrefour Argentina'?, ¿Qué TipoCliente es 'Maxiconsumo S.A.' y cuál es su FrecuenciaCompraPromedioDias?, Dame toda la información disponible para el cliente 'Jumbo Retail Argentina S.A.'.\n\n\n- InfoEspecificaLineaByName: con esta herramienta puedes extraer la informacion de las lineas de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es la CapacidadProduccionHora de la 'Línea Harinas N°1'?, ¿Cuál es la EficienciaPromedio y la TasaFalloEsperada de la 'Línea Envasado Aceites N°1'?, ¿Qué ProductoAsociadoPrincipal tiene la 'Línea Pastas Secas N°1'?\n\n\n- InfoEspecificaProductoByName: con esta herramienta puedes extraer todos los productos de la empresa. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el ProductoID, CategoriaProducto y UnidadMedida de 'Harina Blancaflor Leudante 1kg'?, ¿Cuál es el CostoProduccionEstandar y el PrecioVentaBase de 'Aceite Cocinero Girasol Botella PET 900ml'?, Dame toda la información disponible para el producto 'Fideos Matarazzo Mostacholes Rayados 500g'.\n\n\n- InfoEspecificaMaterialByInsID: con esta herramienta puedes extraer todos los materiales que necesita un producto. Con esta herramienta puedes responder preguntas de este tipo:\n¿En qué productos se utiliza el insumo INS-TRI-PAN y en qué cantidad?, ¿Qué ProductoIDs requieren el InsumoID INS-EMP-HAR-1KG y cuánto de este insumo necesita cada uno? Dime para qué ProductoIDs es un componente el insumo INS-SEM-GIR y la CantidadRequerida.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE STOCK\nCon estas herramientas puedes extraer la informacion especifica del stock de productos o insumos. Tiene que ser de un producto o insumo especifico por ejemplo HAR-BLAN-LEUD-1KG para producto y INS-TRI-PAN para insumo. Si piden un insumo o producto que no existe ve a la herramienta general de productos o listaMateriales para verificar si es uno de esos y pregunta si se refiere a ese\n\n\n- StockDisponibilidadInsumo: con esta herramienta puedes extraer la disponibilidad de un insumo especifico (ejemplo: cual es el nivel se stock de INS-TRI-PAN). Con esta herramienta puedes responder preguntas de este tipo:\n¿Cual es el stock de del insumo INS-VIT-HAR?\n\n\n- StockDisponibilidadProducto: con esta herramienta puedes extraer la cantidad de un producto que hay en el inventario (por ejemplo cual es el stock de PAS-MATA-MOST-500G). Con esta herramienta puedes responder preguntas de este tipo:\n¿Cual es el stock de del producto ACE-COCI-GIRA-900ML?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE BUSQUEDA POR ID\nCon estas herramientas puedes extraer la informacion sobre ordenes de compra insumos, calidad, ordenes de ventas, ordenes de produccion. Te tienen que dar el id, si no lo dan lo pides \n\n\n- BuscarPorIdCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál fue el resultado (Resultado) del control de calidad con ControlCalidadID QCID-000001?, Dime todos los parámetros (ParametroMedido), valores (ValorMedido) y observaciones (Observaciones) para el LoteID LOTE-SIMACE02915, ¿Qué FechaControl y ParametroMedido corresponden al ControlCalidadID QCID-007483?\n\n\n- BuscarPorIdCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles son los detalles de la orden de compra OCI-00001?, ¿Qué InsumoID se pidió en la orden de compra OCI-03988, a qué ProveedorID y cuál fue la CantidadPedida y el CostoTotal?, Dime la FechaPedido y FechaEntregaReal para la orden de compra OCI-00002.\n\n\n- BuscarPorIdVenta: con esta herramienta puedes extraer una orden de venta por su ID. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles son los detalles de la orden de venta OV-000001?, ¿Qué ProductoID se vendió en la orden OV-000003, a qué ClienteID, y cuál fue la CantidadPedida y el MontoTotal?, Dime la FechaPedido y FechaEntregaReal para la orden de venta OV-000004.\n\n\n- BuscarPorIdProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles son los detalles de la orden de producción OP-00001?, ¿Qué ProductoID se produjo en la orden OP-03991, en qué LineaProduccionID, y cuál fue la CantidadPlanificada y CantidadProducida?, Dime la FechaRealInicio y FechaRealFin para la orden de producción OP-00002.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE BUSQUEDA POR FECHA\nCon estas herramientas puedes extraer la informacion sobre ordenes de compra insumos, calidad, ordenes de ventas, ordenes de produccion usando las fechas dadas. Usa estas herramientas cuando den fechas y si es una fecha que no encuentras da el motivo, si se muy viejo o muy nuevo.\n\n\n- BuscarPorFechaCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles fueron los resultados de calidad emitidos el '12/05/2022'?, Dime los LoteID, ParametroMedido y Resultado de todos los controles de calidad realizados el '10/05/2025', ¿Qué observaciones se registraron en los controles de calidad del '13/05/2022'?\n\n\n- BuscarPorFechaCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles fueron las órdenes de compra de insumos realizadas el '22/10/2024'?, Dime los InsumoID, ProveedorID y CostoTotal de todas las compras del '28/01/2025', ¿Qué CantidadPedida y CalidadRecibida tuvieron las órdenes de compra del '24/03/2024'?\n\n\n- BuscarPorFechaVenta: con esta herramienta puedes extraer una orden de venta por su ID. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuáles fueron las órdenes de venta registradas el '12/05/2022'?, Dime los ClienteID, ProductoID, CantidadPedida y MontoTotal de todas las ventas del '10/05/2025', ¿Qué CanalVenta tuvieron las órdenes de venta del '13/05/2025'?\n\n\n- BuscarPorFechaProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto. Con esta herramienta puedes responder preguntas de este tipo:\n¿Qué órdenes de producción se realizaron el '12/05/2022'?, Dime las CantidadProducida y EficienciaReal de las órdenes de producción del '08/05/2025', ¿Qué ProductoID se produjeron el '09/05/2025'?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE KPIS GLOBALES\nCon estas herramientas vas a poder extraer toda la info relacionada a los KPIs globales de la empresa. Son preguntas relacionadas a los kpi VVMM, OTIF, AOV, QTY, TME, DMA, CTP\n\n\n- KpisGlobalEstrategicos: este herramienta te permite extraer un KPI estrategico global actual y anterior. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el EBITDTA actual y el anterior?, ¿Cuál es el PPD (Productividad de Producción por Día) y OEE (Eficiencia General de los Equipos) más reciente y el anterior?, Dime el valor actual y anterior de todos los KPI estratégicos globales, Comparar el sum_valor actual con el anterior\n\n\n- KpisGlobalVentas: con esta herramienta puedes extraer los registos de cada mes un kpi global de las ventas. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cómo evolucionó el valor medio de pedido en el último mes?, ¿Qué canal de ventas (CTP) aportó el mayor monto el mes pasado?, ¿Cuál fue el ValorMedioPedido para cada Mes?, ¿Cómo evolucionó el MontoTotalVentas a lo largo de los meses registrados?, ¿Qué CTP_MayorMonto (Canal de Venta con Mayor Monto) se registró en cada Mes?, ¿Cuál fue la TasaDevolucion en el último mes registrado?, ¿Cuál es el DescuentoTotalAplicado en el mes de '2024-06'?, Dame todos los KPI de ventas para el mes '2025-01'\n\n\n- KpisGlobalProduccion: con esta herramienta puedes extraer un kpi global de la produccion actual y anterior. Con esta herramienta puedes responder preguntas de este tipo:\n¿Cuál es el PPD (Productividad de Producción por Día) y OEE (Eficiencia General de los Equipos) para el último mes registrado?, ¿Cómo evolucionó la TasaDefectos a lo largo de los meses?, ¿Cuál fue el TiempoInactividadPromedioMin en el mes de '2024-06' y en el mes anterior?, Dame todos los KPI de producción para el mes '2025-01', Comparar el PPD de '2024-05' con el de '2024-06'.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### HERRAMIENTAS DE KPIS DE CLIENTES\nCon estas herramientas vas a poder extraer toda la info relacionada a los KPIs de los clientes. Son preguntas relacionadas a los kpi VVMM, OTIF, AOV, QTY, TME, DMA, CTP\n\n\n- KPIsGlobalesVentasPorCliente: con esta herramienta puedes extraer todos los kpis globales de un cliente especifico. Con esta herramienta puedes responder preguntas de este tipo: \nextrae todos los kpis del cliente CLI-0003 de este mes, ¿Cuál fue el MontoTotalVentas y CantidadTotalProductosVendidos de 'Carrefour Argentina' en cada Mes?, Dime el NumeroPedidos y ValorMedioPedido para el ClienteID CLI-0005 a lo largo del tiempo, ¿Cómo evolucionaron los KPI de ventas (Monto Total, Cantidad Total, Número de Pedidos, Valor Medio) para 'Makro'?, Dame todos los KPI de ventas por cliente para el ClienteID CLI-0001 en el mes '2024-06'\n\n\n- KPIEspecificoParaClientes: con esta herramienta puedes extraer un solo kpi pero de todos los clientes. Con esta herramienta puedes responder preguntas de este tipo:\nextrae el AOV de todos los clientes de este mes, ¿Cuál es el MontoTotalVentas (VVMM) del mes de 2025-02?, ¿Cuál es el Tiempo Medio Entrega  de todos los clientes en el mes más reciente?, ¿Qué CanalVentaPrincipal (CTP) utilizó cada cliente en el mes más reciente?\"\n\n\n- KPIPorProductoCliente: con esta herramienta puedes extraer un kpi de un cliente en un producto, un kpi especifico (siempre escrito por sus siglas) de todos cada cliente con cada producto. Con esta herramienta puedes responder preguntas de este tipo: \nel VVMM del cliente CLI-0001 para el producto PAS-MATA-MOST-500G, el AOV del cliente CLI-0002 para el producto HAR-FAVO-000-1KG\n\n\n- KPIPorProducto: con esta herramienta puedes extraer los datos de un kpi especifico usando un producto. Extrae un kpi de un producto pero de todos los clientes. Con esta herramienta puedes responder preguntas de este tipo:\ncual es el DMA del producto ARR-GALL-ORO-1KG?, el AOV para HAR-FAVO-000-1KG\n\n\n\n\n\n\n\n\n## NO PUEDES HACER ESTO MAL\n- no puedes devolver un codigo que resuelva el problema, siempre debe ser en el formato del ejemplo\n- el json debe tener siempre las mismas variables\n- las fechas debes ponderlas exactamente como las piden, si dicen 27/12/2024, pones eso, no debes poner 27-12-2024\n- recuerda que si no sabes la respuesta no la respondas y explica de manera profesional porque no puedes responder. Si preguntan por algun dato que este relacionado con tu funcion pero no encuentras el dato que preguntan, responder que no puedes encontrar ese dato y que pudo pasar\n- no puedes devolver doble backslash en las formulas matematicas. debes escribirlas estrictamente asi si son en linea escribelas con un $ al comienzo y al final asi $...$(no hagas esto \\\\(..\\\\)), si son en bloque la debes escribir asi $$...$$ . A demas debes escribir las operaciones con un solo slash asi \\times, \\sum, etc. Tienes prohibido hacerlo asi  \\\\[...\\\\], \\\\(..\\\\),\\\\times, etc.\n- en las formulas matematicas no uses nunca esta notacion \\\\(..\\\\), usa esta $...$\n\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2,
+        "position": [
+          1672,
+          0
+        ],
+        "id": "a2f9fdda-4915-43e2-9745-b52889b3074c",
+        "name": "Agente global"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.3,
+        "position": [
+          3280,
+          0
+        ],
+        "id": "7eb8cffe-9569-4534-b966-d96617d0cc97",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a811af4d-67ff-47d0-91e6-14461a36dcd7",
+                "name": "chatInput",
+                "value": "={{ $json.body.chatInput }}",
+                "type": "string"
+              },
+              {
+                "id": "c285a76e-f5c6-42af-a67a-fea9cb8d994c",
+                "name": "sessionId",
+                "value": "={{ $json.body.sessionId }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          220,
+          0
+        ],
+        "id": "1c4983f6-9b93-4d9b-b5a2-8315df909fe3",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+        "typeVersion": 1,
+        "position": [
+          1960,
+          460
+        ],
+        "id": "1ec4d65e-953c-4325-a44a-51fcd983eca8",
+        "name": "Calculator"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KpisGlobalVentas: con esta herramienta puedes extraer los registos de cada mes un kpi global de las ventas (por ejemplo: ¿Cómo evolucionó el valor medio de pedido en el último mes? o ¿Qué canal de ventas (CTP) aportó el mayor monto el mes pasado?) ",
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1199409120,
+            "mode": "list",
+            "cachedResultName": "Ventas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1199409120"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "KPI",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui van las siglas del kpi (ejemplo: VVMM)`, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2740,
+          420
+        ],
+        "id": "62ca5113-aa24-4c53-b896-b60b77927f11",
+        "name": "KPIs de ventas",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KpisGlobalEstrategicos: este herramienta te permite extraer un KPI estrategico global actual y anterior",
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Estrategicos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "KPI",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui van las siglas del kpi (ejemplo: EBITDA)`, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2540,
+          420
+        ],
+        "id": "c1bb53ba-5dba-40be-a6c3-65e96315a8aa",
+        "name": "KPIs estrategicos",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KpisGlobalProduccion: con esta herramienta puedes extraer un kpi global de la produccion actual y anterior",
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1246746953,
+            "mode": "list",
+            "cachedResultName": "Produccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1246746953"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "KPI",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `Aqui van las siglas del kpi (ejemplo: OEE)`, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2640,
+          520
+        ],
+        "id": "ae2f054e-d279-4603-8f02-30f012b81974",
+        "name": "KPIs de produccion",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KPIsGlobalesVentasPorCliente: con esta herramienta puedes extraer todos los kpis globales de un cliente especifico (ejemplo: extrae todos los kpis del cliente CLI-0003 de este mes)",
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 173760484,
+            "mode": "list",
+            "cachedResultName": "Ventas por cliente",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=173760484"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ClienteID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2540,
+          760
+        ],
+        "id": "d5e13276-5948-4786-9dd2-e2ffd0e51b50",
+        "name": "KPIs de ventas de cliente",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE KPIS GLOBALES",
+          "height": 340,
+          "width": 380
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2500,
+          320
+        ],
+        "id": "174d909f-bd11-49b2-8869-44d55ca37938",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KPIEspecificoParaClientes: con esta herramienta puedes extraer un solo kpis global de todos los clientes (por ejemplo: extrae el AOV de todos los clientes de este mes) ",
+          "documentId": {
+            "__rl": true,
+            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
+            "mode": "list",
+            "cachedResultName": "Kpis consolidados",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 173760484,
+            "mode": "list",
+            "cachedResultName": "Ventas por cliente",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=173760484"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "KPI",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2600,
+          900
+        ],
+        "id": "c427ca82-3a64-42b0-b10c-2eba33d8e738",
+        "name": "KPI de ventas especifico de clientes",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "description": "StockDisponibilidadProducto: con esta herramienta puedes extraer la cantidad de un producto que hay en el inventario (por ejemplo cual es el stock de PAS-MATA-MOST-500G)",
+          "workflowId": {
+            "__rl": true,
+            "value": "pTcmAhDc6lvDeQ0r",
+            "mode": "list",
+            "cachedResultName": "disponibilidad.csv"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "ProductoID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ProductoID', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "ProductoID"
+            ],
+            "schema": [
+              {
+                "id": "ProductoID",
+                "displayName": "ProductoID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          1780,
+          480
+        ],
+        "id": "50519912-165f-4873-abf3-0f61b98f9b61",
+        "name": "disponibilidad producto"
+      },
+      {
+        "parameters": {
+          "description": "StockDisponibilidadInsumo: con esta herramienta puedes extraer la disponibilidad de un insumo especifico (ejemplo: cual es el nivel se stock de INS-TRI-PAN)",
+          "workflowId": {
+            "__rl": true,
+            "value": "MIgAwcdr5odDb0IC",
+            "mode": "list",
+            "cachedResultName": "DisponibilidadInsumo.csv"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "InsumoID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('InsumoID', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "InsumoID"
+            ],
+            "schema": [
+              {
+                "id": "InsumoID",
+                "displayName": "InsumoID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          1660,
+          460
+        ],
+        "id": "a0a9112d-77d3-486a-b206-dfc7f4a1ae22",
+        "name": "Disponibilidad Insumo"
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE STOCK",
+          "height": 280,
+          "width": 340,
+          "color": 2
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1600,
+          380
+        ],
+        "id": "5a719b63-70c0-4f85-8292-96a99dd34db1",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE INFORMACION GENERAL",
+          "height": 440,
+          "width": 440,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1080,
+          180
+        ],
+        "id": "60106586-503e-45f6-86fc-e1360a600462",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE BUSQUEDA POR ID",
+          "height": 380,
+          "width": 360,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2080,
+          460
+        ],
+        "id": "58aba490-0c8d-4043-b020-ddb783e7052d",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorIdVenta: con esta herramienta puedes extraer una orden de venta por su ID",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1904553983,
+            "mode": "list",
+            "cachedResultName": "OrdenesVenta",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1904553983"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "OrdenVentaID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2140,
+          700
+        ],
+        "id": "679ad34d-c133-4580-b9a5-de2a32baa61c",
+        "name": "Orden Venta",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorIdProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 501630710,
+            "mode": "list",
+            "cachedResultName": "OrdenesProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=501630710"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProductoID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2300,
+          700
+        ],
+        "id": "7bcb186d-4551-49f7-bd8a-186952eaf9c6",
+        "name": "orden Produccion",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorIdCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1157211533,
+            "mode": "list",
+            "cachedResultName": "ResultadosCalidadLote",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1157211533"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ControlCalidadID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2140,
+          560
+        ],
+        "id": "02d95651-c180-4996-acfc-7627a04ec712",
+        "name": "Resultado Calidad",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE KPIS DE CLIENTES",
+          "height": 380,
+          "width": 380
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2500,
+          680
+        ],
+        "id": "7841fb2f-cbc8-4050-be61-d06cb0edd31c",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoGeneralClientes: con esta herramienta podras extraer los datos de los clientes que tiene la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1044932044,
+            "mode": "list",
+            "cachedResultName": "Clientes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1044932044"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1120,
+          300
+        ],
+        "id": "7387dafb-ca30-4093-bb58-99544dabdfdb",
+        "name": "clientes",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoGeneralProductos: con esta herramienta puedes extraer todos los productos de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 923592231,
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1400,
+          300
+        ],
+        "id": "c19a5ae2-65fd-4b51-bc59-bcfb15fa3a6d",
+        "name": "productos",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoGeneralProveedores: con esta herramienta podras extraer todos los proveedores de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1609370961,
+            "mode": "list",
+            "cachedResultName": "Proveedores",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1609370961"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1120,
+          460
+        ],
+        "id": "f6a7f91f-27a8-46b2-8081-24a4e4448793",
+        "name": "proveedores",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoGeneralLineas: con esta herramienta puedes extraer la informacion de las lineas de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1625954007,
+            "mode": "list",
+            "cachedResultName": "LineasProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1625954007"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1400,
+          460
+        ],
+        "id": "e24b5296-ba45-4761-b1e8-d983087f1336",
+        "name": "lineas",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorIdCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 735153486,
+            "mode": "list",
+            "cachedResultName": "OrdenesCompraInsumos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=735153486"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "OrdenCompraID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2300,
+          560
+        ],
+        "id": "6f0fe9a9-9eab-4ae9-85b4-43059fe358e4",
+        "name": "orden Compra",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE INFORMACION ESPECIFICA",
+          "height": 620,
+          "width": 540,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          980,
+          660
+        ],
+        "id": "496e5977-3bcb-4d75-8092-c2061514fd7b",
+        "name": "Sticky Note5"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaProductoByName: con esta herramienta puedes extraer todos los productos de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 923592231,
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "NombreProducto",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1420,
+          920
+        ],
+        "id": "5bdbe09a-559b-4a91-a989-5b326bd36be1",
+        "name": "producto por nombre",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaLineaByID: con esta herramienta puedes extraer la informacion de las lineas de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1625954007,
+            "mode": "list",
+            "cachedResultName": "LineasProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1625954007"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "LineaProduccionID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1300,
+          740
+        ],
+        "id": "0a4ec5a2-5bf6-4ed0-ac5f-d0073d65f475",
+        "name": "linea por ID",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaLineaByName: con esta herramienta puedes extraer la informacion de las lineas de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1625954007,
+            "mode": "list",
+            "cachedResultName": "LineasProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1625954007"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "LineaProduccionID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1300,
+          920
+        ],
+        "id": "a1b26b21-479c-4d3e-9897-37c43ed4b44e",
+        "name": "linea por nombre",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaProductoByID: con esta herramienta puedes extraer todos los productos de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 923592231,
+            "mode": "list",
+            "cachedResultName": "Productos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=923592231"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProductoID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1420,
+          740
+        ],
+        "id": "fe97fe60-ec93-4a4d-8bb4-a74a657c2b83",
+        "name": "producto por ID",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaClienteByID: con esta herramienta podras extraer los datos de los clientes que tiene la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1044932044,
+            "mode": "list",
+            "cachedResultName": "Clientes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1044932044"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1160,
+          740
+        ],
+        "id": "5a5d0b2b-e357-4225-86a5-9c44bf281352",
+        "name": "cliente por ID",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaClienteByName: con esta herramienta podras extraer los datos de los clientes que tiene la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1044932044,
+            "mode": "list",
+            "cachedResultName": "Clientes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1044932044"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1160,
+          920
+        ],
+        "id": "3e48b2df-437d-493f-b628-8eae8f8e2294",
+        "name": "cliente por nombre",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaProveedorByID: con esta herramienta podras extraer todos los proveedores de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1609370961,
+            "mode": "list",
+            "cachedResultName": "Proveedores",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1609370961"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProveedorID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1020,
+          740
+        ],
+        "id": "4cdea60c-d20f-43b4-9000-ff00322ff1b0",
+        "name": "proveedor por ID",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=InfoEspecificaProveedorByName: con esta herramienta podras extraer todos los proveedores de la empresa",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1609370961,
+            "mode": "list",
+            "cachedResultName": "Proveedores",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1609370961"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "NombreProveedor",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1020,
+          920
+        ],
+        "id": "232f8cf4-ba04-4f5d-9389-6db6c09bc9c6",
+        "name": "proveedor por nombre",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "InfoEspecificaMaterialByInsID: con esta herramienta puedes extraer todos los materiales que necesita un producto",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 262449362,
+            "mode": "list",
+            "cachedResultName": "ListaMateriales",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=262449362"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "InsumoID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1020,
+          1120
+        ],
+        "id": "cfcb5007-e1cc-42ed-ac84-934b247d4ab8",
+        "name": "Material por insumo",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "InfoGeneralListaMateriales: con esta herramienta puedes extraer todos los materiales que necesita un producto",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 262449362,
+            "mode": "list",
+            "cachedResultName": "ListaMateriales",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=262449362"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "ProductoID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          1260,
+          460
+        ],
+        "id": "23680409-83ba-4763-a8bf-dbc98dcca81b",
+        "name": "Lista Materiales",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## HERRAMIENTAS DE BUSQUEDA POR FECHA",
+          "height": 380,
+          "width": 360,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2080,
+          860
+        ],
+        "id": "1aa3271d-b66e-4e45-b44c-645eb948072e",
+        "name": "Sticky Note6"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorFechaCalidad: con esta herramienta puedes extraer el resultado de calidad que se ha emitido de un lote",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1157211533,
+            "mode": "list",
+            "cachedResultName": "ResultadosCalidadLote",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1157211533"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "FechaControl",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2140,
+          960
+        ],
+        "id": "8f25b75c-9a2d-4d56-8e99-ec66f9425d28",
+        "name": "Resultados Calidad",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorFechaCompra: con esta herramienta puedes extraer todas las ordenes de compra de insumos que se han hecho en el tiempo de un insumo especifico",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 735153486,
+            "mode": "list",
+            "cachedResultName": "OrdenesCompraInsumos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=735153486"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "FechaPedido",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2300,
+          960
+        ],
+        "id": "899d50a3-7c75-4f88-9356-2eb2c8538d10",
+        "name": "ordenes Compras",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorFechaProduccion: con esta herramienta puedes extraer todas las ordenes de produccion que se han hecho en el tiempo de un producto",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 501630710,
+            "mode": "list",
+            "cachedResultName": "OrdenesProduccion",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=501630710"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "FechaPlanificadaInicio",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2300,
+          1100
+        ],
+        "id": "45dd7583-fa2e-48b7-bfc7-9ba4c5a7a439",
+        "name": "ordenes Produccion",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "BuscarPorFechaVenta: con esta herramienta puedes extraer una orden de venta por su ID",
+          "documentId": {
+            "__rl": true,
+            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
+            "mode": "list",
+            "cachedResultName": "Base de datos sintetica arreglada",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1904553983,
+            "mode": "list",
+            "cachedResultName": "OrdenesVenta",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=1904553983"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "FechaPedido",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2140,
+          1100
+        ],
+        "id": "bf281891-f293-47e5-9a4a-c073f39d883f",
+        "name": "Ordenes Venta",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KPIPorProductoCliente: con esta herramienta puedes extraer un kpi especifico (siempre escrito por sus siglas) de todos cada cliente con cada producto. Por ejemplo el VVMM del cliente CLI-0001 para el producto PAS-MATA-MOST-500G",
+          "documentId": {
+            "__rl": true,
+            "value": "1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g",
+            "mode": "list",
+            "cachedResultName": "kpis de ventas por cliente",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sheet', ``, 'string') }}"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "=productoID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              },
+              {
+                "lookupColumn": "=ClienteID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values1_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2760,
+          740
+        ],
+        "id": "5e848aaa-0497-4a6a-83ac-20146839a8c7",
+        "name": "KPI por cliente y producto",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "=KPIPorProducto: con esta herramienta puedes extraer un kpi especifico (siempre escrito por sus siglas) de todos cada cliente con cada producto. Por ejemplo el VVMM del cliente CLI-0001 para el producto PAS-MATA-MOST-500G",
+          "documentId": {
+            "__rl": true,
+            "value": "1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g",
+            "mode": "list",
+            "cachedResultName": "kpis de ventas por cliente",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o9-ZAtpGicbqzQx03Sr5kEi9GmLX20BuRipxqROW54g/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sheet', ``, 'string') }}"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "=productoID",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.6,
+        "position": [
+          2760,
+          920
+        ],
+        "id": "912ce8e6-8c94-477a-b158-cf690ab998d0",
+        "name": "KPI por producto",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agente global": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Agente global",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculator": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "KPIs de ventas": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "KPIs estrategicos": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "KPIs de produccion": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "KPIs de ventas de cliente": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "KPI de ventas especifico de clientes": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "disponibilidad producto": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Disponibilidad Insumo": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Orden Venta": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "orden Produccion": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resultado Calidad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "clientes": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "productos": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "proveedores": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "lineas": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "orden Compra": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lista Materiales": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "KPI por cliente y producto": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "proveedor por ID": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "cliente por ID": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "linea por ID": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "producto por ID": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "proveedor por nombre": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "cliente por nombre": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "linea por nombre": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "producto por nombre": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Material por insumo": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resultados Calidad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ordenes Compras": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ordenes Produccion": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ordenes Venta": {
+        "ai_tool": [
+          [
+            {
+              "node": "Agente global",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
