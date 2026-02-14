@@ -1,0 +1,598 @@
+{
+  "updatedAt": "2026-01-26T03:36:40.000Z",
+  "createdAt": "2026-01-26T03:36:40.057Z",
+  "id": "jRCBLFwiifnH7T3Z",
+  "name": "calculo de impacto 2",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const y = Number(r.y_norm ?? 0);\n  const yhat = Number(r.yhat_norm ?? 0);\n  \n  // CORRECCIÓN: Usamos scale_avg en lugar de scale_max\n  const scaleAvg = Number(r.scale_avg ?? 0); \n  const scaleIsZero = Boolean(r.scale_is_zero);\n\n  // Error técnico normalizado\n  const signed_error_norm = yhat - y; // (Forecast - Real) -> Según definición PDF Fórmula 10\n  // NOTA: En tu código tenías (y - yhat) para el norm, pero (yhat - y) para el signed unitario.\n  // Lo he unificado a (yhat - y) para que sea consistente: Positivo = Overforecast.\n  \n  const abs_error_norm = Math.abs(signed_error_norm);\n\n  // Impacto en unidades (Recuperamos la magnitud real)\n  // Fórmula: Error_Unitario = Error_Normalizado * Escala_Promedio\n  const abs_error_unit = (scaleIsZero || scaleAvg === 0)\n    ? 0\n    : abs_error_norm * scaleAvg;\n\n  // Calculamos también el error con signo en unidades para el BIAS\n  // Usamos los datos crudos y/yhat si están disponibles para mayor precisión\n  const raw_y = Number(r.y ?? 0);\n  const raw_yhat = Number(r.yhat ?? 0);\n  const signed_error = raw_yhat - raw_y; \n\n  return {\n    json: {\n      ...r,\n      signed_error_norm, // Error relativo al promedio\n      abs_error_norm,\n      abs_error_unit,    // Error en cajas/kilos (CRÍTICO para WAPE y Share)\n      signed_error       // Error en cajas/kilos con signo (CRÍTICO para BIAS)\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        1328
+      ],
+      "id": "100b2dd9-d55f-44f2-ac8a-2db5d04cdf57",
+      "name": "Code in JavaScript3",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "abs_error_unit"
+            },
+            {
+              "aggregation": "sum",
+              "field": "signed_error_norm"
+            },
+            {
+              "aggregation": "count",
+              "field": "PERIODID3",
+              "includeEmpty": false
+            },
+            {
+              "aggregation": "sum",
+              "field": "signed_error"
+            },
+            {
+              "aggregation": "sum",
+              "field": "y"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1648,
+        1328
+      ],
+      "id": "dc1701e1-5e58-4863-a107-725d6fab7938",
+      "name": "Summarize1",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "sum_abs_error_unit"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1872,
+        1232
+      ],
+      "id": "4add53da-8a02-4bb7-b453-31927a42f591",
+      "name": "Summarize2",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b659e08a-2279-46a8-9d2c-6101acdd7975",
+              "name": "total_abs_error_unit",
+              "value": "={{ Number($json.sum_sum_abs_error_unit || 0) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2064,
+        1232
+      ],
+      "id": "e8b2b2e9-a0f8-4d07-a009-aa985ac61204",
+      "name": "Edit Fields5",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Toma el total desde el nodo donde lo calculaste (cambia el nombre del nodo si es distinto)\nconst totalItem = $items(\"Edit Fields5\", 0, 0)[0]?.json;\nconst total = Number(totalItem?.total_abs_error_unit ?? 0);\n\nreturn items.map(item => ({\n  json: {\n    ...item.json,\n    total_abs_error_unit: total\n  }\n}));\n",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        1408
+      ],
+      "id": "c457bf54-088f-486d-8f7d-fbfd6b0290ec",
+      "name": "Code in JavaScript4",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  // 1. Extracción de variables seguras (inputs del nodo anterior)\n  // Usamos 'sum_abs_error_unit' para el numerador del WAPE\n  const sumAbsError = Number(r.sum_abs_error_unit ?? 0);\n  \n  // Usamos 'sum_signed_error' para el numerador del BIAS (Crucial: conserva el signo)\n  const sumSignedError = Number(r.sum_signed_error ?? 0);\n  \n  // Usamos 'sum_y' (Venta Real Total) como denominador para Bias y WAPE\n  const sumY = Number(r.sum_y ?? 0);\n  \n  // Usamos 'total_abs_error_unit' para el denominador del Share\n  const totalGlobalError = Number(r.total_abs_error_unit ?? 0);\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 1: BIAS (Fórmulas 40 y 41 del PDF)\n  // Fórmula: Suma del error con signo / Suma de venta real\n  // -------------------------------------------------------\n  // Evitamos división por cero si el cliente no tuvo venta real (sumY = 0)\n  const bias = sumY !== 0 ? (sumSignedError / sumY) : 0;\n  \n  // Valor absoluto del bias (necesario para la fórmula final de Score S_I)\n  const abs_bias = Math.abs(bias); \n\n  // Determinamos la dirección (útil para filtrar en dashboard)\n  let bias_direction = 'NEUTRAL';\n  if (bias > 0.0001) bias_direction = 'OVERFORECAST'; // Pronosticaste de más (Sobra stock)\n  if (bias < -0.0001) bias_direction = 'UNDERFORECAST'; // Pronosticaste de menos (Falta stock)\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 2: WAPE (Fórmula 42 del PDF)\n  // Fórmula: Suma del error absoluto / Suma de venta real\n  // -------------------------------------------------------\n  const wape = sumY !== 0 ? (sumAbsError / sumY) : 0;\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 3: CONTRIBUCIÓN (Fórmula 43 del PDF)\n  // Fórmula: Error absoluto del cliente / Error absoluto total de la empresa\n  // -------------------------------------------------------\n  const impact_share = totalGlobalError > 0 ? (sumAbsError / totalGlobalError) : 0;\n  const contribution_pct = impact_share * 100; // Para lectura humana (0-100%)\n\n\n  return {\n    json: {\n      ...r,\n      // Nuevos campos calculados\n      bias,             // El sesgo crudo (ej: 0.20 o -0.15)\n      abs_bias,         // El sesgo absoluto (para el Score SI)\n      bias_direction,   // Etiqueta de texto\n      wape,             // El error porcentual ponderado (ej: 0.35)\n      impact_share,     // Peso decimal\n      contribution_pct  // Peso porcentual\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        1408
+      ],
+      "id": "95c29c18-86dc-4d3b-b907-d0c6f4ac38df",
+      "name": "Code in JavaScript5",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "type": "simple",
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "impact_share",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        2496,
+        1408
+      ],
+      "id": "ccf22b05-db9e-4f83-bd29-a61f3cac066b",
+      "name": "Sort",
+      "disabled": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// --- CONFIGURACIÓN DE PESOS ---\nconst W_BIAS = 0.50;  \nconst W_SHARE = 0.35; \nconst W_WAPE = 0.15;  \n\n// --- NUEVOS TOPES MÁS ESTRICTOS ---\n// Bajamos de 2.0 (200%) a 0.6 (60%)\n// Esto hará que los errores del 20% \"pesen\" mucho más en el resultado final.\nconst CAP_BIAS = 0.60; \nconst CAP_WAPE = 0.60; \n\n// ---------------------------------------------------------\n// PASO 1: ENCONTRAR MÁXIMOS (CON TOPES APLICADOS)\n// ---------------------------------------------------------\n\nlet maxAbsBias = 0;\nlet maxWape = 0;\nlet maxShare = 0;\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Limpieza y lectura\n  let rawBias = Math.abs(parseFloat(r.bias || 0));\n  let rawWape = parseFloat(r.wape || 0);\n  let rawShare = parseFloat(r.impact_share || 0);\n\n  // APLICAR TOPES ESTRICTOS\n  if (rawBias > CAP_BIAS) rawBias = CAP_BIAS;\n  if (rawWape > CAP_WAPE) rawWape = CAP_WAPE;\n  \n  // Share sigue usando el máximo real para respetar el volumen\n  \n  if (rawBias > maxAbsBias) maxAbsBias = rawBias;\n  if (rawWape > maxWape) maxWape = rawWape;\n  if (rawShare > maxShare) maxShare = rawShare;\n}\n\n// Protección\nif (maxAbsBias === 0) maxAbsBias = 1;\nif (maxWape === 0) maxWape = 1;\nif (maxShare === 0) maxShare = 1;\n\n// ---------------------------------------------------------\n// PASO 2: CÁLCULO FINAL\n// ---------------------------------------------------------\n\nreturn items.map(item => {\n  const r = item.json;\n\n  let valBias = Math.abs(parseFloat(r.bias || 0));\n  let valWape = parseFloat(r.wape || 0);\n  let valShare = parseFloat(r.impact_share || 0);\n\n  // Aplicar Tope Individual\n  if (valBias > CAP_BIAS) valBias = CAP_BIAS;\n  if (valWape > CAP_WAPE) valWape = CAP_WAPE;\n\n  // Normalización más sensible\n  // Ahora dividir por 0.6 hace que los números crezcan más rápido\n  const norm_bias = valBias / maxAbsBias;\n  const norm_wape = valWape / maxWape;\n  const norm_share = valShare / maxShare;\n\n  const impact_score_final = (W_BIAS * norm_bias) + \n                             (W_SHARE * norm_share) + \n                             (W_WAPE * norm_wape);\n\n  return {\n    json: {\n      ...r,\n      // Debug: Verás que norm_bias ahora es mucho más alto para errores pequeños\n      debug_norm_bias: norm_bias.toFixed(2),\n      \n      impact_score_final,\n      impact_score_final_100: (impact_score_final * 100).toFixed(2)\n    }\n  };\n});",
+        "notice": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        1408
+      ],
+      "id": "b0395ac6-88ad-4df5-824a-1bd97d7ea548",
+      "name": "Code in JavaScript",
+      "disabled": false
+    },
+    {
+      "id": "8a12f31f-0d06-41e3-8372-ded2ac3b34f9",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        1232,
+        1328
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    }
+  ],
+  "connections": {
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Summarize1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize1": {
+      "main": [
+        [
+          {
+            "node": "Summarize2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "30878bca-f382-482b-b656-022c9f2f394d",
+  "activeVersionId": "30878bca-f382-482b-b656-022c9f2f394d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-26T03:36:40.065Z",
+      "createdAt": "2026-01-26T03:36:40.065Z",
+      "role": "workflow:owner",
+      "workflowId": "jRCBLFwiifnH7T3Z",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-26T03:36:40.067Z",
+    "createdAt": "2026-01-26T03:36:40.067Z",
+    "versionId": "30878bca-f382-482b-b656-022c9f2f394d",
+    "workflowId": "jRCBLFwiifnH7T3Z",
+    "nodes": [
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  const y = Number(r.y_norm ?? 0);\n  const yhat = Number(r.yhat_norm ?? 0);\n  \n  // CORRECCIÓN: Usamos scale_avg en lugar de scale_max\n  const scaleAvg = Number(r.scale_avg ?? 0); \n  const scaleIsZero = Boolean(r.scale_is_zero);\n\n  // Error técnico normalizado\n  const signed_error_norm = yhat - y; // (Forecast - Real) -> Según definición PDF Fórmula 10\n  // NOTA: En tu código tenías (y - yhat) para el norm, pero (yhat - y) para el signed unitario.\n  // Lo he unificado a (yhat - y) para que sea consistente: Positivo = Overforecast.\n  \n  const abs_error_norm = Math.abs(signed_error_norm);\n\n  // Impacto en unidades (Recuperamos la magnitud real)\n  // Fórmula: Error_Unitario = Error_Normalizado * Escala_Promedio\n  const abs_error_unit = (scaleIsZero || scaleAvg === 0)\n    ? 0\n    : abs_error_norm * scaleAvg;\n\n  // Calculamos también el error con signo en unidades para el BIAS\n  // Usamos los datos crudos y/yhat si están disponibles para mayor precisión\n  const raw_y = Number(r.y ?? 0);\n  const raw_yhat = Number(r.yhat ?? 0);\n  const signed_error = raw_yhat - raw_y; \n\n  return {\n    json: {\n      ...r,\n      signed_error_norm, // Error relativo al promedio\n      abs_error_norm,\n      abs_error_unit,    // Error en cajas/kilos (CRÍTICO para WAPE y Share)\n      signed_error       // Error en cajas/kilos con signo (CRÍTICO para BIAS)\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1440,
+          1328
+        ],
+        "id": "100b2dd9-d55f-44f2-ac8a-2db5d04cdf57",
+        "name": "Code in JavaScript3",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "sum",
+                "field": "abs_error_unit"
+              },
+              {
+                "aggregation": "sum",
+                "field": "signed_error_norm"
+              },
+              {
+                "aggregation": "count",
+                "field": "PERIODID3",
+                "includeEmpty": false
+              },
+              {
+                "aggregation": "sum",
+                "field": "signed_error"
+              },
+              {
+                "aggregation": "sum",
+                "field": "y"
+              }
+            ]
+          },
+          "fieldsToSplitBy": "CUSTID, PRDID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          1648,
+          1328
+        ],
+        "id": "dc1701e1-5e58-4863-a107-725d6fab7938",
+        "name": "Summarize1",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "sum",
+                "field": "sum_abs_error_unit"
+              }
+            ]
+          },
+          "fieldsToSplitBy": "",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          1872,
+          1232
+        ],
+        "id": "4add53da-8a02-4bb7-b453-31927a42f591",
+        "name": "Summarize2",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b659e08a-2279-46a8-9d2c-6101acdd7975",
+                "name": "total_abs_error_unit",
+                "value": "={{ Number($json.sum_sum_abs_error_unit || 0) }}",
+                "type": "number"
+              }
+            ]
+          },
+          "includeOtherFields": false,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2064,
+          1232
+        ],
+        "id": "e8b2b2e9-a0f8-4d07-a009-aa985ac61204",
+        "name": "Edit Fields5",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// Toma el total desde el nodo donde lo calculaste (cambia el nombre del nodo si es distinto)\nconst totalItem = $items(\"Edit Fields5\", 0, 0)[0]?.json;\nconst total = Number(totalItem?.total_abs_error_unit ?? 0);\n\nreturn items.map(item => ({\n  json: {\n    ...item.json,\n    total_abs_error_unit: total\n  }\n}));\n",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1872,
+          1408
+        ],
+        "id": "c457bf54-088f-486d-8f7d-fbfd6b0290ec",
+        "name": "Code in JavaScript4",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "return items.map(item => {\n  const r = item.json;\n\n  // 1. Extracción de variables seguras (inputs del nodo anterior)\n  // Usamos 'sum_abs_error_unit' para el numerador del WAPE\n  const sumAbsError = Number(r.sum_abs_error_unit ?? 0);\n  \n  // Usamos 'sum_signed_error' para el numerador del BIAS (Crucial: conserva el signo)\n  const sumSignedError = Number(r.sum_signed_error ?? 0);\n  \n  // Usamos 'sum_y' (Venta Real Total) como denominador para Bias y WAPE\n  const sumY = Number(r.sum_y ?? 0);\n  \n  // Usamos 'total_abs_error_unit' para el denominador del Share\n  const totalGlobalError = Number(r.total_abs_error_unit ?? 0);\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 1: BIAS (Fórmulas 40 y 41 del PDF)\n  // Fórmula: Suma del error con signo / Suma de venta real\n  // -------------------------------------------------------\n  // Evitamos división por cero si el cliente no tuvo venta real (sumY = 0)\n  const bias = sumY !== 0 ? (sumSignedError / sumY) : 0;\n  \n  // Valor absoluto del bias (necesario para la fórmula final de Score S_I)\n  const abs_bias = Math.abs(bias); \n\n  // Determinamos la dirección (útil para filtrar en dashboard)\n  let bias_direction = 'NEUTRAL';\n  if (bias > 0.0001) bias_direction = 'OVERFORECAST'; // Pronosticaste de más (Sobra stock)\n  if (bias < -0.0001) bias_direction = 'UNDERFORECAST'; // Pronosticaste de menos (Falta stock)\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 2: WAPE (Fórmula 42 del PDF)\n  // Fórmula: Suma del error absoluto / Suma de venta real\n  // -------------------------------------------------------\n  const wape = sumY !== 0 ? (sumAbsError / sumY) : 0;\n\n\n  // -------------------------------------------------------\n  // CÁLCULO 3: CONTRIBUCIÓN (Fórmula 43 del PDF)\n  // Fórmula: Error absoluto del cliente / Error absoluto total de la empresa\n  // -------------------------------------------------------\n  const impact_share = totalGlobalError > 0 ? (sumAbsError / totalGlobalError) : 0;\n  const contribution_pct = impact_share * 100; // Para lectura humana (0-100%)\n\n\n  return {\n    json: {\n      ...r,\n      // Nuevos campos calculados\n      bias,             // El sesgo crudo (ej: 0.20 o -0.15)\n      abs_bias,         // El sesgo absoluto (para el Score SI)\n      bias_direction,   // Etiqueta de texto\n      wape,             // El error porcentual ponderado (ej: 0.35)\n      impact_share,     // Peso decimal\n      contribution_pct  // Peso porcentual\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2080,
+          1408
+        ],
+        "id": "95c29c18-86dc-4d3b-b907-d0c6f4ac38df",
+        "name": "Code in JavaScript5",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "type": "simple",
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "impact_share",
+                "order": "descending"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          2496,
+          1408
+        ],
+        "id": "ccf22b05-db9e-4f83-bd29-a61f3cac066b",
+        "name": "Sort",
+        "disabled": false
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "// --- CONFIGURACIÓN DE PESOS ---\nconst W_BIAS = 0.50;  \nconst W_SHARE = 0.35; \nconst W_WAPE = 0.15;  \n\n// --- NUEVOS TOPES MÁS ESTRICTOS ---\n// Bajamos de 2.0 (200%) a 0.6 (60%)\n// Esto hará que los errores del 20% \"pesen\" mucho más en el resultado final.\nconst CAP_BIAS = 0.60; \nconst CAP_WAPE = 0.60; \n\n// ---------------------------------------------------------\n// PASO 1: ENCONTRAR MÁXIMOS (CON TOPES APLICADOS)\n// ---------------------------------------------------------\n\nlet maxAbsBias = 0;\nlet maxWape = 0;\nlet maxShare = 0;\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Limpieza y lectura\n  let rawBias = Math.abs(parseFloat(r.bias || 0));\n  let rawWape = parseFloat(r.wape || 0);\n  let rawShare = parseFloat(r.impact_share || 0);\n\n  // APLICAR TOPES ESTRICTOS\n  if (rawBias > CAP_BIAS) rawBias = CAP_BIAS;\n  if (rawWape > CAP_WAPE) rawWape = CAP_WAPE;\n  \n  // Share sigue usando el máximo real para respetar el volumen\n  \n  if (rawBias > maxAbsBias) maxAbsBias = rawBias;\n  if (rawWape > maxWape) maxWape = rawWape;\n  if (rawShare > maxShare) maxShare = rawShare;\n}\n\n// Protección\nif (maxAbsBias === 0) maxAbsBias = 1;\nif (maxWape === 0) maxWape = 1;\nif (maxShare === 0) maxShare = 1;\n\n// ---------------------------------------------------------\n// PASO 2: CÁLCULO FINAL\n// ---------------------------------------------------------\n\nreturn items.map(item => {\n  const r = item.json;\n\n  let valBias = Math.abs(parseFloat(r.bias || 0));\n  let valWape = parseFloat(r.wape || 0);\n  let valShare = parseFloat(r.impact_share || 0);\n\n  // Aplicar Tope Individual\n  if (valBias > CAP_BIAS) valBias = CAP_BIAS;\n  if (valWape > CAP_WAPE) valWape = CAP_WAPE;\n\n  // Normalización más sensible\n  // Ahora dividir por 0.6 hace que los números crezcan más rápido\n  const norm_bias = valBias / maxAbsBias;\n  const norm_wape = valWape / maxWape;\n  const norm_share = valShare / maxShare;\n\n  const impact_score_final = (W_BIAS * norm_bias) + \n                             (W_SHARE * norm_share) + \n                             (W_WAPE * norm_wape);\n\n  return {\n    json: {\n      ...r,\n      // Debug: Verás que norm_bias ahora es mucho más alto para errores pequeños\n      debug_norm_bias: norm_bias.toFixed(2),\n      \n      impact_score_final,\n      impact_score_final_100: (impact_score_final * 100).toFixed(2)\n    }\n  };\n});",
+          "notice": ""
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2288,
+          1408
+        ],
+        "id": "b0395ac6-88ad-4df5-824a-1bd97d7ea548",
+        "name": "Code in JavaScript",
+        "disabled": false
+      },
+      {
+        "id": "8a12f31f-0d06-41e3-8372-ded2ac3b34f9",
+        "typeVersion": 1.1,
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          1232,
+          1328
+        ],
+        "parameters": {
+          "inputSource": "passthrough"
+        }
+      }
+    ],
+    "connections": {
+      "Code in JavaScript3": {
+        "main": [
+          [
+            {
+              "node": "Summarize1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize1": {
+        "main": [
+          [
+            {
+              "node": "Summarize2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code in JavaScript4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize2": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript4": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript5": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Sort",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  Guedez",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
