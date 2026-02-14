@@ -1,0 +1,369 @@
+{
+  "updatedAt": "2026-01-26T04:01:10.000Z",
+  "createdAt": "2026-01-20T22:00:37.633Z",
+  "id": "493rc8AVPlWMrRRb",
+  "name": "normalizacion",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -288,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01e0861c-4123-4786-92cf-57c008cf60f8",
+              "name": "y",
+              "value": "={{ Number($json.ADJUSTEDACTUALSQTY) }}",
+              "type": "number"
+            },
+            {
+              "id": "e075d05a-fb30-441e-80db-455d7cc49145",
+              "name": "yhat",
+              "value": "={{ Number($json.foreAct) }}",
+              "type": "number"
+            },
+            {
+              "id": "de871df9-2396-4254-8b55-3657d404f107",
+              "name": "punitario",
+              "value": "={{ Number($json.PUNITARIO) }}",
+              "type": "number"
+            },
+            {
+              "id": "76104ada-943c-465c-92bc-c074686d9489",
+              "name": "pindex",
+              "value": "={{ Number($json.PINDEX) }}",
+              "type": "number"
+            },
+            {
+              "id": "9e1b7504-f38a-4d8a-8e66-eb4c2a293c71",
+              "name": "som",
+              "value": "={{ Number($json.SOM) }}",
+              "type": "number"
+            },
+            {
+              "id": "3e79412f-c1cc-419b-a8ee-49e102e4668d",
+              "name": "sov",
+              "value": "={{ Number($json.SOV) }}",
+              "type": "number"
+            },
+            {
+              "id": "401ee443-5a40-4fa2-bd5b-fa9867c03336",
+              "name": "zselloutcliente",
+              "value": "={{ Number($json.ZSELLOUTCLIENTE) }}",
+              "type": "number"
+            },
+            {
+              "id": "3fb24806-1570-433d-9c83-7fef8e5e55e7",
+              "name": "CUSTID",
+              "value": "={{ $json.CUSTID }}",
+              "type": "string"
+            },
+            {
+              "id": "05415e07-a833-473b-aadc-0d0eb1068395",
+              "name": "PRDID",
+              "value": "={{ $json.PRDID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        512
+      ],
+      "id": "41523b9b-f28f-4a09-ba11-f1cef948c1ed",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "max",
+              "field": "y"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        720
+      ],
+      "id": "9736aaea-8a5e-4e9b-8777-d9ab068c87f3",
+      "name": "Summarize",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "PRDID, CUSTID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        528
+      ],
+      "id": "4314f99d-a708-4c44-8944-a56bbe9264fb",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "defa1d2c-bfa0-481a-a7de-54efb4515a88",
+              "name": "scale_max",
+              "value": "={{ $json.max_y }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        720
+      ],
+      "id": "e692aff0-d346-4e63-8a49-e1efb375db43",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Definición 1.1 – Normalización por escala (Cliente–Producto)\n * y_norm     = y / scale_max\n * yhat_norm  = yhat / scale_max\n */\n\nconst EPS = 1e-9;\n\nreturn items.map(item => {\n  const r = item.json;\n\n  const y = Number(r.y);\n  const yhat = Number(r.yhat);\n  const scale_max = Number(r.scale_max ?? 0);\n\n  const denom = scale_max + EPS;\n\n  return {\n    json: {\n      ...r,\n\n      y_norm: (Number.isFinite(y) && scale_max > 0) ? (y / denom) : 0,\n      yhat_norm: (Number.isFinite(yhat) && scale_max > 0) ? (yhat / denom) : 0,\n\n      // flag útil para filtrado posterior\n      scale_is_zero: scale_max === 0\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        528
+      ],
+      "id": "a7d43984-4279-4566-95ab-427ce6e0b806",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PERIODID3, PRDID, CUSTID, MONTH, YEAR, SEASON, CUSTREGION, CUSTGROUP, y, yhat, punitario, pindex, som, sov, zselloutcliente, scale_max, y_norm, yhat_norm, scale_is_zero",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        528
+      ],
+      "id": "ffe5ac47-a91b-4143-8498-e2f97885376a",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "max",
+              "field": "y"
+            },
+            {
+              "aggregation": "max",
+              "field": "scale_max"
+            },
+            {
+              "aggregation": "min",
+              "field": "scale_max"
+            },
+            {
+              "aggregation": "max",
+              "field": "y_norm"
+            },
+            {
+              "aggregation": "min",
+              "field": "y_norm"
+            },
+            {}
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        336
+      ],
+      "id": "fb3a8996-3372-400f-a844-8e3cbf082099",
+      "name": "Summarize2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "g9Cl7TeGTZMtOBBF",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/g9Cl7TeGTZMtOBBF",
+          "cachedResultName": "estacionalidad jerarquica"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        528
+      ],
+      "id": "b1bbd8d6-328f-4466-983e-9090f699ec93",
+      "name": "Call 'estacionalidad jerarquica'"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Call 'estacionalidad jerarquica'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "8fc62ce0-507b-4eea-954e-2b8e6a689631",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-20T22:00:37.637Z",
+      "createdAt": "2026-01-20T22:00:37.637Z",
+      "role": "workflow:owner",
+      "workflowId": "493rc8AVPlWMrRRb",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
