@@ -1,0 +1,456 @@
+{
+  "updatedAt": "2025-08-25T15:01:57.000Z",
+  "createdAt": "2025-07-14T13:34:42.399Z",
+  "id": "L0P96r2fY4xkjKpO",
+  "name": "llamada analista de ventas filtradas solo codigo",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agente/analyst",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        100
+      ],
+      "id": "9f223105-218c-44e0-826b-1a18a947cd30",
+      "name": "Webhook",
+      "webhookId": "6bdbbbf7-5d5e-4817-8f8b-3dda0b5d2933"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{\"Extraje los Kpis de ventas actuales para que los tomes en cuenta\\n\"\n+\n\"Volumen de ventas mensual: \"+ $json.VVMM +\"\\n\"\n+\n\"Tasa de tiempo de entrega a tiempo: \"+ $json.OTIF +\"\\n\"\n+\n\"Valor Medio Pedido: \"+ $json.AOV +\"\\n\"\n+\n\"Precisión Pronóstico Demanda: \"+ $json.PPD +\"\\n\"\n+\n\"Número de Pedidos: \"+ $json.QTY +\"\\n\"\n+\n\"Descuento Medio Aplicado: \"+ $json.DMA +\"\\n\"\n+\n\"Volumen de ventas mensual: \"+ $json.CTP +\"\\n\"\n+\n\"Canal Top Performance: \"+ $json.TME +\"\\n\\n\"\n+\n\"Tambien analice las ventas historicas del producto ....\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        760,
+        100
+      ],
+      "id": "a91db717-7389-46b2-899d-15d33551f8f5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+          "mode": "list",
+          "cachedResultName": "Respuesta agentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 428586664,
+          "mode": "list",
+          "cachedResultName": "SimularOrden",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=428586664"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Agente": "Analista de ventas filtradas",
+            "respuesta": "={{ $json.ventas }}",
+            "producto": "={{ $('Code1').item.json.productName }}"
+          },
+          "matchingColumns": [
+            "Agente"
+          ],
+          "schema": [
+            {
+              "id": "Agente",
+              "displayName": "Agente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "producto",
+              "displayName": "producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "respuesta",
+              "displayName": "respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1100,
+        100
+      ],
+      "id": "04a2514f-20c2-42f1-a949-bb082d2a979f",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CWI2Yxp3gWinrW8v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Uu9fupEbq4ezZfj3",
+          "mode": "list",
+          "cachedResultName": "Ventas agente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        100
+      ],
+      "id": "655649ad-5567-4cc0-ab16-8bf826c6f681",
+      "name": "Execute Workflow1"
+    },
+    {
+      "parameters": {
+        "jsCode": "let productName;\nif ($input.first().json.body.productName === \"Harina Blancaflor Leudante 1kg\") {\n  productName= \"HAR-BLAN-LEUD-1KG\";\n}else if ($input.first().json.body.productName === \"Fideos Matarazzo Mostacholes Rayados 500g\") {\n  productName= \"PAS-MATA-MOST-500G\";\n}else if ($input.first().json.body.productName === \"Aceite Cocinero Girasol Botella PET 900ml\") {\n  productName= \"ACE-COCI-GIRA-900ML\";\n}else if ($input.first().json.body.productName === \"Rebozador Preferido 500g\") {\n  productName= \"REB-PREF-500G\";\n}else if ($input.first().json.body.productName === \"Harina Favorita 000 1kg\") {\n  productName= \"HAR-FAVO-000-1KG\";\n}else if ($input.first().json.body.productName === \"Fideos Lucchetti Tirabuzón 500g\") {\n  productName= \"PAS-LUCC-TIRA-500G\";\n}else if ($input.first().json.body.productName ===\"Arroz Gallo Oro Largo Fino 1kg\") {\n  productName= \"ARR-GALL-ORO-1KG\";\n}else if ($input.first().json.body.productName === \"Yerba Mate Cruz de Malta 500g\") {\n  productName= \"YER-CRMA-500G\";\n}\n\nreturn {productName};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        100
+      ],
+      "id": "1bb43ae5-e445-4da3-b35e-7578bcabc9fe",
+      "name": "Code1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "fd1a5524-471a-4f2d-9d34-b72916de5ede",
+  "activeVersionId": "fd1a5524-471a-4f2d-9d34-b72916de5ede",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-14T13:34:42.908Z",
+      "createdAt": "2025-07-14T13:34:42.908Z",
+      "role": "workflow:owner",
+      "workflowId": "L0P96r2fY4xkjKpO",
+      "projectId": "cEfHDRqL69JgpIBq"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-17T21:03:07.932Z",
+    "createdAt": "2026-01-17T21:03:07.932Z",
+    "versionId": "fd1a5524-471a-4f2d-9d34-b72916de5ede",
+    "workflowId": "L0P96r2fY4xkjKpO",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "agente/analyst",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -100,
+          100
+        ],
+        "id": "9f223105-218c-44e0-826b-1a18a947cd30",
+        "name": "Webhook",
+        "webhookId": "6bdbbbf7-5d5e-4817-8f8b-3dda0b5d2933"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{\"Extraje los Kpis de ventas actuales para que los tomes en cuenta\\n\"\n+\n\"Volumen de ventas mensual: \"+ $json.VVMM +\"\\n\"\n+\n\"Tasa de tiempo de entrega a tiempo: \"+ $json.OTIF +\"\\n\"\n+\n\"Valor Medio Pedido: \"+ $json.AOV +\"\\n\"\n+\n\"Precisión Pronóstico Demanda: \"+ $json.PPD +\"\\n\"\n+\n\"Número de Pedidos: \"+ $json.QTY +\"\\n\"\n+\n\"Descuento Medio Aplicado: \"+ $json.DMA +\"\\n\"\n+\n\"Volumen de ventas mensual: \"+ $json.CTP +\"\\n\"\n+\n\"Canal Top Performance: \"+ $json.TME +\"\\n\\n\"\n+\n\"Tambien analice las ventas historicas del producto ....\" }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          760,
+          100
+        ],
+        "id": "a91db717-7389-46b2-899d-15d33551f8f5",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
+            "mode": "list",
+            "cachedResultName": "Respuesta agentes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 428586664,
+            "mode": "list",
+            "cachedResultName": "SimularOrden",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=428586664"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Agente": "Analista de ventas filtradas",
+              "respuesta": "={{ $json.ventas }}",
+              "producto": "={{ $('Code1').item.json.productName }}"
+            },
+            "matchingColumns": [
+              "Agente"
+            ],
+            "schema": [
+              {
+                "id": "Agente",
+                "displayName": "Agente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "producto",
+                "displayName": "producto",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "respuesta",
+                "displayName": "respuesta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          1100,
+          100
+        ],
+        "id": "04a2514f-20c2-42f1-a949-bb082d2a979f",
+        "name": "Append or update row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "CWI2Yxp3gWinrW8v",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "Uu9fupEbq4ezZfj3",
+            "mode": "list",
+            "cachedResultName": "Ventas agente"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          420,
+          100
+        ],
+        "id": "655649ad-5567-4cc0-ab16-8bf826c6f681",
+        "name": "Execute Workflow1"
+      },
+      {
+        "parameters": {
+          "jsCode": "let productName;\nif ($input.first().json.body.productName === \"Harina Blancaflor Leudante 1kg\") {\n  productName= \"HAR-BLAN-LEUD-1KG\";\n}else if ($input.first().json.body.productName === \"Fideos Matarazzo Mostacholes Rayados 500g\") {\n  productName= \"PAS-MATA-MOST-500G\";\n}else if ($input.first().json.body.productName === \"Aceite Cocinero Girasol Botella PET 900ml\") {\n  productName= \"ACE-COCI-GIRA-900ML\";\n}else if ($input.first().json.body.productName === \"Rebozador Preferido 500g\") {\n  productName= \"REB-PREF-500G\";\n}else if ($input.first().json.body.productName === \"Harina Favorita 000 1kg\") {\n  productName= \"HAR-FAVO-000-1KG\";\n}else if ($input.first().json.body.productName === \"Fideos Lucchetti Tirabuzón 500g\") {\n  productName= \"PAS-LUCC-TIRA-500G\";\n}else if ($input.first().json.body.productName ===\"Arroz Gallo Oro Largo Fino 1kg\") {\n  productName= \"ARR-GALL-ORO-1KG\";\n}else if ($input.first().json.body.productName === \"Yerba Mate Cruz de Malta 500g\") {\n  productName= \"YER-CRMA-500G\";\n}\n\nreturn {productName};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          140,
+          100
+        ],
+        "id": "1bb43ae5-e445-4da3-b35e-7578bcabc9fe",
+        "name": "Code1"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-06-30T05:39:23.880Z",
+      "createdAt": "2025-06-30T05:39:23.880Z",
+      "id": "PCwJPjYtmsBC33eY",
+      "name": "codigo"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.906Z",
+      "createdAt": "2025-06-30T05:39:23.906Z",
+      "id": "gh4ts8neeyHbzaZE",
+      "name": "herramienta"
+    },
+    {
+      "updatedAt": "2025-06-30T05:39:23.935Z",
+      "createdAt": "2025-06-30T05:39:23.935Z",
+      "id": "nH1Q67MvpBeviA8C",
+      "name": "Proyecto multi agentes"
+    }
+  ]
+}
