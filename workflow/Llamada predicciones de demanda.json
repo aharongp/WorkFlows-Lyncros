@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-08-14T00:36:49.000Z",
-  "createdAt": "2025-08-13T18:55:45.323Z",
-  "id": "Wgqa410wvmbuE8GX",
+  "updatedAt": "2026-02-15T00:38:33.667Z",
+  "createdAt": "2026-02-15T00:31:12.859Z",
+  "id": "GVWBjEKDh2wTb8yC",
   "name": "Llamada predicciones de demanda",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -109,137 +109,25 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "63de3ee9-bd30-4650-bdf5-f037b144492c",
-  "activeVersionId": "63de3ee9-bd30-4650-bdf5-f037b144492c",
-  "triggerCount": 1,
+  "meta": null,
+  "pinData": null,
+  "versionId": "da2e0814-5b73-4c2f-99e2-47c979ff0d48",
+  "activeVersionId": null,
+  "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-08-13T18:55:45.345Z",
-      "createdAt": "2025-08-13T18:55:45.345Z",
+      "updatedAt": "2026-02-15T00:31:12.859Z",
+      "createdAt": "2026-02-15T00:31:12.859Z",
       "role": "workflow:owner",
-      "workflowId": "Wgqa410wvmbuE8GX",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "GVWBjEKDh2wTb8yC",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-17T21:03:07.932Z",
-    "createdAt": "2026-01-17T21:03:07.932Z",
-    "versionId": "63de3ee9-bd30-4650-bdf5-f037b144492c",
-    "workflowId": "Wgqa410wvmbuE8GX",
-    "nodes": [
-      {
-        "parameters": {
-          "httpMethod": "POST",
-          "path": "prediccion",
-          "responseMode": "responseNode",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2,
-        "position": [
-          -820,
-          -40
-        ],
-        "id": "a135d846-1a8c-4e4b-bd6c-d12ee4dee08b",
-        "name": "Webhook",
-        "webhookId": "cae4bb01-cb36-414b-92a7-2163c8985c58"
-      },
-      {
-        "parameters": {
-          "respondWith": "json",
-          "responseBody": "={\n    \"grafica\": [{{ $json['Sale 1'].toNumber().round() }}, {{ $json['Sale 2'].toNumber().round() }}, {{ $json['Sale 3'].toNumber().round() }}, {{ $json['Sale 4'].toNumber().round() }}, {{ $json['Sale 5'].toNumber().round() }}, {{ $json['Sale 6'].toNumber().round() }}, {{ $json['Sale 7'].toNumber().round() }}],\n    \"resumen\": \"{{ $json.resumen }}\"\n\n}",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.respondToWebhook",
-        "typeVersion": 1.4,
-        "position": [
-          -380,
-          -40
-        ],
-        "id": "8021c349-b545-4167-81a6-fa7a8f71c710",
-        "name": "Respond to Webhook"
-      },
-      {
-        "parameters": {
-          "documentId": {
-            "__rl": true,
-            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
-            "mode": "list",
-            "cachedResultName": "Respuesta agentes",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
-          },
-          "sheetName": {
-            "__rl": true,
-            "value": 416926134,
-            "mode": "list",
-            "cachedResultName": "predicciones",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=416926134"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "producto",
-                "lookupValue": "={{ $json.body.producto }}"
-              },
-              {
-                "lookupColumn": "fecha",
-                "lookupValue": "1/2/2025"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.6,
-        "position": [
-          -600,
-          -40
-        ],
-        "id": "7a07086a-68ab-43fe-a8bb-5a1bfb6c1c00",
-        "name": "Get row(s) in sheet",
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "CWI2Yxp3gWinrW8v",
-            "name": "Google Sheets account"
-          }
-        }
-      }
-    ],
-    "connections": {
-      "Webhook": {
-        "main": [
-          [
-            {
-              "node": "Get row(s) in sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Get row(s) in sheet": {
-        "main": [
-          [
-            {
-              "node": "Respond to Webhook",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
-  },
+  "activeVersion": null,
   "tags": []
 }
