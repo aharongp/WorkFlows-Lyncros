@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-07-07T01:59:44.000Z",
-  "createdAt": "2025-07-07T01:56:56.624Z",
-  "id": "QbWxmiyMhNKW9uYq",
+  "updatedAt": "2026-02-15T00:37:01.922Z",
+  "createdAt": "2026-02-15T00:31:18.179Z",
+  "id": "q1rMu8ef3PAQJCyw",
   "name": "estrategico agente",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -201,227 +201,25 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
-  "versionId": "63470a03-6ac2-44fe-9f35-d02f59b402a9",
-  "activeVersionId": "63470a03-6ac2-44fe-9f35-d02f59b402a9",
+  "pinData": null,
+  "versionId": "167fd6fe-a241-4c6a-bd73-20840d0f1268",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-07-07T01:56:56.642Z",
-      "createdAt": "2025-07-07T01:56:56.642Z",
+      "updatedAt": "2026-02-15T00:31:18.179Z",
+      "createdAt": "2026-02-15T00:31:18.179Z",
       "role": "workflow:owner",
-      "workflowId": "QbWxmiyMhNKW9uYq",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "q1rMu8ef3PAQJCyw",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-17T21:03:07.932Z",
-    "createdAt": "2026-01-17T21:03:07.932Z",
-    "versionId": "63470a03-6ac2-44fe-9f35-d02f59b402a9",
-    "workflowId": "QbWxmiyMhNKW9uYq",
-    "nodes": [
-      {
-        "parameters": {
-          "inputSource": "passthrough"
-        },
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          -280,
-          40
-        ],
-        "id": "68d24528-e657-43f7-adee-787a31594d83",
-        "name": "When Executed by Another Workflow"
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "f56ead26-f8d0-4373-aacf-84c3940171f5",
-                "name": "EBITDTA",
-                "value": "={{ $json.EBITDTA[0] }}$",
-                "type": "string"
-              },
-              {
-                "id": "77ea928a-9ede-498d-abb2-73dea5040cc0",
-                "name": "PPD",
-                "value": "={{ $json.PPD[0] }}%",
-                "type": "string"
-              },
-              {
-                "id": "91092fec-7a8f-4ed5-962c-570b9deee3e1",
-                "name": "OEE",
-                "value": "={{ $json.OEE[0] }}%",
-                "type": "string"
-              },
-              {
-                "id": "4129619f-1d9d-4a95-9e6d-eae429952fe3",
-                "name": "CPR",
-                "value": "={{ $json.sum_valor[0] }}$",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          620,
-          40
-        ],
-        "id": "52a60d8f-48b2-457c-bad8-0c7da793e237",
-        "name": "Edit Fields8"
-      },
-      {
-        "parameters": {
-          "documentId": {
-            "__rl": true,
-            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
-            "mode": "list",
-            "cachedResultName": "Kpis consolidados",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
-          },
-          "sheetName": {
-            "__rl": true,
-            "value": "gid=0",
-            "mode": "list",
-            "cachedResultName": "Estrategicos",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=0"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "Fecha",
-                "lookupValue": "01/02/2025"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.6,
-        "position": [
-          -60,
-          40
-        ],
-        "id": "c7d6ffa7-63d2-4452-9ef5-0cf8afa14b9b",
-        "name": "Get row(s) in sheet2",
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "CWI2Yxp3gWinrW8v",
-            "name": "Google Sheets account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "c9a841a8-ec30-409b-b57e-eef05ed79505",
-                "name": "={{ $json.KPI }}",
-                "value": "={{ $json.Valor }}",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          160,
-          40
-        ],
-        "id": "5a647c62-6ef8-48bd-9528-bfe908f2f94d",
-        "name": "Edit Fields"
-      },
-      {
-        "parameters": {
-          "fieldsToAggregate": {
-            "fieldToAggregate": [
-              {
-                "fieldToAggregate": "EBITDTA"
-              },
-              {
-                "fieldToAggregate": "PPD"
-              },
-              {
-                "fieldToAggregate": "OEE"
-              },
-              {
-                "fieldToAggregate": "sum_valor"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.aggregate",
-        "typeVersion": 1,
-        "position": [
-          380,
-          40
-        ],
-        "id": "91d07295-1f32-4d13-aa6e-77b208565f3f",
-        "name": "Aggregate1"
-      }
-    ],
-    "connections": {
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Get row(s) in sheet2",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Get row(s) in sheet2": {
-        "main": [
-          [
-            {
-              "node": "Edit Fields",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Edit Fields": {
-        "main": [
-          [
-            {
-              "node": "Aggregate1",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Aggregate1": {
-        "main": [
-          [
-            {
-              "node": "Edit Fields8",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
-  },
+  "activeVersion": null,
   "tags": []
 }
