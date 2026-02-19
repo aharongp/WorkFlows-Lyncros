@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2025-06-30T05:53:24.000Z",
-  "createdAt": "2025-06-30T05:53:24.386Z",
-  "id": "Z51IlXvxq6kqloOK",
+  "updatedAt": "2026-02-15T00:38:50.751Z",
+  "createdAt": "2026-02-15T00:31:10.405Z",
+  "id": "WdWzYz5enR2DLySg",
   "name": "Global KPIs estrategicos",
   "active": false,
   "isArchived": false,
@@ -226,23 +226,23 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "c857d6be-63a4-4520-80af-14c0b0640cc3",
+  "meta": null,
+  "pinData": null,
+  "versionId": "77ed8b6f-31dd-4064-a67d-0ac5d71f316a",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T05:53:24.393Z",
-      "createdAt": "2025-06-30T05:53:24.393Z",
+      "updatedAt": "2026-02-15T00:31:10.405Z",
+      "createdAt": "2026-02-15T00:31:10.405Z",
       "role": "workflow:owner",
-      "workflowId": "Z51IlXvxq6kqloOK",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "WdWzYz5enR2DLySg",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
