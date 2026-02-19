@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-06-30T13:22:52.000Z",
-  "createdAt": "2025-06-30T13:22:52.619Z",
-  "id": "q113B7zjWJ2qL5Mw",
+  "updatedAt": "2026-02-15T00:39:10.316Z",
+  "createdAt": "2026-02-15T00:31:07.974Z",
+  "id": "MBz9nT9mBY2KhVnu",
   "name": "Capacidad y Estado de Lineas",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -244,281 +244,25 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {
-    "When Executed by Another Workflow": [
-      {
-        "json": {
-          "ProductoID": "HAR-BLAN-LEUD-1KG",
-          "fechaHoy": "1/2/2025"
-        }
-      }
-    ]
-  },
-  "versionId": "e7dae949-6b19-4383-98cd-17610c53f09a",
-  "activeVersionId": "e7dae949-6b19-4383-98cd-17610c53f09a",
+  "meta": null,
+  "pinData": null,
+  "versionId": "318d656f-f890-4d9a-8fa3-3ccf44190b83",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T13:22:52.654Z",
-      "createdAt": "2025-06-30T13:22:52.654Z",
+      "updatedAt": "2026-02-15T00:31:07.974Z",
+      "createdAt": "2026-02-15T00:31:07.974Z",
       "role": "workflow:owner",
-      "workflowId": "q113B7zjWJ2qL5Mw",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "MBz9nT9mBY2KhVnu",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-17T21:03:07.932Z",
-    "createdAt": "2026-01-17T21:03:07.932Z",
-    "versionId": "e7dae949-6b19-4383-98cd-17610c53f09a",
-    "workflowId": "q113B7zjWJ2qL5Mw",
-    "nodes": [
-      {
-        "parameters": {
-          "workflowInputs": {
-            "values": [
-              {
-                "name": "ProductoID"
-              },
-              {
-                "name": "fechaHoy"
-              }
-            ]
-          }
-        },
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          20,
-          -80
-        ],
-        "id": "d1c458cf-ded4-454d-a342-71932cb04891",
-        "name": "When Executed by Another Workflow"
-      },
-      {
-        "parameters": {
-          "model": {
-            "__rl": true,
-            "mode": "list",
-            "value": "gpt-4o-mini"
-          },
-          "options": {}
-        },
-        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-        "typeVersion": 1.2,
-        "position": [
-          180,
-          200
-        ],
-        "id": "a977e66c-17e7-4cec-ba01-faf1466f455d",
-        "name": "OpenAI Chat Model",
-        "credentials": {
-          "openAiApi": {
-            "id": "vzdjQJqcvomw8EgG",
-            "name": "OpenAi account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "description": "OrdenesProduccion.csv",
-          "workflowId": {
-            "__rl": true,
-            "value": "5zSIXoLsyKkhNSM7",
-            "mode": "list",
-            "cachedResultName": "herramienta OrdenesProduccion.csv"
-          },
-          "workflowInputs": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "ProductoID": "={{ $json.ProductoID }}"
-            },
-            "matchingColumns": [
-              "ProductoID"
-            ],
-            "schema": [
-              {
-                "id": "ProductoID",
-                "displayName": "ProductoID",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "canBeUsedToMatch": true,
-                "type": "string",
-                "removed": false
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false
-          }
-        },
-        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-        "typeVersion": 2.2,
-        "position": [
-          460,
-          200
-        ],
-        "id": "7e9aab80-00c9-4248-a6b9-e8d3c96f6d6b",
-        "name": "OrdenesProduccion.csv"
-      },
-      {
-        "parameters": {
-          "promptType": "define",
-          "text": "=Quiero que hagas un analisis de los estados de la linea para este producto\n{{ $json.ProductoID }}\nfecha de hoy: \n{{ $json.fechaHoy }}",
-          "options": {
-            "systemMessage": "#ROL\neres ProductionAI, El encargado de las lineas de produccion de la empresa Molinos Río de La Plata con 12 años de experiencia analizando las lineas de produccion de la empresa. Te encargas de ver que tan saturadas estan las lineas de produccion para ver cuantos productos podrian ponerse en produccion. Eres una pieza clave de la empresa ya que si no haces bien tu trabajo no podre pagar el tratamiento de cancer de mi mama\n\n#TAREAS\nEn tus tareas se incluye:\n- usa tu herramienta OrdenesProduccion.csv para extraer las 2 ultimas producciones que se hicieron de ese producto que quieren producir\n- por ultimo debes crear un analisis corto de la disponibilidad que tiene la linea de produccion teniendo en cuenta que se puede hacer una produccion de cada producto cada 2 dias, es decir si la fecha de hoy es 9 y se hizo una produccion ayer que fue 8 entonces la siguiente produccion que se podra hacer sera mañana, a demas debes tener en cuenta la eficiencia promedio y la capacidad de produccion por hora que tiene cada linea\n\n##EJEMPLOS\nQ: \n***********\nQuiero que hagas un analisis de los estados de la linea para este producto\nHAR-BLAN-LEUD-1KG\nfecha de hoy: \n11/05/2025\nOrdenesProduccion.csv:\n[\n  {\n    \"ordenes\": \"Ultimas 2 ordenes de produccion para el producto: REB-PREF-500G en la linea de produccion: LINPROD-SEC-01\\n\\nfecha de inicio planificada: 09/05/2025 22:00\\nfecha de inicio real: 09/05/2025 23:43\\nfecha de fin real: 10/05/2025 4:18\\neficiencia real: 0.802,0.754\\ntiempo de parada no planificada: 0,0\\n\\nfecha de inicio planificada: 11/05/2025 22:00\\nfecha de inicio real: 11/05/2025 23:38\\nfecha de fin real: 12/05/2025 1:49\\neficiencia real: 0.802,0.754\\ntiempo de parada no planificada: 0,0\\n\\n\"\n  }\n]\n***********\nA:\n***********\nHoy es 11/05/2025 y la ultima orden de produccion fue el 11/05/2025 a las 23:38, esto significa que los dias que se podra producir de nuevo el producto HAR-BLAN-LEUD-1KG en la linea de produccion: LINPROD-SEC-01 sera en las siguientes fechas:\n13/05/2025 22:00\n15/05/2025 22:00\n17/05/2025 22:00\n19/05/2025 22:00\n***********\n\n#ESPECIFICACIONES\n##GENERALES\n- responde siempre en español\n- usa el formato de respuesta del ejemplo para responder\n- devuelve 4 dias en los que se podra producir\n##HERRAMIENTAS\n- OrdenesProduccion.csv: con esta herramienta extraeras un string que te dara la informacion sobre las ultimas 2 fechas de produccion que hubieron\n\n##NO PUEDES HACER ESTO MAL\n- no puedes devolver un codigo que resuelva el problema, siempre debe ser en el formato del ejemplo\n- debes responder siempre en español"
-          }
-        },
-        "type": "@n8n/n8n-nodes-langchain.agent",
-        "typeVersion": 2,
-        "position": [
-          240,
-          -80
-        ],
-        "id": "6905c608-8d62-4183-9415-1c8104d75ef5",
-        "name": "Agente de Capacidad y Estado de Líneas"
-      },
-      {
-        "parameters": {
-          "operation": "append",
-          "documentId": {
-            "__rl": true,
-            "value": "1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84",
-            "mode": "list",
-            "cachedResultName": "Respuesta agentes",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit?usp=drivesdk"
-          },
-          "sheetName": {
-            "__rl": true,
-            "value": "gid=0",
-            "mode": "list",
-            "cachedResultName": "Agentes",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uyOe2CGS2p3nYx8V-MEQpimyMB9KFB0kp_WVLtleZ84/edit#gid=0"
-          },
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "Agente": "Agente de Capacidad y Estado de Líneas",
-              "respuesta": "={{ $json.output }}",
-              "fecha": "={{ $('When Executed by Another Workflow').item.json.fechaHoy }}",
-              "producto": "={{ $('When Executed by Another Workflow').item.json.ProductoID }}"
-            },
-            "matchingColumns": [],
-            "schema": [
-              {
-                "id": "Agente",
-                "displayName": "Agente",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true
-              },
-              {
-                "id": "producto",
-                "displayName": "producto",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": false
-              },
-              {
-                "id": "respuesta",
-                "displayName": "respuesta",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true
-              },
-              {
-                "id": "fecha",
-                "displayName": "fecha",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.6,
-        "position": [
-          660,
-          -80
-        ],
-        "id": "9d95616f-6b25-4260-9608-aeff67520448",
-        "name": "Append row in sheet",
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "CWI2Yxp3gWinrW8v",
-            "name": "Google Sheets account"
-          }
-        }
-      }
-    ],
-    "connections": {
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Agente de Capacidad y Estado de Líneas",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "OpenAI Chat Model": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "Agente de Capacidad y Estado de Líneas",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "OrdenesProduccion.csv": {
-        "ai_tool": [
-          [
-            {
-              "node": "Agente de Capacidad y Estado de Líneas",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Agente de Capacidad y Estado de Líneas": {
-        "main": [
-          [
-            {
-              "node": "Append row in sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
-  },
+  "activeVersion": null,
   "tags": []
 }
