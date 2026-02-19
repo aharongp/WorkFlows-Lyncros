@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-01-26T04:01:07.000Z",
-  "createdAt": "2026-01-22T00:42:08.099Z",
-  "id": "keyJ5tQ2kg2fP5ZW",
+  "updatedAt": "2026-02-15T00:42:39.634Z",
+  "createdAt": "2026-02-15T00:31:21.795Z",
+  "id": "mRwgIa9lRFaZomFB",
   "name": "normalizacion y desestacionalizacion",
   "active": false,
   "isArchived": true,
@@ -552,21 +552,22 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
-  "versionId": "1afc5b12-bc80-411d-94cd-5b8b7060a459",
+  "pinData": null,
+  "versionId": "28cd7c01-39a9-4418-af3f-7b32c229e72a",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-01-22T00:42:08.224Z",
-      "createdAt": "2026-01-22T00:42:08.224Z",
+      "updatedAt": "2026-02-15T00:31:21.795Z",
+      "createdAt": "2026-02-15T00:31:21.795Z",
       "role": "workflow:owner",
-      "workflowId": "keyJ5tQ2kg2fP5ZW",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "mRwgIa9lRFaZomFB",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
