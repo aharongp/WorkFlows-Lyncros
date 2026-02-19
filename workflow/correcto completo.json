@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T18:03:57.714Z",
+  "updatedAt": "2026-02-19T01:23:26.788Z",
   "createdAt": "2026-02-15T00:31:17.331Z",
   "id": "NE79qj90G17n8JtH",
   "name": "correcto completo",
@@ -173,28 +173,6 @@
       ],
       "id": "f20781d7-26fd-44f0-b65e-aad085348b08",
       "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Estatus: {{ $json[\"_debug_status\"] }}\nCliente: {{ $json[\"CUSTID\"] }}\nVenta Ant: {{ $json[\"LAST_MONTH_SALE\"] }}\nForecast Orig: {{ $json[\"MODEL_forecast_original\"] }}\nForecast IA: {{ $json[\"MODEL_forecast_corrected\"] }}\nDrivers: {{ $json[\"MODEL_drivers\"] }}",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "Eres un Analista Senior de Demand Planning. Genera una explicación breve (máximo 1 frase) para el ajuste del forecast.  TONO SEGÚN ESTATUS: - CRITICAL: Tono URGENTE. \"Ajuste agresivo necesario por impacto estructural\". - CHAOS: Tono CAUTELOSO. \"Ajuste limitado por seguridad ante volatilidad histórica\". - OPPORTUNITY: Tono POSITIVO. \"Captura de oportunidad por señal clara\". - STABLE: Tono RUTINARIO. \"Mantenimiento de tendencia\". (Sé muy breve).  INSTRUCCIONES: - Identifica los Drivers: Precio, Inercia, Sell-out. - No uses saludos. Solo la justificación de negocio."
-            }
-          ]
-        },
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        4432,
-        1084
-      ],
-      "id": "7a36c995-5814-4ec4-8b64-ebfa43accf7e",
-      "name": "Basic LLM Chain"
     },
     {
       "parameters": {
@@ -639,7 +617,7 @@
       "typeVersion": 1.1,
       "position": [
         5008,
-        1208
+        1216
       ],
       "id": "8e891bef-fc25-4996-a52a-192a0029482f",
       "name": "Insert row"
@@ -653,7 +631,7 @@
       "typeVersion": 3,
       "position": [
         4208,
-        1208
+        1216
       ],
       "id": "7fb277da-845b-4f50-99a2-59ca9c54e762",
       "name": "Loop Over Items1"
@@ -904,36 +882,10 @@
       "typeVersion": 3.4,
       "position": [
         4784,
-        1084
+        1088
       ],
       "id": "9f8d8f8e-a622-46ca-941f-6ab1f8e50dbd",
       "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4.1-nano",
-          "mode": "list",
-          "cachedResultName": "gpt-4.1-nano"
-        },
-        "builtInTools": {},
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
-      "position": [
-        4504,
-        1308
-      ],
-      "id": "1e2e9b5f-49ff-4b48-b43a-ed7a3c55af08",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "Z9zPhNW2TDZXLiTT",
-          "name": "OpenAi account"
-        }
-      }
     },
     {
       "parameters": {
@@ -976,6 +928,43 @@
         "postgres": {
           "id": "ezJ6rP6dRWwFUGI9",
           "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Eres un Analista Senior de Demand Planning. Genera una explicación breve (máximo 1 frase) para el ajuste del forecast.  TONO SEGÚN ESTATUS: - CRITICAL: Tono URGENTE. \"Ajuste agresivo necesario por impacto estructural\". - CHAOS: Tono CAUTELOSO. \"Ajuste limitado por seguridad ante volatilidad histórica\". - OPPORTUNITY: Tono POSITIVO. \"Captura de oportunidad por señal clara\". - STABLE: Tono RUTINARIO. \"Mantenimiento de tendencia\". (Sé muy breve).  INSTRUCCIONES: - Identifica los Drivers: Precio, Inercia, Sell-out. - No uses saludos. Solo la justificación de negocio."
+            },
+            {
+              "content": "=Estatus: {{ $json[\"_debug_status\"] }}\nCliente: {{ $json[\"CUSTID\"] }}\nVenta Ant: {{ $json[\"LAST_MONTH_SALE\"] }}\nForecast Orig: {{ $json[\"MODEL_forecast_original\"] }}\nForecast IA: {{ $json[\"MODEL_forecast_corrected\"] }}\nDrivers: {{ $json[\"MODEL_drivers\"] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        4448,
+        1216
+      ],
+      "id": "3ed307e2-e201-4235-b740-33bef11cd0a9",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Z9zPhNW2TDZXLiTT",
+          "name": "OpenAi account"
         }
       }
     }
@@ -1081,17 +1070,6 @@
         ]
       ]
     },
-    "Basic LLM Chain": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Insert row": {
       "main": [
         [
@@ -1108,7 +1086,7 @@
         [],
         [
           {
-            "node": "Basic LLM Chain",
+            "node": "Message a model",
             "type": "main",
             "index": 0
           }
@@ -1121,17 +1099,6 @@
           {
             "node": "Insert row",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -1158,6 +1125,17 @@
           }
         ]
       ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1170,7 +1148,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "83aa236d-f068-4981-a541-994745e688cd",
+  "versionId": "9142456d-781a-4345-b513-803fc83fc080",
   "activeVersionId": "46efdccd-3c73-4f6a-b551-217dbac7077b",
   "triggerCount": 1,
   "shared": [
