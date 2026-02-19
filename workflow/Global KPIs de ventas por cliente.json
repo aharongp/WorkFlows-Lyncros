@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2025-07-23T06:07:07.000Z",
-  "createdAt": "2025-07-23T04:01:55.397Z",
-  "id": "MPLCEWI44rOB6zU4",
+  "updatedAt": "2026-02-15T00:38:52.641Z",
+  "createdAt": "2026-02-15T00:31:09.921Z",
+  "id": "vS4cwuUYHgkEowXo",
   "name": "Global KPIs de ventas por cliente",
   "active": false,
   "isArchived": false,
@@ -219,23 +219,23 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "a3b0d2d1-1b72-4396-8994-866be562ecad",
+  "meta": null,
+  "pinData": null,
+  "versionId": "cc28fcd3-370e-4eb8-bb57-e4822ccd102a",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-07-23T04:01:55.418Z",
-      "createdAt": "2025-07-23T04:01:55.418Z",
+      "updatedAt": "2026-02-15T00:31:09.921Z",
+      "createdAt": "2026-02-15T00:31:09.921Z",
       "role": "workflow:owner",
-      "workflowId": "MPLCEWI44rOB6zU4",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "vS4cwuUYHgkEowXo",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
