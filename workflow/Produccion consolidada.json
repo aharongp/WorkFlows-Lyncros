@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2025-07-06T16:47:19.000Z",
-  "createdAt": "2025-06-30T05:56:20.752Z",
-  "id": "nDXYrT7QSJKUjYZ8",
+  "updatedAt": "2026-02-15T00:37:50.398Z",
+  "createdAt": "2026-02-15T00:31:14.201Z",
+  "id": "vTHEJdUnTtY2Sjse",
   "name": "Produccion consolidada",
   "active": false,
   "isArchived": false,
@@ -1035,23 +1035,23 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "2490d85e-5ce3-4629-bd14-0c1c99e66640",
+  "meta": null,
+  "pinData": null,
+  "versionId": "6617f533-527f-4cda-8c29-472fb1a97f09",
   "activeVersionId": null,
-  "triggerCount": 1,
+  "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T05:56:20.759Z",
-      "createdAt": "2025-06-30T05:56:20.759Z",
+      "updatedAt": "2026-02-15T00:31:14.201Z",
+      "createdAt": "2026-02-15T00:31:14.201Z",
       "role": "workflow:owner",
-      "workflowId": "nDXYrT7QSJKUjYZ8",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "vTHEJdUnTtY2Sjse",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
