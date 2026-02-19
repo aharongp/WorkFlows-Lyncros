@@ -526,7 +526,7 @@
   "meta": null,
   "pinData": {},
   "versionId": "b1b3c3d8-fa13-48fb-b3cd-4deef0b27b43",
-  "activeVersionId": "062566c2-c66f-4a5a-9917-a430f6067a4e",
+  "activeVersionId": "b1b3c3d8-fa13-48fb-b3cd-4deef0b27b43",
   "triggerCount": 1,
   "shared": [
     {
@@ -538,9 +538,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-19T00:22:43.830Z",
-    "createdAt": "2026-02-15T00:31:16.423Z",
-    "versionId": "062566c2-c66f-4a5a-9917-a430f6067a4e",
+    "updatedAt": "2026-02-19T00:53:08.018Z",
+    "createdAt": "2026-02-19T00:48:53.106Z",
+    "versionId": "b1b3c3d8-fa13-48fb-b3cd-4deef0b27b43",
     "workflowId": "RWwa2BaNpxwrnokF",
     "nodes": [
       {
@@ -676,7 +676,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\n\n// 2. Obtenemos los datos ORIGINALES del workflow desde el Loop\n// CAMBIA 'Loop Over Items' por el nombre exacto de tu nodo Loop si es diferente\nconst localWorkflowData = $('Loop Over Items').item.json;\n\n// Preparamos el contenido local (tal como lo guardaríamos)\n// null, 2 es para que tenga formato bonito (saltos de linea) igual que en GitHub\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// LÓGICA DE ESTADOS\n\n// CASO 2: NUEVO (No existe en GitHub)\n// Si GitHub devolvió error o no tiene propiedad 'content'\nif (items[0].error || !githubData.content) {\n  return {\n    json: {\n      status: 2, // Nuevo\n      fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n      content: localContent\n    }\n  };\n}\n\n// Decodificar el contenido de GitHub (viene en Base64)\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\n// CASO 0: IGUAL (No hacer nada)\nif (remoteContent.trim() === localContent.trim()) {\n  return {\n    json: {\n      status: 0, // Igual\n      fileName: localWorkflowData.name,\n      message: \"Skipped - No changes\"\n    }\n  };\n}\n\n// CASO 1: DIFERENTE (Actualizar)\nreturn {\n  json: {\n    status: 1, // Modificado\n    fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n    content: localContent,\n    sha: githubData.sha // IMPORTANTE: Necesitamos el SHA para actualizar\n  }\n};"
+          "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\nconst localWorkflowData = $('Loop Over Items').item.json;\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// --- CAMBIO CLAVE AQUÍ ---\n// Verificamos si el archivo EXISTE usando el SHA, no el contenido\nconst fileExists = githubData.sha && githubData.sha !== \"\";\n\nif (!fileExists) {\n    return {\n        json: {\n            status: 2, // Nuevo\n            fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n            content: localContent\n        }\n    };\n}\n\n// Si el archivo es muy grande (>1MB), GitHub no manda el content.\n// En esos casos, para backups, lo mejor es asumir que hay que actualizar \n// o comparar de otra forma. De momento, forzamos el status 1 para que no falle.\nif (githubData.size > 1000000 && !githubData.content) {\n    return {\n        json: {\n            status: 1, // Modificado (por precaución al ser archivo grande)\n            fileName: githubData.name, // Usamos el nombre que ya tiene en GitHub\n            content: localContent,\n            sha: githubData.sha // ¡ESTO ES LO QUE EVITA EL ERROR 422!\n        }\n    };\n}\n\n// ... Resto de tu lógica de comparación para archivos pequeños ...\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\nif (remoteContent.trim() === localContent.trim()) {\n    return { json: { status: 0, message: \"Skipped - No changes\" } };\n}\n\nreturn {\n    json: {\n        status: 1,\n        fileName: githubData.name,\n        content: localContent,\n        sha: githubData.sha\n    }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -875,6 +875,19 @@
             "name": "GitHub account"
           }
         }
+      },
+      {
+        "parameters": {
+          "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\n\n// 2. Obtenemos los datos ORIGINALES del workflow desde el Loop\n// CAMBIA 'Loop Over Items' por el nombre exacto de tu nodo Loop si es diferente\nconst localWorkflowData = $('Loop Over Items').item.json;\n\n// Preparamos el contenido local (tal como lo guardaríamos)\n// null, 2 es para que tenga formato bonito (saltos de linea) igual que en GitHub\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// LÓGICA DE ESTADOS\n\n// CASO 2: NUEVO (No existe en GitHub)\n// Si GitHub devolvió error o no tiene propiedad 'content'\nif (items[0].error || !githubData.content) {\n  return {\n    json: {\n      status: 2, // Nuevo\n      fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n      content: localContent\n    }\n  };\n}\n\n// Decodificar el contenido de GitHub (viene en Base64)\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\n// CASO 0: IGUAL (No hacer nada)\nif (remoteContent.trim() === localContent.trim()) {\n  return {\n    json: {\n      status: 0, // Igual\n      fileName: localWorkflowData.name,\n      message: \"Skipped - No changes\"\n    }\n  };\n}\n\n// CASO 1: DIFERENTE (Actualizar)\nreturn {\n  json: {\n    status: 1, // Modificado\n    fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n    content: localContent,\n    sha: githubData.sha // IMPORTANTE: Necesitamos el SHA para actualizar\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          304,
+          0
+        ],
+        "id": "b3142be8-551e-4286-934a-682842e9eda4",
+        "name": "Code in JavaScript1"
       }
     ],
     "connections": {
@@ -1038,7 +1051,7 @@
       }
     },
     "authors": "Juan  lyncros",
-    "name": "Version 062566c2",
+    "name": "Version b1b3c3d8",
     "description": "",
     "autosaved": false
   },
