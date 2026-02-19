@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-08-13T18:45:56.000Z",
-  "createdAt": "2025-06-30T05:45:44.372Z",
-  "id": "AywyzRdwT53nidkN",
+  "updatedAt": "2026-02-15T00:37:16.484Z",
+  "createdAt": "2026-02-15T00:31:16.100Z",
+  "id": "koyc2n5NPUSCRgG4",
   "name": "analista de ventas filtradas solo codigo",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -194,250 +194,25 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
-  "pinData": {
-    "When Executed by Another Workflow": [
-      {
-        "json": {
-          "ProductID": "HAR-BLAN-LEUD-1KG",
-          "Dia": 1,
-          "Mes": 2,
-          "Año": 2025
-        }
-      }
-    ]
-  },
-  "versionId": "12198666-21ab-4e13-a47e-55437cb9a2c0",
-  "activeVersionId": "12198666-21ab-4e13-a47e-55437cb9a2c0",
+  "pinData": null,
+  "versionId": "2837152c-349c-4a04-9129-cfe3d3994d5e",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T05:45:44.381Z",
-      "createdAt": "2025-06-30T05:45:44.381Z",
+      "updatedAt": "2026-02-15T00:31:16.100Z",
+      "createdAt": "2026-02-15T00:31:16.100Z",
       "role": "workflow:owner",
-      "workflowId": "AywyzRdwT53nidkN",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "koyc2n5NPUSCRgG4",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-17T21:03:07.932Z",
-    "createdAt": "2026-01-17T21:03:07.932Z",
-    "versionId": "12198666-21ab-4e13-a47e-55437cb9a2c0",
-    "workflowId": "AywyzRdwT53nidkN",
-    "nodes": [
-      {
-        "parameters": {
-          "workflowId": {
-            "__rl": true,
-            "value": "3sAyEXFKhqRUlQWt",
-            "mode": "list",
-            "cachedResultName": "Extraer ventas historicas filtradas csv"
-          },
-          "workflowInputs": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "ProductID": "={{ $json.ProductID }}",
-              "Dia": "={{ $json.Dia }}",
-              "Mes": "={{ $json.Mes }}",
-              "Año": "={{ $json['Año'] }}"
-            },
-            "matchingColumns": [],
-            "schema": [
-              {
-                "id": "ProductID",
-                "displayName": "ProductID",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "canBeUsedToMatch": true,
-                "type": "string"
-              },
-              {
-                "id": "Dia",
-                "displayName": "Dia",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "canBeUsedToMatch": true,
-                "type": "number"
-              },
-              {
-                "id": "Mes",
-                "displayName": "Mes",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "canBeUsedToMatch": true,
-                "type": "number"
-              },
-              {
-                "id": "Año",
-                "displayName": "Año",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "canBeUsedToMatch": true,
-                "type": "number"
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": true
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.executeWorkflow",
-        "typeVersion": 1.2,
-        "position": [
-          300,
-          0
-        ],
-        "id": "10a75add-b266-4df3-aa98-98804da9acad",
-        "name": "Execute Workflow"
-      },
-      {
-        "parameters": {
-          "workflowInputs": {
-            "values": [
-              {
-                "name": "ProductID"
-              },
-              {
-                "name": "Dia",
-                "type": "number"
-              },
-              {
-                "name": "Mes",
-                "type": "number"
-              },
-              {
-                "name": "Año",
-                "type": "number"
-              }
-            ]
-          }
-        },
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          0,
-          0
-        ],
-        "id": "55ff260d-0f5b-40ff-a552-9d932ff12f3e",
-        "name": "When Executed by Another Workflow"
-      },
-      {
-        "parameters": {
-          "fieldsToAggregate": {
-            "fieldToAggregate": [
-              {
-                "fieldToAggregate": "ProductoID"
-              },
-              {
-                "fieldToAggregate": "ClienteID"
-              },
-              {
-                "fieldToAggregate": "FechaPedido"
-              },
-              {
-                "fieldToAggregate": "CantidadPedida"
-              },
-              {
-                "fieldToAggregate": "PrecioUnitarioVenta"
-              },
-              {
-                "fieldToAggregate": "DescuentoAplicado"
-              },
-              {
-                "fieldToAggregate": "MontoTotal"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.aggregate",
-        "typeVersion": 1,
-        "position": [
-          540,
-          0
-        ],
-        "id": "5a9c5320-eff9-4f5d-b125-2263469ac34e",
-        "name": "Aggregate"
-      },
-      {
-        "parameters": {
-          "jsCode": "let str = \"\" + $input.first().json.ProductoID[0]+\"\\n \";\n\nfor(let i=0; i < $input.first().json.ProductoID.length ;i++){\n  str = str +\"Venta \"+(i+1)+\": \\n Cliente: \" + $input.first().json.ClienteID[i] + \"\\n FechaPedido: \" + $input.first().json.FechaPedido[i] + \"\\n CantidadPedida: \" + $input.first().json.CantidadPedida[i] + \"\\n PrecioUnitario: \" + $input.first().json.PrecioUnitarioVenta[i] + \"\\n DescuentoAplicado: \" + $input.first().json.DescuentoAplicado[i] + \"\\n MontoTotal: \" + $input.first().json.MontoTotal[i] + \"\\n \"\n}\n\n\n\n\nreturn [{\n  \"ventas\": str\n}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          760,
-          0
-        ],
-        "id": "e675c205-7076-4a8f-8868-788bcce363e0",
-        "name": "Code"
-      }
-    ],
-    "connections": {
-      "Execute Workflow": {
-        "main": [
-          [
-            {
-              "node": "Aggregate",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Execute Workflow",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Aggregate": {
-        "main": [
-          [
-            {
-              "node": "Code",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
-  },
-  "tags": [
-    {
-      "updatedAt": "2025-06-30T05:39:23.880Z",
-      "createdAt": "2025-06-30T05:39:23.880Z",
-      "id": "PCwJPjYtmsBC33eY",
-      "name": "codigo"
-    },
-    {
-      "updatedAt": "2025-06-30T05:39:23.906Z",
-      "createdAt": "2025-06-30T05:39:23.906Z",
-      "id": "gh4ts8neeyHbzaZE",
-      "name": "herramienta"
-    },
-    {
-      "updatedAt": "2025-06-30T05:39:23.935Z",
-      "createdAt": "2025-06-30T05:39:23.935Z",
-      "id": "nH1Q67MvpBeviA8C",
-      "name": "Proyecto multi agentes"
-    }
-  ]
+  "activeVersion": null,
+  "tags": []
 }
