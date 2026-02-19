@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-02-14T23:34:34.662Z",
-  "createdAt": "2026-02-14T22:09:20.819Z",
-  "id": "RSXSSidfDBeguLz_pK8Xd",
+  "updatedAt": "2026-02-15T00:39:40.831Z",
+  "createdAt": "2026-02-15T00:31:22.960Z",
+  "id": "wQHMqmjnRK8rSinx",
   "name": "restore",
   "active": false,
   "isArchived": false,
@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -144,
-        136
+        -800,
+        384
       ],
-      "id": "4a19f895-661d-4832-b33c-f8efed2b9877",
+      "id": "729ad93b-57bb-4653-9c39-00f68de15a1b",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -38,15 +38,15 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        80,
-        136
+        -576,
+        384
       ],
-      "id": "bf7e77bf-4f66-4cfd-9ac6-15ebf86cbda8",
+      "id": "4db1f59f-77a2-40bf-a163-be2876b5c113",
       "name": "List files",
       "webhookId": "f50dba63-7db1-4216-8ba8-6022e1240f8e",
       "credentials": {
         "githubApi": {
-          "id": "wNHSUGXCVHrHamaK",
+          "id": "DBmDD6xqRBes6abQ",
           "name": "GitHub account"
         }
       }
@@ -60,17 +60,19 @@
       "type": "n8n-nodes-base.n8n",
       "typeVersion": 1,
       "position": [
-        976,
-        136
+        992,
+        384
       ],
-      "id": "bca3c322-fd56-41a0-ac4f-65ad9f8e0108",
+      "id": "faa7fc70-0c2c-4767-992a-2b5587ba6741",
       "name": "Create a workflow",
+      "alwaysOutputData": false,
       "credentials": {
         "n8nApi": {
-          "id": "XE18JDowzzNYBUnY",
+          "id": "bWVWT9OL5JqJU9dd",
           "name": "n8n account"
         }
-      }
+      },
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -79,10 +81,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        304,
-        136
+        -336,
+        304
       ],
-      "id": "5d4b6dbe-9792-4502-a818-7daf4f6a0441",
+      "id": "7913815b-bc6d-4ee0-92e6-d0a924f8f3d9",
       "name": "Loop Over Items"
     },
     {
@@ -105,15 +107,15 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        528,
-        64
+        160,
+        240
       ],
-      "id": "47bbddf2-254d-4672-807a-fdecdd51754d",
+      "id": "207ac988-a70a-42ab-b252-1b54ef63f539",
       "name": "Get a file",
       "webhookId": "7ced58a9-e53a-47a9-bbcd-bb464573d318",
       "credentials": {
         "githubApi": {
-          "id": "wNHSUGXCVHrHamaK",
+          "id": "DBmDD6xqRBes6abQ",
           "name": "GitHub account"
         }
       }
@@ -125,11 +127,114 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        752,
-        64
+        688,
+        336
       ],
-      "id": "527af2aa-4abf-456f-b509-af1f482083c8",
-      "name": "Code in JavaScript"
+      "id": "4a055578-e647-40e5-bb45-5ef85805854b",
+      "name": "Code in JavaScript",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -16
+      ],
+      "id": "8f1285dd-41e5-4ae6-a7d3-40206434a7e7",
+      "name": "Delete a workflow",
+      "credentials": {
+        "n8nApi": {
+          "id": "bWVWT9OL5JqJU9dd",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        16
+      ],
+      "id": "9adcb87a-3938-4a55-ba7f-f6e9492e5aa8",
+      "name": "Get many workflows1",
+      "credentials": {
+        "n8nApi": {
+          "id": "bWVWT9OL5JqJU9dd",
+          "name": "n8n account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d647731a-a757-45db-a262-3552d9933306",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "restore1",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -432,
+        16
+      ],
+      "id": "94d81ea1-5522-48f6-96c4-296ccc5a5b33",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b17b9845-8715-42a8-ab0e-3c1aab8cb42c",
+              "name": "datas",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        640
+      ],
+      "id": "a8bf979d-6b03-4c7b-b8ea-ad7a917be2a3",
+      "name": "Edit Fields"
     }
   ],
   "connections": {
@@ -160,6 +265,13 @@
         [
           {
             "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
@@ -199,27 +311,59 @@
           }
         ]
       ]
+    },
+    "Get many workflows1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Delete a workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {},
-  "versionId": "db5bbc16-79f4-410a-a627-dd2fbe55f573",
+  "versionId": "bfb9e29f-8d6a-4e8b-a1a6-7bd915562396",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-02-14T22:09:20.824Z",
-      "createdAt": "2026-02-14T22:09:20.824Z",
+      "updatedAt": "2026-02-15T00:31:22.960Z",
+      "createdAt": "2026-02-15T00:31:22.960Z",
       "role": "workflow:owner",
-      "workflowId": "RSXSSidfDBeguLz_pK8Xd",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "wQHMqmjnRK8rSinx",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
