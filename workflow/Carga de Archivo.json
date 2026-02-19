@@ -1,0 +1,1350 @@
+{
+  "updatedAt": "2026-02-18T17:57:39.383Z",
+  "createdAt": "2026-02-16T22:34:15.210Z",
+  "id": "PCIiQLXy4CsZ0Byaq4NOk",
+  "name": "Carga de Archivo",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "recibir-archivo",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        640
+      ],
+      "id": "c9351d54-6a12-4d09-8e40-d16ba567cd44",
+      "name": "recibir-archivo",
+      "webhookId": "d9df7169-2f8c-4d6f-8233-1559a2921a1e"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"file_path\": \"0{{ $json.originalFilename }}\",\n  \"execution_id\": \"{{$execution.id}}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2384,
+        496
+      ],
+      "id": "6f77c2f5-eb68-42ed-88ca-e281dc494907",
+      "name": "confirmacion de exito"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "data0",
+        "name": "=dataset_{{$execution.id}}.csv",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j",
+          "mode": "list",
+          "cachedResultName": "proyecto molinos rio de la plata",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        592,
+        496
+      ],
+      "id": "7100772d-b7c6-41f0-860a-0cea341416ed",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YlliA6g1EcMRYRSj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "data1",
+        "name": "=propuesta_{{$execution.id}}.csv",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j",
+          "mode": "list",
+          "cachedResultName": "proyecto molinos rio de la plata",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        592,
+        688
+      ],
+      "id": "f2d1b949-b1ec-41c9-81ae-f0487cb60303",
+      "name": "Upload file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YlliA6g1EcMRYRSj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "gbDmDcfLqLz1rdHQ",
+          "mode": "list",
+          "cachedResultName": "archivos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/gbDmDcfLqLz1rdHQ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "archivo": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "archivo"
+          ],
+          "schema": [
+            {
+              "id": "archivo",
+              "displayName": "archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        640
+      ],
+      "id": "941a1ffa-0eaf-4c56-a471-afba68f80ff6",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\"\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        transactions = parseCSV(buffer.toString('utf8'), ','); \n    }\n    \n    // ARCHIVO \"4k\"\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const rows = parseCSV(buffer.toString('utf8'), ';');\n        \n        for (const row of rows) {\n            // parseCSV ya limpia los datos, no necesitamos String().trim() aquí\n            const key = `${row.PRDID}_${row.CUSTID}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\nconst dateCache = {}; // <-- CACHÉ DE FECHAS PARA AHORRAR CPU\n\nfor (const txn of transactions) {\n    // Usamos las llaves limpias directamente\n    const key = `${txn.PRDID}_${txn.CUSTID}`;\n    const refData = referenceMap.get(key);\n    \n    if (!refData) continue; // Si no hay match en el 4k, saltamos a la siguiente fila inmediatamente\n\n    let foreActValue = null;\n\n    // --- Lógica de Fecha Optimizada con Caché ---\n    if (txn.PERIODID3) {\n        let dynamicColumn = dateCache[txn.PERIODID3];\n        \n        // Si no hemos calculado esta fecha antes, lo hacemos y la guardamos\n        if (dynamicColumn === undefined) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2);\n                const monthName = monthMap[parts[1]];\n                dynamicColumn = monthName ? `${yearShort}-${monthName}` : null;\n            } else {\n                dynamicColumn = null;\n            }\n            dateCache[txn.PERIODID3] = dynamicColumn; // Guardar en caché\n        }\n\n        // Extraer el valor del forecast\n        if (dynamicColumn) {\n            const val = refData[dynamicColumn];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = val;\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO Y ASIGNACIÓN ---\n    if (foreActValue !== null) {\n        // Mutamos el objeto original para ahorrar memoria RAM\n        txn['CUSTREGION'] = refData['CUSTREGION'];\n        txn['CUSTGROUP'] = refData['CUSTGROUP'];\n        txn['foreAct'] = foreActValue; \n\n        results.push({ json: txn });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            // parseCSV limpia espacios, así que los valores ya vienen listos\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1936,
+        640
+      ],
+      "id": "07207aff-8304-4b8e-bd8a-cf9cc3ecaf9a",
+      "name": "leer documentos"
+    },
+    {
+      "parameters": {
+        "batchSize": 5000,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2160,
+        640
+      ],
+      "id": "23e0a3de-6055-41a1-8ca2-7dab18b3df02",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_consolidated_data",
+          "mode": "list",
+          "cachedResultName": "molinos_consolidated_data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pindex": "={{ $json.PINDEX }}",
+            "zselloutcliente": "={{ $json.ZSELLOUTCLIENTE }}",
+            "custid": "={{ $json.CUSTID }}",
+            "prdid": "={{ $json.PRDID }}",
+            "custregion": "={{ $json.CUSTREGION }}",
+            "custgroup": "={{ $json.CUSTGROUP }}",
+            "foreact": "={{ $json.foreAct }}",
+            "sov": "={{ $json.SOV }}",
+            "som": "={{ $json.SOM }}",
+            "punitario": "={{ $json.PUNITARIO }}",
+            "year": "={{ $json.YEAR }}",
+            "month": "={{ $json.MONTH }}",
+            "adjustedactualsqty": "={{ $json.ADJUSTEDACTUALSQTY }}",
+            "periodid3": "={{ $json.PERIODID3 }}",
+            "season": "={{ $json.SEASON }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "periodid3",
+              "displayName": "periodid3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prdid",
+              "displayName": "prdid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "custid",
+              "displayName": "custid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "adjustedactualsqty",
+              "displayName": "adjustedactualsqty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "month",
+              "displayName": "month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "season",
+              "displayName": "season",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "punitario",
+              "displayName": "punitario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pindex",
+              "displayName": "pindex",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "som",
+              "displayName": "som",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sov",
+              "displayName": "sov",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "zselloutcliente",
+              "displayName": "zselloutcliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "custregion",
+              "displayName": "custregion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "custgroup",
+              "displayName": "custgroup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "foreact",
+              "displayName": "foreact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "createdat",
+              "displayName": "createdat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updatedat",
+              "displayName": "updatedat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2384,
+        688
+      ],
+      "id": "d742631c-a591-43d5-bd6d-737830b811b9",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.dataset }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "70k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1488,
+        496
+      ],
+      "id": "92c54fa5-7646-4926-a1cf-7a54b88cfb8d",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YlliA6g1EcMRYRSj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.propuesta }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "4k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1488,
+        688
+      ],
+      "id": "bca37f3e-e0f0-417f-85cd-295d52acc63d",
+      "name": "Download file4",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YlliA6g1EcMRYRSj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1712,
+        640
+      ],
+      "id": "ce456ecb-229a-4783-a991-57d8dcae8c72",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "gbDmDcfLqLz1rdHQ",
+          "mode": "list",
+          "cachedResultName": "archivos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/gbDmDcfLqLz1rdHQ"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        640
+      ],
+      "id": "7e8c8c08-9f24-4840-b8f5-bfeb4897f022",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos todas las filas de la tabla\nconst filas = $input.all();\n\n// 2. Verificamos que haya al menos 2 registros para evitar errores\nif (filas.length < 2) {\n  throw new Error(\"No hay suficientes archivos en la base de datos.\");\n}\n\n// 3. Ordenamos las filas de mayor a menor basándonos en la columna 'id'\nfilas.sort((a, b) => b.json.id - a.json.id);\n\n// 4. Devolvemos 1 sola fila con dos \"columnas\" independientes \n// usando la propiedad 'archivo' que vi en tu captura\nreturn [\n  {\n    json: {\n      dataset: filas[1].json.archivo,\n      propuesta: filas[0].json.archivo\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        640
+      ],
+      "id": "702a5488-407f-49ba-9b1a-c064d01b1fba",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "recibir-archivo": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leer documentos": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "confirmacion de exito",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file4": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "leer documentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "631c7084-d8f6-4a77-bc09-5a6e29990395",
+  "activeVersionId": "631c7084-d8f6-4a77-bc09-5a6e29990395",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-16T22:34:15.210Z",
+      "createdAt": "2026-02-16T22:34:15.210Z",
+      "role": "workflow:owner",
+      "workflowId": "PCIiQLXy4CsZ0Byaq4NOk",
+      "projectId": "9axjLTcJCvAcwxP1"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-18T17:57:44.028Z",
+    "createdAt": "2026-02-18T17:57:39.385Z",
+    "versionId": "631c7084-d8f6-4a77-bc09-5a6e29990395",
+    "workflowId": "PCIiQLXy4CsZ0Byaq4NOk",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "recibir-archivo",
+          "responseMode": "responseNode",
+          "options": {
+            "binaryPropertyName": "data"
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          368,
+          640
+        ],
+        "id": "c9351d54-6a12-4d09-8e40-d16ba567cd44",
+        "name": "recibir-archivo",
+        "webhookId": "d9df7169-2f8c-4d6f-8233-1559a2921a1e"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"status\": \"success\",\n  \"file_path\": \"0{{ $json.originalFilename }}\",\n  \"execution_id\": \"{{$execution.id}}\"\n} ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          2384,
+          496
+        ],
+        "id": "6f77c2f5-eb68-42ed-88ca-e281dc494907",
+        "name": "confirmacion de exito"
+      },
+      {
+        "parameters": {
+          "inputDataFieldName": "data0",
+          "name": "=dataset_{{$execution.id}}.csv",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j",
+            "mode": "list",
+            "cachedResultName": "proyecto molinos rio de la plata",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          592,
+          496
+        ],
+        "id": "7100772d-b7c6-41f0-860a-0cea341416ed",
+        "name": "Upload file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YlliA6g1EcMRYRSj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputDataFieldName": "data1",
+          "name": "=propuesta_{{$execution.id}}.csv",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j",
+            "mode": "list",
+            "cachedResultName": "proyecto molinos rio de la plata",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1nWbiHTB5AsS7Vxr61_5Wy89UX4N4_z4j"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          592,
+          688
+        ],
+        "id": "f2d1b949-b1ec-41c9-81ae-f0487cb60303",
+        "name": "Upload file1",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YlliA6g1EcMRYRSj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "value": "gbDmDcfLqLz1rdHQ",
+            "mode": "list",
+            "cachedResultName": "archivos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/gbDmDcfLqLz1rdHQ"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "archivo": "={{ $json.id }}"
+            },
+            "matchingColumns": [
+              "archivo"
+            ],
+            "schema": [
+              {
+                "id": "archivo",
+                "displayName": "archivo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          816,
+          640
+        ],
+        "id": "941a1ffa-0eaf-4c56-a471-afba68f80ff6",
+        "name": "Insert row"
+      },
+      {
+        "parameters": {
+          "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\"\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        transactions = parseCSV(buffer.toString('utf8'), ','); \n    }\n    \n    // ARCHIVO \"4k\"\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const rows = parseCSV(buffer.toString('utf8'), ';');\n        \n        for (const row of rows) {\n            // parseCSV ya limpia los datos, no necesitamos String().trim() aquí\n            const key = `${row.PRDID}_${row.CUSTID}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\nconst dateCache = {}; // <-- CACHÉ DE FECHAS PARA AHORRAR CPU\n\nfor (const txn of transactions) {\n    // Usamos las llaves limpias directamente\n    const key = `${txn.PRDID}_${txn.CUSTID}`;\n    const refData = referenceMap.get(key);\n    \n    if (!refData) continue; // Si no hay match en el 4k, saltamos a la siguiente fila inmediatamente\n\n    let foreActValue = null;\n\n    // --- Lógica de Fecha Optimizada con Caché ---\n    if (txn.PERIODID3) {\n        let dynamicColumn = dateCache[txn.PERIODID3];\n        \n        // Si no hemos calculado esta fecha antes, lo hacemos y la guardamos\n        if (dynamicColumn === undefined) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2);\n                const monthName = monthMap[parts[1]];\n                dynamicColumn = monthName ? `${yearShort}-${monthName}` : null;\n            } else {\n                dynamicColumn = null;\n            }\n            dateCache[txn.PERIODID3] = dynamicColumn; // Guardar en caché\n        }\n\n        // Extraer el valor del forecast\n        if (dynamicColumn) {\n            const val = refData[dynamicColumn];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = val;\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO Y ASIGNACIÓN ---\n    if (foreActValue !== null) {\n        // Mutamos el objeto original para ahorrar memoria RAM\n        txn['CUSTREGION'] = refData['CUSTREGION'];\n        txn['CUSTGROUP'] = refData['CUSTGROUP'];\n        txn['foreAct'] = foreActValue; \n\n        results.push({ json: txn });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            // parseCSV limpia espacios, así que los valores ya vienen listos\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1936,
+          640
+        ],
+        "id": "07207aff-8304-4b8e-bd8a-cf9cc3ecaf9a",
+        "name": "leer documentos"
+      },
+      {
+        "parameters": {
+          "batchSize": 5000,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          2160,
+          640
+        ],
+        "id": "23e0a3de-6055-41a1-8ca2-7dab18b3df02",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "schema": {
+            "__rl": true,
+            "value": "public",
+            "mode": "list",
+            "cachedResultName": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_consolidated_data",
+            "mode": "list",
+            "cachedResultName": "molinos_consolidated_data"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "pindex": "={{ $json.PINDEX }}",
+              "zselloutcliente": "={{ $json.ZSELLOUTCLIENTE }}",
+              "custid": "={{ $json.CUSTID }}",
+              "prdid": "={{ $json.PRDID }}",
+              "custregion": "={{ $json.CUSTREGION }}",
+              "custgroup": "={{ $json.CUSTGROUP }}",
+              "foreact": "={{ $json.foreAct }}",
+              "sov": "={{ $json.SOV }}",
+              "som": "={{ $json.SOM }}",
+              "punitario": "={{ $json.PUNITARIO }}",
+              "year": "={{ $json.YEAR }}",
+              "month": "={{ $json.MONTH }}",
+              "adjustedactualsqty": "={{ $json.ADJUSTEDACTUALSQTY }}",
+              "periodid3": "={{ $json.PERIODID3 }}",
+              "season": "={{ $json.SEASON }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "periodid3",
+                "displayName": "periodid3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "prdid",
+                "displayName": "prdid",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "custid",
+                "displayName": "custid",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "adjustedactualsqty",
+                "displayName": "adjustedactualsqty",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "month",
+                "displayName": "month",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "year",
+                "displayName": "year",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "season",
+                "displayName": "season",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "punitario",
+                "displayName": "punitario",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "pindex",
+                "displayName": "pindex",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "som",
+                "displayName": "som",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "sov",
+                "displayName": "sov",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "zselloutcliente",
+                "displayName": "zselloutcliente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "custregion",
+                "displayName": "custregion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "custgroup",
+                "displayName": "custgroup",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "foreact",
+                "displayName": "foreact",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "createdat",
+                "displayName": "createdat",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "updatedat",
+                "displayName": "updatedat",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          2384,
+          688
+        ],
+        "id": "d742631c-a591-43d5-bd6d-737830b811b9",
+        "name": "Insert rows in a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.dataset }}",
+            "mode": "id"
+          },
+          "options": {
+            "binaryPropertyName": "70k"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1488,
+          496
+        ],
+        "id": "92c54fa5-7646-4926-a1cf-7a54b88cfb8d",
+        "name": "Download file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YlliA6g1EcMRYRSj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.propuesta }}",
+            "mode": "id"
+          },
+          "options": {
+            "binaryPropertyName": "4k"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1488,
+          688
+        ],
+        "id": "bca37f3e-e0f0-417f-85cd-295d52acc63d",
+        "name": "Download file4",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YlliA6g1EcMRYRSj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1712,
+          640
+        ],
+        "id": "ce456ecb-229a-4783-a991-57d8dcae8c72",
+        "name": "Merge3"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "dataTableId": {
+            "__rl": true,
+            "value": "gbDmDcfLqLz1rdHQ",
+            "mode": "list",
+            "cachedResultName": "archivos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/gbDmDcfLqLz1rdHQ"
+          },
+          "matchType": "allConditions",
+          "returnAll": true
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          1040,
+          640
+        ],
+        "id": "7e8c8c08-9f24-4840-b8f5-bfeb4897f022",
+        "name": "Get row(s)"
+      },
+      {
+        "parameters": {
+          "jsCode": "// 1. Obtenemos todas las filas de la tabla\nconst filas = $input.all();\n\n// 2. Verificamos que haya al menos 2 registros para evitar errores\nif (filas.length < 2) {\n  throw new Error(\"No hay suficientes archivos en la base de datos.\");\n}\n\n// 3. Ordenamos las filas de mayor a menor basándonos en la columna 'id'\nfilas.sort((a, b) => b.json.id - a.json.id);\n\n// 4. Devolvemos 1 sola fila con dos \"columnas\" independientes \n// usando la propiedad 'archivo' que vi en tu captura\nreturn [\n  {\n    json: {\n      dataset: filas[1].json.archivo,\n      propuesta: filas[0].json.archivo\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1264,
+          640
+        ],
+        "id": "702a5488-407f-49ba-9b1a-c064d01b1fba",
+        "name": "Code in JavaScript"
+      }
+    ],
+    "connections": {
+      "recibir-archivo": {
+        "main": [
+          [
+            {
+              "node": "Upload file",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Upload file1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file": {
+        "main": [
+          [
+            {
+              "node": "Insert row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file1": {
+        "main": [
+          [
+            {
+              "node": "Insert row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert row": {
+        "main": [
+          [
+            {
+              "node": "Get row(s)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "leer documentos": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "confirmacion de exito",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Insert rows in a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert rows in a table": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file4": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "node": "leer documentos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s)": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Download file",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Download file4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version 631c7084",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
