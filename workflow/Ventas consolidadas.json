@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2025-07-23T07:04:50.000Z",
-  "createdAt": "2025-06-30T05:55:16.964Z",
-  "id": "MHfyMJbFqHdDyyes",
+  "updatedAt": "2026-02-15T00:37:42.400Z",
+  "createdAt": "2026-02-15T00:31:14.765Z",
+  "id": "EBrlOp0RQY0JH78R",
   "name": "Ventas consolidadas",
   "active": false,
   "isArchived": false,
@@ -1139,23 +1139,23 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "0e42fe85-16c7-414e-8193-75664e3a3a9b",
+  "meta": null,
+  "pinData": null,
+  "versionId": "fb39a842-7985-4a8d-986f-1998915b22c1",
   "activeVersionId": null,
-  "triggerCount": 1,
+  "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T05:55:16.970Z",
-      "createdAt": "2025-06-30T05:55:16.970Z",
+      "updatedAt": "2026-02-15T00:31:14.765Z",
+      "createdAt": "2026-02-15T00:31:14.765Z",
       "role": "workflow:owner",
-      "workflowId": "MHfyMJbFqHdDyyes",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "EBrlOp0RQY0JH78R",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
