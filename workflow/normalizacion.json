@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-01-20T22:03:07.000Z",
-  "createdAt": "2026-01-20T21:59:48.663Z",
-  "id": "RFawMfFvVJFWaYYTpevIo",
+  "updatedAt": "2026-02-15T00:42:28.930Z",
+  "createdAt": "2026-02-15T00:31:22.056Z",
+  "id": "VI590EQSjqvPuhL3",
   "name": "normalizacion",
   "active": false,
   "isArchived": true,
@@ -290,21 +290,22 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
-  "versionId": "01e4bc86-f3d8-47c5-84bd-d6a5e7b3f7f9",
+  "pinData": null,
+  "versionId": "ee69279e-3231-43c1-bdd5-9d68420b4cc0",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-01-20T21:59:48.668Z",
-      "createdAt": "2026-01-20T21:59:48.668Z",
+      "updatedAt": "2026-02-15T00:31:22.056Z",
+      "createdAt": "2026-02-15T00:31:22.056Z",
       "role": "workflow:owner",
-      "workflowId": "RFawMfFvVJFWaYYTpevIo",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "VI590EQSjqvPuhL3",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
