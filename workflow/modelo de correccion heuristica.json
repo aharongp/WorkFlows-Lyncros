@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-02-14T05:04:02.517Z",
-  "createdAt": "2026-01-26T04:01:55.165Z",
-  "id": "24kdvmx8q0XatapK16_wP",
+  "updatedAt": "2026-02-17T23:46:15.582Z",
+  "createdAt": "2026-02-15T00:31:21.179Z",
+  "id": "j30ej6IzqhxPv6js",
   "name": "modelo de correccion heuristica",
   "active": false,
   "isArchived": false,
@@ -11,7 +11,7 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -272,
+        -240,
         -96
       ],
       "id": "a6ce70c3-3233-4e16-ab1d-0e0f8bae3b2c",
@@ -41,7 +41,7 @@
       "name": "Download file2",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "YDXrgVq9dh5QCcVj",
+          "id": "YlliA6g1EcMRYRSj",
           "name": "Google Drive account"
         }
       }
@@ -70,7 +70,7 @@
       "name": "Download file3",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "YDXrgVq9dh5QCcVj",
+          "id": "YlliA6g1EcMRYRSj",
           "name": "Google Drive account"
         }
       }
@@ -150,10 +150,10 @@
         "operation": "get",
         "dataTableId": {
           "__rl": true,
-          "value": "2QNW70i5pMi85LF2",
+          "value": "zivYLI1PlIMWk3fK",
           "mode": "list",
-          "cachedResultName": "clientes problematicos nuevo",
-          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+          "cachedResultName": "clientes problematicos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
         },
         "limit": 1000
       },
@@ -233,61 +233,60 @@
     },
     {
       "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        1552,
-        64
-      ],
-      "id": "a2a86d20-641c-43be-a744-5c9d67806fcc",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "ZBx8lP0qcbCWBfIn",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// 1. Recuperamos los datos ORIGINALES del Loop (donde están CUSTID, Forecast, etc.)\n// Asegúrate de que el nombre dentro de $('...') sea IDÉNTICO al nombre de tu nodo de loop.\nconst originalItems = $('Loop Over Items').all();\n\n// 2. Recorremos las respuestas de la IA\nreturn items.map((item, index) => {\n    \n    // 'aiData' es lo que escupe el nodo LLM (Solo el texto)\n    const aiData = item.json;\n    \n    // 'originalData' es lo que teníamos antes de entrar a la IA (Los datos ricos)\n    // Usamos el índice para casar la respuesta 1 con el dato original 1\n    const originalData = originalItems[index].json;\n\n    // Limpieza de la respuesta de texto\n    const explicacion = (aiData.text || aiData.response || \"\").replace(/^[\"']|[\"']$/g, '').trim();\n\n    // 3. Fusionamos todo en el JSON final\n    return {\n        json: {\n            // Datos traídos del original\n            \"Periodo\": originalData.PERIODID3,\n            \"ID_Cliente\": originalData.CUSTID,\n            \"SKU\": originalData.PRDID,\n            \"Grupo\": originalData.CUSTGROUP,\n            \"Estatus\": originalData._debug_status,\n            \n            // Métricas numéricas originales\n            \"Forecast_Original\": parseInt(originalData.MODEL_forecast_original || 0),\n            \"Forecast_IA\": parseInt(originalData.MODEL_forecast_corrected || 0),\n            \"Variacion\": originalData.MODEL_delta_pct,\n            \"Drivers\": originalData.MODEL_drivers,\n            \n            // La respuesta de la IA\n            \"Racional_IA\": explicacion \n        }\n    };\n});"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1968,
-        -48
-      ],
-      "id": "928e4d79-ded2-47b9-90a3-a11ddf074410",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
         "dataTableId": {
           "__rl": true,
-          "value": "b6pR0XroBARiYZ8N",
+          "value": "eSMLU4SNBggQHYjh",
           "mode": "list",
-          "cachedResultName": "forecast explicado",
-          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/b6pR0XroBARiYZ8N"
+          "cachedResultName": "forecast corregido",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/eSMLU4SNBggQHYjh"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Forecast_Og": "={{ $json.Forecast_Original }}",
-            "Forecast_IA": "={{ $json.Forecast_IA }}",
-            "Racional": "={{ $json.Racional_IA }}",
-            "Periodo": "={{ $json.Periodo }}",
-            "Cliente": "={{ $json.ID_Cliente }}",
-            "SKU": "={{ $json.SKU }}",
-            "Estatus": "={{ $json.Estatus }}"
+            "MODEL_forecast_no_cap": "={{ $json.MODEL_forecast_no_cap }}",
+            "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
+            "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
+            "count": "={{ $json._count }}",
+            "LAST_MONTH_SALE": "={{ $json.LAST_MONTH_SALE }}",
+            "foreAct": "={{ $json.foreAct }}",
+            "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
+            "PINDEX": "={{ $json.PINDEX }}",
+            "PUNITARIO": "={{ $json.PUNITARIO }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "REGION": "={{ $json.REGION }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}",
+            "PERIODID3": "={{ $json.PERIODID3 }}",
+            "ADJUSTEDACTUALSQTY": "={{ $json.ADJUSTEDACTUALSQTY }}",
+            "MONTH": "={{ $json.MONTH }}",
+            "YEAR": "={{ $json.YEAR }}",
+            "SEASON": "={{ $json.SEASON }}",
+            "SOM": "={{ $json.SOM }}",
+            "SOV": "={{ $json.SOV }}",
+            "CUSTREGION": "={{ $json.CUSTREGION }}",
+            "CUSTGROUP": "={{ $json.CUSTGROUP }}",
+            "meta_data_period": "={{ $json._meta_data_period }}",
+            "meta_forecast_col": "={{ $json._meta_forecast_col }}",
+            "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
+            "MODEL_raw_delta_pct": "={{ $json.MODEL_raw_delta_pct }}",
+            "MODEL_drivers": "={{ $json.MODEL_drivers }}",
+            "debug_momentum_ratio": "={{ $json._debug_status }}",
+            "agent_explication": "={{ $json.agent_explication }}"
           },
           "matchingColumns": [],
           "schema": [
             {
-              "id": "Periodo",
-              "displayName": "Periodo",
+              "id": "CUSTID",
+              "displayName": "CUSTID",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -296,8 +295,8 @@
               "removed": false
             },
             {
-              "id": "Cliente",
-              "displayName": "Cliente",
+              "id": "PRDID",
+              "displayName": "PRDID",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -306,8 +305,8 @@
               "removed": false
             },
             {
-              "id": "SKU",
-              "displayName": "SKU",
+              "id": "REGION",
+              "displayName": "REGION",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -316,8 +315,8 @@
               "removed": false
             },
             {
-              "id": "Estatus",
-              "displayName": "Estatus",
+              "id": "STATUS",
+              "displayName": "STATUS",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -326,8 +325,18 @@
               "removed": false
             },
             {
-              "id": "Forecast_Og",
-              "displayName": "Forecast_Og",
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -336,8 +345,48 @@
               "removed": false
             },
             {
-              "id": "Forecast_IA",
-              "displayName": "Forecast_IA",
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -346,8 +395,268 @@
               "removed": false
             },
             {
-              "id": "Racional",
-              "displayName": "Racional",
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PERIODID3",
+              "displayName": "PERIODID3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ADJUSTEDACTUALSQTY",
+              "displayName": "ADJUSTEDACTUALSQTY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MONTH",
+              "displayName": "MONTH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "YEAR",
+              "displayName": "YEAR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SEASON",
+              "displayName": "SEASON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PUNITARIO",
+              "displayName": "PUNITARIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PINDEX",
+              "displayName": "PINDEX",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SOM",
+              "displayName": "SOM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SOV",
+              "displayName": "SOV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ZSELLOUTCLIENTE",
+              "displayName": "ZSELLOUTCLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CUSTREGION",
+              "displayName": "CUSTREGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CUSTGROUP",
+              "displayName": "CUSTGROUP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "foreAct",
+              "displayName": "foreAct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "LAST_MONTH_SALE",
+              "displayName": "LAST_MONTH_SALE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "meta_data_period",
+              "displayName": "meta_data_period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "meta_forecast_col",
+              "displayName": "meta_forecast_col",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "count",
+              "displayName": "count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MODEL_forecast_original",
+              "displayName": "MODEL_forecast_original",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MODEL_forecast_corrected",
+              "displayName": "MODEL_forecast_corrected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MODEL_forecast_no_cap",
+              "displayName": "MODEL_forecast_no_cap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MODEL_delta_pct",
+              "displayName": "MODEL_delta_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MODEL_raw_delta_pct",
+              "displayName": "MODEL_raw_delta_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MODEL_drivers",
+              "displayName": "MODEL_drivers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "debug_momentum_ratio",
+              "displayName": "debug_momentum_ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "agent_explication",
+              "displayName": "agent_explication",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -369,6 +678,277 @@
       ],
       "id": "3f64a3c9-024f-4bb9-8169-8de2f9ffe08f",
       "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "model": "openrouter/free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        112
+      ],
+      "id": "f0fb02bb-40d9-46e2-87bc-fb5605faaafc",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "k9tU10lpYPtOUBLh",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "04d2c8c7-ddcc-44d6-9e60-38a0396af50c",
+              "name": "CUSTID",
+              "value": "={{ $('Loop Over Items').item.json.CUSTID }}",
+              "type": "string"
+            },
+            {
+              "id": "4a49cd58-dec1-490e-afd5-780a2b5d97f1",
+              "name": "PRDID",
+              "value": "={{ $('Loop Over Items').item.json.PRDID }}",
+              "type": "string"
+            },
+            {
+              "id": "cba94077-90a6-4442-b6af-5cccd27c3254",
+              "name": "REGION",
+              "value": "={{ $('Loop Over Items').item.json.REGION }}",
+              "type": "string"
+            },
+            {
+              "id": "e137ae34-7ff8-4053-b725-beb9dde721e9",
+              "name": "STATUS",
+              "value": "={{ $('Loop Over Items').item.json.STATUS }}",
+              "type": "string"
+            },
+            {
+              "id": "f02338c3-89ed-4d62-b75d-138830d167a9",
+              "name": "STRATEGY",
+              "value": "={{ $('Loop Over Items').item.json.STRATEGY }}",
+              "type": "string"
+            },
+            {
+              "id": "fe7efc83-8bed-4b49-8f34-8cc6dfdaa50a",
+              "name": "FINAL_SCORE",
+              "value": "={{ $('Loop Over Items').item.json.FINAL_SCORE }}",
+              "type": "number"
+            },
+            {
+              "id": "a8ec0647-bf38-40eb-ad81-f6959e78b013",
+              "name": "JUSTIFICATION",
+              "value": "={{ $('Loop Over Items').item.json.JUSTIFICATION }}",
+              "type": "string"
+            },
+            {
+              "id": "eaa528bc-881b-45f7-9a89-93a0a45969e1",
+              "name": "ERROR_SHARE",
+              "value": "={{ $('Loop Over Items').item.json.ERROR_SHARE }}",
+              "type": "string"
+            },
+            {
+              "id": "63885e43-4e45-413a-94fa-faf4fd1f1db0",
+              "name": "IMPACT_SCORE",
+              "value": "={{ $('Loop Over Items').item.json.IMPACT_SCORE }}",
+              "type": "string"
+            },
+            {
+              "id": "ab721fdb-e8c0-428c-b394-5cac84d29478",
+              "name": "SIGNAL_SCORE",
+              "value": "={{ $('Loop Over Items').item.json.SIGNAL_SCORE }}",
+              "type": "string"
+            },
+            {
+              "id": "72a83390-c3e2-4af1-8c39-15b8b1d2eafd",
+              "name": "TOTAL_SALES",
+              "value": "={{ $('Loop Over Items').item.json.TOTAL_SALES }}",
+              "type": "number"
+            },
+            {
+              "id": "fb28de5e-5732-4c22-8aa9-e2104282bfee",
+              "name": "BIAS",
+              "value": "={{ $('Loop Over Items').item.json.BIAS }}",
+              "type": "string"
+            },
+            {
+              "id": "d8d6495d-21e9-46e9-b4e7-2f66c0dfd927",
+              "name": "WAPE",
+              "value": "={{ $('Loop Over Items').item.json.WAPE }}",
+              "type": "string"
+            },
+            {
+              "id": "88fedf00-d0c1-466a-81aa-920b41416c73",
+              "name": "PERIODID3",
+              "value": "={{ $('Loop Over Items').item.json.PERIODID3 }}",
+              "type": "string"
+            },
+            {
+              "id": "779409bb-81cf-420a-9147-a9fc23b4a725",
+              "name": "ADJUSTEDACTUALSQTY",
+              "value": "={{ $('Loop Over Items').item.json.ADJUSTEDACTUALSQTY }}",
+              "type": "string"
+            },
+            {
+              "id": "226e4bd4-d78e-497b-b6cd-69065acd39fb",
+              "name": "MONTH",
+              "value": "={{ $('Loop Over Items').item.json.MONTH }}",
+              "type": "string"
+            },
+            {
+              "id": "f7821b2d-d3c3-4b9a-b397-a5aa39f53480",
+              "name": "YEAR",
+              "value": "={{ $('Loop Over Items').item.json.YEAR }}",
+              "type": "string"
+            },
+            {
+              "id": "4be51186-c455-415b-bd26-8d920b97cf55",
+              "name": "SEASON",
+              "value": "={{ $('Loop Over Items').item.json.SEASON }}",
+              "type": "string"
+            },
+            {
+              "id": "412ecb5c-91bc-40c7-85e6-63e2472d3eb6",
+              "name": "PUNITARIO",
+              "value": "={{ $('Loop Over Items').item.json.PUNITARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "7fd6a296-3ede-478a-83df-01dfec41744a",
+              "name": "PINDEX",
+              "value": "={{ $('Loop Over Items').item.json.PINDEX }}",
+              "type": "number"
+            },
+            {
+              "id": "89b096c3-eca9-4361-9264-83a1dda2a1e5",
+              "name": "SOM",
+              "value": "={{ $('Loop Over Items').item.json.SOM }}",
+              "type": "string"
+            },
+            {
+              "id": "ddfc6049-3b64-4d63-923a-d10aba9a59ae",
+              "name": "SOV",
+              "value": "={{ $('Loop Over Items').item.json.SOV }}",
+              "type": "string"
+            },
+            {
+              "id": "260ac4f2-7f05-4adc-a45e-9d8afefeae02",
+              "name": "ZSELLOUTCLIENTE",
+              "value": "={{ $('Loop Over Items').item.json.ZSELLOUTCLIENTE }}",
+              "type": "number"
+            },
+            {
+              "id": "128fed89-94bf-4bb3-a53c-3aff7e7f3a03",
+              "name": "CUSTREGION",
+              "value": "={{ $('Loop Over Items').item.json.CUSTREGION }}",
+              "type": "string"
+            },
+            {
+              "id": "f97ba0e8-4cf6-428e-add3-ee45a1a649bf",
+              "name": "CUSTGROUP",
+              "value": "={{ $('Loop Over Items').item.json.CUSTGROUP }}",
+              "type": "string"
+            },
+            {
+              "id": "1d517762-b5d6-4325-b36d-23981d7b182f",
+              "name": "foreAct",
+              "value": "={{ $('Loop Over Items').item.json.foreAct }}",
+              "type": "number"
+            },
+            {
+              "id": "f0d60a72-95e4-4096-a97b-03caa70567cc",
+              "name": "LAST_MONTH_SALE",
+              "value": "={{ $('Loop Over Items').item.json.LAST_MONTH_SALE }}",
+              "type": "number"
+            },
+            {
+              "id": "5c784026-18e4-42ce-b5a5-e90a981cb6e4",
+              "name": "_meta_data_period",
+              "value": "={{ $('Loop Over Items').item.json._meta_data_period }}",
+              "type": "string"
+            },
+            {
+              "id": "5381c607-d01a-42bc-af19-1bb44a10662f",
+              "name": "_meta_forecast_col",
+              "value": "={{ $('Loop Over Items').item.json._meta_forecast_col }}",
+              "type": "string"
+            },
+            {
+              "id": "c2ec1ab0-d609-4b84-86f3-08f25a1e3f98",
+              "name": "_count",
+              "value": "={{ $('Loop Over Items').item.json._count }}",
+              "type": "number"
+            },
+            {
+              "id": "2acd6965-5d37-44b8-92f4-cf0603680556",
+              "name": "MODEL_forecast_original",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_forecast_original }}",
+              "type": "number"
+            },
+            {
+              "id": "5ae25e1a-89ef-4a76-b429-e3eb3155b7e6",
+              "name": "MODEL_forecast_corrected",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_forecast_corrected }}",
+              "type": "number"
+            },
+            {
+              "id": "280fdf70-63ce-4042-bd92-da54c5fe8c77",
+              "name": "MODEL_forecast_no_cap",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_forecast_no_cap }}",
+              "type": "number"
+            },
+            {
+              "id": "38aa1c08-bc01-4846-8bbe-6304639b3283",
+              "name": "MODEL_delta_pct",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_delta_pct }}",
+              "type": "string"
+            },
+            {
+              "id": "5f6c0043-b71d-443b-b050-fb290876ba3c",
+              "name": "MODEL_raw_delta_pct",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_raw_delta_pct }}",
+              "type": "string"
+            },
+            {
+              "id": "4db998df-f65e-4ab4-8971-6d6ad2dc317a",
+              "name": "MODEL_drivers",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_drivers }}",
+              "type": "string"
+            },
+            {
+              "id": "28e7a88b-e7dd-4542-97a6-f6aa793bb2fc",
+              "name": "MODEL_drivers",
+              "value": "={{ $('Loop Over Items').item.json.MODEL_drivers }}",
+              "type": "string"
+            },
+            {
+              "id": "3cb87ffb-c01f-41fd-af58-d6b70ec2a8a3",
+              "name": "_debug_status",
+              "value": "={{ $('Loop Over Items').item.json._debug_status }}",
+              "type": "string"
+            },
+            {
+              "id": "534f015e-e979-4eed-8602-b007d6469011",
+              "name": "agent_explication",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1968,
+        -48
+      ],
+      "id": "36426c80-dd6c-4693-b6ff-36342f10b843",
+      "name": "Edit Fields1"
     }
   ],
   "connections": {
@@ -513,29 +1093,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Gemini Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Insert row",
+            "node": "Edit Fields1",
             "type": "main",
             "index": 0
           }
@@ -552,11 +1110,34 @@
           }
         ]
       ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": null,
   "meta": {
@@ -565,20 +1146,23 @@
   "pinData": {
     "When clicking ‘Execute workflow’": [
       {
-        "json": {}
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
       }
     ]
   },
-  "versionId": "3d867ab1-834d-4b8a-84fd-9710b772edb4",
+  "versionId": "bbb7b25a-5a70-414f-9058-ac1fecb1cc9f",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-01-26T04:01:55.172Z",
-      "createdAt": "2026-01-26T04:01:55.172Z",
+      "updatedAt": "2026-02-15T00:31:21.179Z",
+      "createdAt": "2026-02-15T00:31:21.179Z",
       "role": "workflow:owner",
-      "workflowId": "24kdvmx8q0XatapK16_wP",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "j30ej6IzqhxPv6js",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
