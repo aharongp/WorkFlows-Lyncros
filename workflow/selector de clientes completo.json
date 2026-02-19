@@ -1,22 +1,11 @@
 {
-  "updatedAt": "2026-02-14T03:10:32.227Z",
-  "createdAt": "2026-01-26T03:34:26.921Z",
-  "id": "tpAhmxic6x60O4LsHzf9Y",
+  "updatedAt": "2026-02-18T17:54:30.168Z",
+  "createdAt": "2026-02-15T00:41:16.111Z",
+  "id": "zhWQh2Cq4j0RsWg0FX9sh",
   "name": "selector de clientes completo",
   "active": true,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -2496,
-        432
-      ],
-      "id": "2611f558-1265-427f-811d-89b362177863",
-      "name": "When clicking ‘Execute workflow’"
-    },
     {
       "parameters": {
         "assignments": {
@@ -83,10 +72,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1600,
-        624
+        -2000,
+        400
       ],
-      "id": "54499cd6-2a15-4dba-b369-74c82d637ee1",
+      "id": "d1f7d6d3-2a0d-484d-8be7-010133d022e0",
       "name": "Edit Fields"
     },
     {
@@ -105,10 +94,10 @@
       "type": "n8n-nodes-base.summarize",
       "typeVersion": 1.1,
       "position": [
-        -1456,
-        832
+        -1856,
+        608
       ],
-      "id": "aa8a8a88-b838-4bff-baef-b976c1eef67c",
+      "id": "f81c28dc-f8e6-48ff-8a57-5506d21982cf",
       "name": "Summarize",
       "alwaysOutputData": false
     },
@@ -122,10 +111,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -1104,
-        640
+        -1504,
+        416
       ],
-      "id": "b2250c72-6033-47fd-b9aa-aa91ad011fc5",
+      "id": "0dd15e9b-6b77-40de-98ff-c3b922f086b1",
       "name": "Merge1"
     },
     {
@@ -148,10 +137,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1280,
-        832
+        -1680,
+        608
       ],
-      "id": "6179f877-4181-4f46-a374-cf9e8e4b2013",
+      "id": "c6f6fb66-d8b4-4d35-89e6-20f43541c5aa",
       "name": "Edit Fields2"
     },
     {
@@ -171,14 +160,14 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        -2224,
-        448
+        -2720,
+        -496
       ],
-      "id": "2ab04727-784b-455b-95ad-68f141e04f15",
+      "id": "e0ce78cf-44dc-4819-a91d-0ca21c7359f2",
       "name": "Download file2",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "YDXrgVq9dh5QCcVj",
+          "id": "YlliA6g1EcMRYRSj",
           "name": "Google Drive account"
         }
       }
@@ -200,14 +189,14 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        -2224,
-        704
+        -2720,
+        -240
       ],
-      "id": "4731311c-e6c8-4da9-8e2b-f942fc256002",
+      "id": "b983546f-0fbb-4e20-8312-21923a0c6124",
       "name": "Download file3",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "YDXrgVq9dh5QCcVj",
+          "id": "YlliA6g1EcMRYRSj",
           "name": "Google Drive account"
         }
       }
@@ -217,10 +206,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -2064,
-        624
+        -2560,
+        -320
       ],
-      "id": "a1ff9659-6015-4b30-a197-330f4e838366",
+      "id": "8715971e-909d-4c28-a1fb-b3b73a277966",
       "name": "Merge2"
     },
     {
@@ -232,10 +221,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2480,
-        656
+        -2976,
+        -288
       ],
-      "id": "a013d71c-3ee4-4c88-af07-7e11b3a63105",
+      "id": "b611b2a5-0710-4a8d-a4b2-6039208b177a",
       "name": "Webhook",
       "webhookId": "26c81a1c-692d-4204-917c-4389c954ea66"
     },
@@ -249,10 +238,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -48,
-        704
+        -448,
+        480
       ],
-      "id": "498a7183-7b9c-49a6-9360-66b42750518e",
+      "id": "afaca49d-bd17-4da2-aee9-dd89c89b0b9b",
       "name": "Merge"
     },
     {
@@ -262,10 +251,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        160,
-        704
+        -240,
+        480
       ],
-      "id": "a9bf1077-92ff-41b0-9e94-4344db394a8e",
+      "id": "d087fb2a-c7d1-4cf6-96a2-654719b4e336",
       "name": "Code in JavaScript9"
     },
     {
@@ -295,33 +284,33 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        448,
-        880
+        48,
+        656
       ],
-      "id": "26d81eee-142c-4c63-890e-85fc7dcb4edc",
+      "id": "eb47d475-8647-46b4-b2af-a6ea5a44dfa4",
       "name": "Filter"
     },
     {
       "parameters": {
-        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); // Clientes (4k)\nlet transactions = [];          // Ventas (70k)\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Usa coma ,)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Usa punto y coma ;)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            // Clave: PRDID + CUSTID\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\n\nfor (const txn of transactions) {\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    // Variable para guardar el valor encontrado (foreAct)\n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Lógica de Fecha Dinámica: 2025-06-01 -> \"25-Jun\"\n        if (txn.PERIODID3) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2); // \"25\"\n                const monthNum = parts[1];           // \"06\"\n                const monthName = monthMap[monthNum];// \"Jun\"\n                \n                if (monthName) {\n                    const dynamicColumn = `${yearShort}-${monthName}`; // \"25-Jun\"\n                    // Intentamos sacar el valor. Si es undefined o vacío, queda null\n                    const val = refData[dynamicColumn];\n                    if (val !== undefined && val !== null && val !== \"\") {\n                        foreActValue = val;\n                    }\n                }\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO ---\n    // SOLO agregamos la fila al resultado si encontramos un valor para foreAct.\n    // Esto elimina automáticamente:\n    // 1. Clientes que no existen en el archivo 4k.\n    // 2. Fechas viejas (2020) que no están en el archivo 4k.\n    if (foreActValue !== null) {\n        \n        const mergedItem = { ...txn };\n        \n        // Agregamos los datos encontrados\n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        mergedItem['foreAct'] = foreActValue; // Aquí está el renombre que pediste\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\"\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        transactions = parseCSV(buffer.toString('utf8'), ','); \n    }\n    \n    // ARCHIVO \"4k\"\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const rows = parseCSV(buffer.toString('utf8'), ';');\n        \n        for (const row of rows) {\n            // parseCSV ya limpia los datos, no necesitamos String().trim() aquí\n            const key = `${row.PRDID}_${row.CUSTID}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\nconst dateCache = {}; // <-- CACHÉ DE FECHAS PARA AHORRAR CPU\n\nfor (const txn of transactions) {\n    // Usamos las llaves limpias directamente\n    const key = `${txn.PRDID}_${txn.CUSTID}`;\n    const refData = referenceMap.get(key);\n    \n    if (!refData) continue; // Si no hay match en el 4k, saltamos a la siguiente fila inmediatamente\n\n    let foreActValue = null;\n\n    // --- Lógica de Fecha Optimizada con Caché ---\n    if (txn.PERIODID3) {\n        let dynamicColumn = dateCache[txn.PERIODID3];\n        \n        // Si no hemos calculado esta fecha antes, lo hacemos y la guardamos\n        if (dynamicColumn === undefined) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2);\n                const monthName = monthMap[parts[1]];\n                dynamicColumn = monthName ? `${yearShort}-${monthName}` : null;\n            } else {\n                dynamicColumn = null;\n            }\n            dateCache[txn.PERIODID3] = dynamicColumn; // Guardar en caché\n        }\n\n        // Extraer el valor del forecast\n        if (dynamicColumn) {\n            const val = refData[dynamicColumn];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = val;\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO Y ASIGNACIÓN ---\n    if (foreActValue !== null) {\n        // Mutamos el objeto original para ahorrar memoria RAM\n        txn['CUSTREGION'] = refData['CUSTREGION'];\n        txn['CUSTGROUP'] = refData['CUSTGROUP'];\n        txn['foreAct'] = foreActValue; \n\n        results.push({ json: txn });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            // parseCSV limpia espacios, así que los valores ya vienen listos\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1808,
-        624
+        -2208,
+        400
       ],
-      "id": "80021a7e-6c99-49bf-bede-3890183611b0",
+      "id": "c2763ed3-5034-44c0-9bfb-e5938c7bb3a0",
       "name": "leer documentos"
     },
     {
       "parameters": {
         "dataTableId": {
           "__rl": true,
-          "value": "2QNW70i5pMi85LF2",
+          "value": "zivYLI1PlIMWk3fK",
           "mode": "list",
-          "cachedResultName": "clientes problematicos nuevo",
-          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+          "cachedResultName": "clientes problematicos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -481,10 +470,10 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        640,
-        1056
+        240,
+        832
       ],
-      "id": "732b5ab6-9c19-4115-9da6-6daf52720749",
+      "id": "207d386a-87dd-4629-b3b8-7f2f82e18e8d",
       "name": "Insert row"
     },
     {
@@ -492,10 +481,10 @@
         "operation": "deleteRows",
         "dataTableId": {
           "__rl": true,
-          "value": "2QNW70i5pMi85LF2",
+          "value": "zivYLI1PlIMWk3fK",
           "mode": "list",
-          "cachedResultName": "clientes problematicos nuevo",
-          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+          "cachedResultName": "clientes problematicos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
         },
         "filters": {
           "conditions": [
@@ -514,10 +503,10 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        640,
-        800
+        240,
+        576
       ],
-      "id": "2218eb07-0c10-4043-aa33-344f31370357",
+      "id": "dfd1ff40-91aa-4634-8e90-82b371de2000",
       "name": "Delete row(s)",
       "executeOnce": false
     },
@@ -525,8 +514,10 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "CR7rjHAYzdC7ktH4",
-          "mode": "list"
+          "value": "P9K8K4aE9VH0yVxE",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/P9K8K4aE9VH0yVxE",
+          "cachedResultName": "normalizacion 1.1 y 1.2"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -541,19 +532,19 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        -864,
-        656
+        -1264,
+        432
       ],
       "name": "Call normalizacion 1.1 y 1.2",
-      "id": "ee019b4b-271c-4bd5-9299-8d5341a0ff2d"
+      "id": "0c447d8d-1cb8-4696-ba5f-2ecb6ea8d8a9"
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "jRCBLFwiifnH7T3Z",
+          "value": "jLKrr1l2GKVl6fJY",
           "mode": "list",
-          "cachedResultUrl": "/workflow/jRCBLFwiifnH7T3Z",
+          "cachedResultUrl": "/workflow/jLKrr1l2GKVl6fJY",
           "cachedResultName": "calculo de impacto 2"
         },
         "workflowInputs": {
@@ -569,19 +560,19 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        -448,
-        864
+        -848,
+        640
       ],
       "name": "Call calculo de impacto 2",
-      "id": "6cf301b5-1cf6-46d6-b1ff-2561feeabff1"
+      "id": "7733d0b9-afa4-4a8b-95ff-0a1369c0180a"
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "FW3dDnVmtsZfTiM4",
+          "value": "u59ywUfqcyy2xKzc",
           "mode": "list",
-          "cachedResultUrl": "/workflow/FW3dDnVmtsZfTiM4",
+          "cachedResultUrl": "/workflow/u59ywUfqcyy2xKzc",
           "cachedResultName": "calculo de señal"
         },
         "workflowInputs": {
@@ -592,25 +583,27 @@
           "attemptToConvertTypes": false,
           "convertFieldsToString": true
         },
-        "options": {}
+        "options": {
+          "waitForSubWorkflow": true
+        }
       },
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        -496,
-        400
+        -896,
+        176
       ],
       "name": "Call calculo de señal",
-      "id": "e47b199a-c8af-4b72-893e-b75e41e2b3a0"
+      "id": "19bd4381-b920-490d-9654-b3c04cd6bee6"
     },
     {
       "parameters": {
         "dataTableId": {
           "__rl": true,
-          "value": "1ALfp7WCaqyNPuHE",
+          "value": "YV6RAVPW84DWicjA",
           "mode": "list",
           "cachedResultName": "clientes clasificados",
-          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/1ALfp7WCaqyNPuHE"
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -770,10 +763,10 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        368,
-        560
+        -32,
+        336
       ],
-      "id": "91adc4ce-06ad-4f89-95eb-cc71f25a5d5c",
+      "id": "a2b8384d-d507-4bd0-9a74-6435b542ffa9",
       "name": "Insert row2"
     },
     {
@@ -781,10 +774,10 @@
         "operation": "deleteRows",
         "dataTableId": {
           "__rl": true,
-          "value": "1ALfp7WCaqyNPuHE",
+          "value": "YV6RAVPW84DWicjA",
           "mode": "list",
           "cachedResultName": "clientes clasificados",
-          "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/1ALfp7WCaqyNPuHE"
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
         },
         "filters": {
           "conditions": [
@@ -803,31 +796,174 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        400,
-        224
+        0,
+        0
       ],
-      "id": "075c46f9-c0cd-409b-9db6-56f00755bfa2",
+      "id": "c23926b5-ae59-43f3-832a-3e84605fda91",
       "name": "Delete row(s)1",
       "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.dataset }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "70k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2640,
+        688
+      ],
+      "id": "3c9e3ff3-4da1-4f5d-9867-8f301c0d4040",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YlliA6g1EcMRYRSj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.propuesta }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "4k"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2640,
+        864
+      ],
+      "id": "099af5be-4e70-4068-9c0a-c42233f26922",
+      "name": "Download file4",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YlliA6g1EcMRYRSj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2416,
+        768
+      ],
+      "id": "04af6b40-e38b-415f-8ff2-3e651d967f33",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "iniciar-clasificacion1",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization, Accept"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "http://localhost:5173"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3184,
+        784
+      ],
+      "id": "8d9f7cce-fdeb-4bfc-8758-187eb62fb739",
+      "name": "iniciar-clasificacion",
+      "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        832
+      ],
+      "id": "cf593c6b-a051-435f-a45c-00aaed1edc26",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "gbDmDcfLqLz1rdHQ",
+          "mode": "list",
+          "cachedResultName": "archivos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/gbDmDcfLqLz1rdHQ"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -3008,
+        784
+      ],
+      "id": "2463ff03-800b-48be-93e1-dd6f9a0b56d8",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos todas las filas de la tabla\nconst filas = $input.all();\n\n// 2. Verificamos que haya al menos 2 registros para evitar errores\nif (filas.length < 2) {\n  throw new Error(\"No hay suficientes archivos en la base de datos.\");\n}\n\n// 3. Ordenamos las filas de mayor a menor basándonos en la columna 'id'\nfilas.sort((a, b) => b.json.id - a.json.id);\n\n// 4. Devolvemos 1 sola fila con dos \"columnas\" independientes \n// usando la propiedad 'archivo' que vi en tu captura\nreturn [\n  {\n    json: {\n      dataset: filas[1].json.archivo,\n      propuesta: filas[0].json.archivo\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2848,
+        784
+      ],
+      "id": "e31c4a95-8265-4dc9-b292-4f512d24002f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3184,
+        1008
+      ],
+      "id": "219bf35a-8cb3-4895-8f65-de71044ffbab",
+      "name": "When clicking ‘Execute workflow’"
     }
   ],
   "connections": {
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "Download file2",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Download file3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Edit Fields": {
       "main": [
         [
@@ -1022,58 +1158,128 @@
           }
         ]
       ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file4": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "leer documentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "iniciar-clasificacion": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": true,
-    "timeSavedMode": "fixed",
-    "callerPolicy": "workflowsFromSameOwner",
-    "timeSavedPerExecution": 90
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "When clicking ‘Execute workflow’": [
-      {
-        "json": {},
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
-  "versionId": "e3b365e1-da76-4f86-8856-3a60fab1a4fb",
-  "activeVersionId": "bb6d7a4b-8b71-491d-9a4a-8a2b41734de6",
-  "triggerCount": 1,
+  "pinData": {},
+  "versionId": "864c1d92-a46b-4506-aeb3-70e92ecb70d2",
+  "activeVersionId": "864c1d92-a46b-4506-aeb3-70e92ecb70d2",
+  "triggerCount": 2,
   "shared": [
     {
-      "updatedAt": "2026-01-26T03:34:26.942Z",
-      "createdAt": "2026-01-26T03:34:26.942Z",
+      "updatedAt": "2026-02-15T00:41:16.111Z",
+      "createdAt": "2026-02-15T00:41:16.111Z",
       "role": "workflow:owner",
-      "workflowId": "tpAhmxic6x60O4LsHzf9Y",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "zhWQh2Cq4j0RsWg0FX9sh",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-27T03:22:52.000Z",
-    "createdAt": "2026-01-27T03:21:00.054Z",
-    "versionId": "bb6d7a4b-8b71-491d-9a4a-8a2b41734de6",
-    "workflowId": "tpAhmxic6x60O4LsHzf9Y",
+    "updatedAt": "2026-02-18T17:57:06.257Z",
+    "createdAt": "2026-02-18T17:54:30.170Z",
+    "versionId": "864c1d92-a46b-4506-aeb3-70e92ecb70d2",
+    "workflowId": "zhWQh2Cq4j0RsWg0FX9sh",
     "nodes": [
-      {
-        "parameters": {},
-        "type": "n8n-nodes-base.manualTrigger",
-        "typeVersion": 1,
-        "position": [
-          -2416,
-          624
-        ],
-        "id": "2611f558-1265-427f-811d-89b362177863",
-        "name": "When clicking ‘Execute workflow’"
-      },
       {
         "parameters": {
           "assignments": {
@@ -1140,10 +1346,10 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          -1600,
-          624
+          -2000,
+          400
         ],
-        "id": "54499cd6-2a15-4dba-b369-74c82d637ee1",
+        "id": "d1f7d6d3-2a0d-484d-8be7-010133d022e0",
         "name": "Edit Fields"
       },
       {
@@ -1162,10 +1368,10 @@
         "type": "n8n-nodes-base.summarize",
         "typeVersion": 1.1,
         "position": [
-          -1456,
-          832
+          -1856,
+          608
         ],
-        "id": "aa8a8a88-b838-4bff-baef-b976c1eef67c",
+        "id": "f81c28dc-f8e6-48ff-8a57-5506d21982cf",
         "name": "Summarize",
         "alwaysOutputData": false
       },
@@ -1179,10 +1385,10 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          -1104,
-          640
+          -1504,
+          416
         ],
-        "id": "b2250c72-6033-47fd-b9aa-aa91ad011fc5",
+        "id": "0dd15e9b-6b77-40de-98ff-c3b922f086b1",
         "name": "Merge1"
       },
       {
@@ -1205,10 +1411,10 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          -1280,
-          832
+          -1680,
+          608
         ],
-        "id": "6179f877-4181-4f46-a374-cf9e8e4b2013",
+        "id": "c6f6fb66-d8b4-4d35-89e6-20f43541c5aa",
         "name": "Edit Fields2"
       },
       {
@@ -1228,14 +1434,14 @@
         "type": "n8n-nodes-base.googleDrive",
         "typeVersion": 3,
         "position": [
-          -2176,
-          464
+          -2720,
+          -496
         ],
-        "id": "2ab04727-784b-455b-95ad-68f141e04f15",
+        "id": "e0ce78cf-44dc-4819-a91d-0ca21c7359f2",
         "name": "Download file2",
         "credentials": {
           "googleDriveOAuth2Api": {
-            "id": "YDXrgVq9dh5QCcVj",
+            "id": "YlliA6g1EcMRYRSj",
             "name": "Google Drive account"
           }
         }
@@ -1257,14 +1463,14 @@
         "type": "n8n-nodes-base.googleDrive",
         "typeVersion": 3,
         "position": [
-          -2176,
-          720
+          -2720,
+          -240
         ],
-        "id": "4731311c-e6c8-4da9-8e2b-f942fc256002",
+        "id": "b983546f-0fbb-4e20-8312-21923a0c6124",
         "name": "Download file3",
         "credentials": {
           "googleDriveOAuth2Api": {
-            "id": "YDXrgVq9dh5QCcVj",
+            "id": "YlliA6g1EcMRYRSj",
             "name": "Google Drive account"
           }
         }
@@ -1274,10 +1480,10 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          -2064,
-          624
+          -2560,
+          -320
         ],
-        "id": "a1ff9659-6015-4b30-a197-330f4e838366",
+        "id": "8715971e-909d-4c28-a1fb-b3b73a277966",
         "name": "Merge2"
       },
       {
@@ -1289,10 +1495,10 @@
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2.1,
         "position": [
-          -2464,
-          416
+          -2976,
+          -288
         ],
-        "id": "a013d71c-3ee4-4c88-af07-7e11b3a63105",
+        "id": "b611b2a5-0710-4a8d-a4b2-6039208b177a",
         "name": "Webhook",
         "webhookId": "26c81a1c-692d-4204-917c-4389c954ea66"
       },
@@ -1306,10 +1512,10 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          -48,
-          704
+          -448,
+          480
         ],
-        "id": "498a7183-7b9c-49a6-9360-66b42750518e",
+        "id": "afaca49d-bd17-4da2-aee9-dd89c89b0b9b",
         "name": "Merge"
       },
       {
@@ -1319,10 +1525,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          160,
-          704
+          -240,
+          480
         ],
-        "id": "a9bf1077-92ff-41b0-9e94-4344db394a8e",
+        "id": "d087fb2a-c7d1-4cf6-96a2-654719b4e336",
         "name": "Code in JavaScript9"
       },
       {
@@ -1352,33 +1558,33 @@
         "type": "n8n-nodes-base.filter",
         "typeVersion": 2.3,
         "position": [
-          352,
-          720
+          48,
+          656
         ],
-        "id": "26d81eee-142c-4c63-890e-85fc7dcb4edc",
+        "id": "eb47d475-8647-46b4-b2af-a6ea5a44dfa4",
         "name": "Filter"
       },
       {
         "parameters": {
-          "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); // Clientes (4k)\nlet transactions = [];          // Ventas (70k)\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\" (Usa coma ,)\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        const text = buffer.toString('utf8');\n        transactions = parseCSV(text, ','); \n    }\n    \n    // ARCHIVO \"4k\" (Usa punto y coma ;)\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const text = buffer.toString('utf8');\n        const rows = parseCSV(text, ';');\n        \n        for (const row of rows) {\n            // Clave: PRDID + CUSTID\n            const key = `${String(row.PRDID).trim()}_${String(row.CUSTID).trim()}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\n\nfor (const txn of transactions) {\n    const key = `${String(txn.PRDID).trim()}_${String(txn.CUSTID).trim()}`;\n    const refData = referenceMap.get(key);\n    \n    // Variable para guardar el valor encontrado (foreAct)\n    let foreActValue = null;\n    let region = null;\n    let group = null;\n\n    if (refData) {\n        region = refData['CUSTREGION'];\n        group = refData['CUSTGROUP'];\n\n        // Lógica de Fecha Dinámica: 2025-06-01 -> \"25-Jun\"\n        if (txn.PERIODID3) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2); // \"25\"\n                const monthNum = parts[1];           // \"06\"\n                const monthName = monthMap[monthNum];// \"Jun\"\n                \n                if (monthName) {\n                    const dynamicColumn = `${yearShort}-${monthName}`; // \"25-Jun\"\n                    // Intentamos sacar el valor. Si es undefined o vacío, queda null\n                    const val = refData[dynamicColumn];\n                    if (val !== undefined && val !== null && val !== \"\") {\n                        foreActValue = val;\n                    }\n                }\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO ---\n    // SOLO agregamos la fila al resultado si encontramos un valor para foreAct.\n    // Esto elimina automáticamente:\n    // 1. Clientes que no existen en el archivo 4k.\n    // 2. Fechas viejas (2020) que no están en el archivo 4k.\n    if (foreActValue !== null) {\n        \n        const mergedItem = { ...txn };\n        \n        // Agregamos los datos encontrados\n        mergedItem['CUSTREGION'] = region;\n        mergedItem['CUSTGROUP'] = group;\n        mergedItem['foreAct'] = foreActValue; // Aquí está el renombre que pediste\n\n        results.push({ json: mergedItem });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+          "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\"\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        transactions = parseCSV(buffer.toString('utf8'), ','); \n    }\n    \n    // ARCHIVO \"4k\"\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const rows = parseCSV(buffer.toString('utf8'), ';');\n        \n        for (const row of rows) {\n            // parseCSV ya limpia los datos, no necesitamos String().trim() aquí\n            const key = `${row.PRDID}_${row.CUSTID}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\nconst dateCache = {}; // <-- CACHÉ DE FECHAS PARA AHORRAR CPU\n\nfor (const txn of transactions) {\n    // Usamos las llaves limpias directamente\n    const key = `${txn.PRDID}_${txn.CUSTID}`;\n    const refData = referenceMap.get(key);\n    \n    if (!refData) continue; // Si no hay match en el 4k, saltamos a la siguiente fila inmediatamente\n\n    let foreActValue = null;\n\n    // --- Lógica de Fecha Optimizada con Caché ---\n    if (txn.PERIODID3) {\n        let dynamicColumn = dateCache[txn.PERIODID3];\n        \n        // Si no hemos calculado esta fecha antes, lo hacemos y la guardamos\n        if (dynamicColumn === undefined) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2);\n                const monthName = monthMap[parts[1]];\n                dynamicColumn = monthName ? `${yearShort}-${monthName}` : null;\n            } else {\n                dynamicColumn = null;\n            }\n            dateCache[txn.PERIODID3] = dynamicColumn; // Guardar en caché\n        }\n\n        // Extraer el valor del forecast\n        if (dynamicColumn) {\n            const val = refData[dynamicColumn];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = val;\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO Y ASIGNACIÓN ---\n    if (foreActValue !== null) {\n        // Mutamos el objeto original para ahorrar memoria RAM\n        txn['CUSTREGION'] = refData['CUSTREGION'];\n        txn['CUSTGROUP'] = refData['CUSTGROUP'];\n        txn['foreAct'] = foreActValue; \n\n        results.push({ json: txn });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            // parseCSV limpia espacios, así que los valores ya vienen listos\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          -1808,
-          624
+          -2208,
+          400
         ],
-        "id": "80021a7e-6c99-49bf-bede-3890183611b0",
+        "id": "c2763ed3-5034-44c0-9bfb-e5938c7bb3a0",
         "name": "leer documentos"
       },
       {
         "parameters": {
           "dataTableId": {
             "__rl": true,
-            "value": "2QNW70i5pMi85LF2",
+            "value": "zivYLI1PlIMWk3fK",
             "mode": "list",
-            "cachedResultName": "clientes problematicos nuevo",
-            "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+            "cachedResultName": "clientes problematicos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
           },
           "columns": {
             "mappingMode": "defineBelow",
@@ -1538,10 +1744,10 @@
         "type": "n8n-nodes-base.dataTable",
         "typeVersion": 1.1,
         "position": [
-          560,
-          800
+          240,
+          832
         ],
-        "id": "732b5ab6-9c19-4115-9da6-6daf52720749",
+        "id": "207d386a-87dd-4629-b3b8-7f2f82e18e8d",
         "name": "Insert row"
       },
       {
@@ -1549,12 +1755,11 @@
           "operation": "deleteRows",
           "dataTableId": {
             "__rl": true,
-            "value": "2QNW70i5pMi85LF2",
+            "value": "zivYLI1PlIMWk3fK",
             "mode": "list",
-            "cachedResultName": "clientes problematicos nuevo",
-            "cachedResultUrl": "/projects/cEfHDRqL69JgpIBq/datatables/2QNW70i5pMi85LF2"
+            "cachedResultName": "clientes problematicos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
           },
-          "matchType": "allConditions",
           "filters": {
             "conditions": [
               {
@@ -1572,10 +1777,10 @@
         "type": "n8n-nodes-base.dataTable",
         "typeVersion": 1.1,
         "position": [
-          576,
-          640
+          240,
+          576
         ],
-        "id": "2218eb07-0c10-4043-aa33-344f31370357",
+        "id": "dfd1ff40-91aa-4634-8e90-82b371de2000",
         "name": "Delete row(s)",
         "executeOnce": false
       },
@@ -1583,8 +1788,10 @@
         "parameters": {
           "workflowId": {
             "__rl": true,
-            "value": "CR7rjHAYzdC7ktH4",
-            "mode": "list"
+            "value": "P9K8K4aE9VH0yVxE",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/P9K8K4aE9VH0yVxE",
+            "cachedResultName": "normalizacion 1.1 y 1.2"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -1599,18 +1806,20 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          -800,
-          656
+          -1264,
+          432
         ],
         "name": "Call normalizacion 1.1 y 1.2",
-        "id": "ee019b4b-271c-4bd5-9299-8d5341a0ff2d"
+        "id": "0c447d8d-1cb8-4696-ba5f-2ecb6ea8d8a9"
       },
       {
         "parameters": {
           "workflowId": {
             "__rl": true,
-            "value": "jRCBLFwiifnH7T3Z",
-            "mode": "list"
+            "value": "jLKrr1l2GKVl6fJY",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/jLKrr1l2GKVl6fJY",
+            "cachedResultName": "calculo de impacto 2"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -1625,18 +1834,20 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          -480,
-          896
+          -848,
+          640
         ],
         "name": "Call calculo de impacto 2",
-        "id": "6cf301b5-1cf6-46d6-b1ff-2561feeabff1"
+        "id": "7733d0b9-afa4-4a8b-95ff-0a1369c0180a"
       },
       {
         "parameters": {
           "workflowId": {
             "__rl": true,
-            "value": "FW3dDnVmtsZfTiM4",
-            "mode": "list"
+            "value": "u59ywUfqcyy2xKzc",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/u59ywUfqcyy2xKzc",
+            "cachedResultName": "calculo de señal"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -1646,35 +1857,387 @@
             "attemptToConvertTypes": false,
             "convertFieldsToString": true
           },
-          "options": {}
+          "options": {
+            "waitForSubWorkflow": true
+          }
         },
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.2,
         "position": [
-          -448,
-          560
+          -896,
+          176
         ],
         "name": "Call calculo de señal",
-        "id": "e47b199a-c8af-4b72-893e-b75e41e2b3a0"
+        "id": "19bd4381-b920-490d-9654-b3c04cd6bee6"
+      },
+      {
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "value": "YV6RAVPW84DWicjA",
+            "mode": "list",
+            "cachedResultName": "clientes clasificados",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "REGION": "={{ $json.REGION }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "REGION",
+                "displayName": "REGION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          -32,
+          336
+        ],
+        "id": "a2b8384d-d507-4bd0-9a74-6435b542ffa9",
+        "name": "Insert row2"
+      },
+      {
+        "parameters": {
+          "operation": "deleteRows",
+          "dataTableId": {
+            "__rl": true,
+            "value": "YV6RAVPW84DWicjA",
+            "mode": "list",
+            "cachedResultName": "clientes clasificados",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "CUSTID",
+                "keyValue": "={{ $json.CUSTID }}"
+              },
+              {
+                "keyName": "PRDID",
+                "keyValue": "={{ $json.PRDID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "c23926b5-ae59-43f3-832a-3e84605fda91",
+        "name": "Delete row(s)1",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.dataset }}",
+            "mode": "id"
+          },
+          "options": {
+            "binaryPropertyName": "70k"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -2640,
+          688
+        ],
+        "id": "3c9e3ff3-4da1-4f5d-9867-8f301c0d4040",
+        "name": "Download file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YlliA6g1EcMRYRSj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.propuesta }}",
+            "mode": "id"
+          },
+          "options": {
+            "binaryPropertyName": "4k"
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -2640,
+          864
+        ],
+        "id": "099af5be-4e70-4068-9c0a-c42233f26922",
+        "name": "Download file4",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "YlliA6g1EcMRYRSj",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -2416,
+          768
+        ],
+        "id": "04af6b40-e38b-415f-8ff2-3e651d967f33",
+        "name": "Merge3"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "iniciar-clasificacion1",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Authorization, Accept"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "GET, POST, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -3184,
+          784
+        ],
+        "id": "8d9f7cce-fdeb-4bfc-8758-187eb62fb739",
+        "name": "iniciar-clasificacion",
+        "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
+      },
+      {
+        "parameters": {
+          "respondWith": "noData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          448,
+          832
+        ],
+        "id": "cf593c6b-a051-435f-a45c-00aaed1edc26",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "dataTableId": {
+            "__rl": true,
+            "value": "gbDmDcfLqLz1rdHQ",
+            "mode": "list",
+            "cachedResultName": "archivos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/gbDmDcfLqLz1rdHQ"
+          },
+          "matchType": "allConditions",
+          "returnAll": true
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          -3008,
+          784
+        ],
+        "id": "2463ff03-800b-48be-93e1-dd6f9a0b56d8",
+        "name": "Get row(s)"
+      },
+      {
+        "parameters": {
+          "jsCode": "// 1. Obtenemos todas las filas de la tabla\nconst filas = $input.all();\n\n// 2. Verificamos que haya al menos 2 registros para evitar errores\nif (filas.length < 2) {\n  throw new Error(\"No hay suficientes archivos en la base de datos.\");\n}\n\n// 3. Ordenamos las filas de mayor a menor basándonos en la columna 'id'\nfilas.sort((a, b) => b.json.id - a.json.id);\n\n// 4. Devolvemos 1 sola fila con dos \"columnas\" independientes \n// usando la propiedad 'archivo' que vi en tu captura\nreturn [\n  {\n    json: {\n      dataset: filas[1].json.archivo,\n      propuesta: filas[0].json.archivo\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2848,
+          784
+        ],
+        "id": "e31c4a95-8265-4dc9-b292-4f512d24002f",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -3184,
+          1008
+        ],
+        "id": "219bf35a-8cb3-4895-8f65-de71044ffbab",
+        "name": "When clicking ‘Execute workflow’"
       }
     ],
     "connections": {
-      "When clicking ‘Execute workflow’": {
-        "main": [
-          [
-            {
-              "node": "Download file2",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Download file3",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Edit Fields": {
         "main": [
           [
@@ -1791,6 +2354,16 @@
               "node": "Filter",
               "type": "main",
               "index": 0
+            },
+            {
+              "node": "Delete row(s)1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Insert row2",
+              "type": "main",
+              "index": 0
             }
           ]
         ]
@@ -1799,12 +2372,12 @@
         "main": [
           [
             {
-              "node": "Delete row(s)",
+              "node": "Insert row",
               "type": "main",
               "index": 0
             },
             {
-              "node": "Insert row",
+              "node": "Delete row(s)",
               "type": "main",
               "index": 0
             }
@@ -1859,10 +2432,103 @@
             }
           ]
         ]
+      },
+      "Download file": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file4": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "node": "leer documentos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "iniciar-clasificacion": {
+        "main": [
+          [
+            {
+              "node": "Get row(s)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert row": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s)": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Download file",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Download file4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Get row(s)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
-    "authors": "Juan  Guedez",
-    "name": "Version bb6d7a4b",
+    "authors": "Juan  lyncros",
+    "name": "Version 864c1d92",
     "description": "",
     "autosaved": false
   },
