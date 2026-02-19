@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-07-28T14:24:08.000Z",
-  "createdAt": "2025-06-30T05:48:20.636Z",
-  "id": "Uu9fupEbq4ezZfj3",
+  "updatedAt": "2026-02-15T00:37:46.835Z",
+  "createdAt": "2026-02-15T00:31:14.474Z",
+  "id": "Ol1EjBc0efU0YO2G",
   "name": "Ventas agente",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -238,279 +238,25 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "711f0672-797d-411a-932d-227539252346",
-  "activeVersionId": "711f0672-797d-411a-932d-227539252346",
+  "meta": null,
+  "pinData": null,
+  "versionId": "9518d659-7630-4249-aa3b-009126944552",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T05:48:20.648Z",
-      "createdAt": "2025-06-30T05:48:20.648Z",
+      "updatedAt": "2026-02-15T00:31:14.474Z",
+      "createdAt": "2026-02-15T00:31:14.474Z",
       "role": "workflow:owner",
-      "workflowId": "Uu9fupEbq4ezZfj3",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "Ol1EjBc0efU0YO2G",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-17T21:03:07.932Z",
-    "createdAt": "2026-01-17T21:03:07.932Z",
-    "versionId": "711f0672-797d-411a-932d-227539252346",
-    "workflowId": "Uu9fupEbq4ezZfj3",
-    "nodes": [
-      {
-        "parameters": {
-          "inputSource": "passthrough"
-        },
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          -320,
-          700
-        ],
-        "id": "cfae623e-a41e-4fc6-87e8-6c9adb449a35",
-        "name": "When Executed by Another Workflow"
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "d5ca1062-50bf-44db-96ca-6f11691f558c",
-                "name": "VVMM",
-                "value": "={{\"$\"+ $json.VVMM[0] }}",
-                "type": "string"
-              },
-              {
-                "id": "cac89738-ce4c-45de-a1f9-17e34d454074",
-                "name": "OTIF",
-                "value": "={{ $json.OTIF[0] +\"%\"}}",
-                "type": "string"
-              },
-              {
-                "id": "7502386c-9da5-4143-8dc2-0b8a105720d8",
-                "name": "AOV",
-                "value": "={{\"$\"+ $json.AOV[0]}}",
-                "type": "string"
-              },
-              {
-                "id": "caea9ed4-e6e9-42ee-832c-672fc4c6b359",
-                "name": "PPD",
-                "value": "={{ $json.PPD[0]+\"%\" }}",
-                "type": "string"
-              },
-              {
-                "id": "6cbfdfa6-df9c-45d8-bab8-8501b251f874",
-                "name": "QTY",
-                "value": "={{ $json.QTY[0] }}",
-                "type": "string"
-              },
-              {
-                "id": "23acf3d8-d9a7-435c-a3b0-e09c85412622",
-                "name": "DMA",
-                "value": "={{ $json.DMA[0]+\"%\" }}",
-                "type": "string"
-              },
-              {
-                "id": "1edc15a3-421e-44af-9774-e5f7ea00a890",
-                "name": "CTP",
-                "value": "={{ $json.CTP[0] }}",
-                "type": "string"
-              },
-              {
-                "id": "4378d93e-addc-4839-b1df-9b62b19cf1d0",
-                "name": "TME",
-                "value": "={{ $json.TME[0]+\" Dias\" }}",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          560,
-          700
-        ],
-        "id": "20ec1b03-60ea-4517-b5ef-40cc1d13ec7a",
-        "name": "Edit Fields8"
-      },
-      {
-        "parameters": {
-          "documentId": {
-            "__rl": true,
-            "value": "1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU",
-            "mode": "list",
-            "cachedResultName": "Kpis consolidados",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit?usp=drivesdk"
-          },
-          "sheetName": {
-            "__rl": true,
-            "value": 1199409120,
-            "mode": "list",
-            "cachedResultName": "Ventas",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s1d5I1W6iT3l7wNN-v1Zk3J66t37FvucpODoOvR43JU/edit#gid=1199409120"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "Fecha",
-                "lookupValue": "01/02/2025"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.6,
-        "position": [
-          -100,
-          700
-        ],
-        "id": "39169c85-c8d6-45d7-90ee-2b1104cba33b",
-        "name": "Get row(s) in sheet",
-        "retryOnFail": true,
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "CWI2Yxp3gWinrW8v",
-            "name": "Google Sheets account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "c9a841a8-ec30-409b-b57e-eef05ed79505",
-                "name": "={{ $json.KPI }}",
-                "value": "={{ $json.Valor }}",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          120,
-          700
-        ],
-        "id": "04ebae22-0cba-416a-acf4-1574f99cc2e1",
-        "name": "Edit Fields"
-      },
-      {
-        "parameters": {
-          "fieldsToAggregate": {
-            "fieldToAggregate": [
-              {
-                "fieldToAggregate": "VVMM"
-              },
-              {
-                "fieldToAggregate": "OTIF"
-              },
-              {
-                "fieldToAggregate": "AOV"
-              },
-              {
-                "fieldToAggregate": "PPD"
-              },
-              {
-                "fieldToAggregate": "QTY"
-              },
-              {
-                "fieldToAggregate": "DMA"
-              },
-              {
-                "fieldToAggregate": "CTP"
-              },
-              {
-                "fieldToAggregate": "TME"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.aggregate",
-        "typeVersion": 1,
-        "position": [
-          340,
-          700
-        ],
-        "id": "c369f679-0f13-478f-b088-a2419b80e802",
-        "name": "Aggregate"
-      }
-    ],
-    "connections": {
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Get row(s) in sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Get row(s) in sheet": {
-        "main": [
-          [
-            {
-              "node": "Edit Fields",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Edit Fields": {
-        "main": [
-          [
-            {
-              "node": "Aggregate",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Aggregate": {
-        "main": [
-          [
-            {
-              "node": "Edit Fields8",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
-  },
-  "tags": [
-    {
-      "updatedAt": "2025-06-30T05:46:46.217Z",
-      "createdAt": "2025-06-30T05:46:46.217Z",
-      "id": "c5N8G6Mzc0mOXCsw",
-      "name": "KPI"
-    },
-    {
-      "updatedAt": "2025-06-30T05:39:23.906Z",
-      "createdAt": "2025-06-30T05:39:23.906Z",
-      "id": "gh4ts8neeyHbzaZE",
-      "name": "herramienta"
-    }
-  ]
+  "activeVersion": null,
+  "tags": []
 }
