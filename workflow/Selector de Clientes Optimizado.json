@@ -1,0 +1,2065 @@
+{
+  "updatedAt": "2026-02-18T17:59:12.016Z",
+  "createdAt": "2026-02-18T02:57:59.891Z",
+  "id": "I6UIeOYazVZEtSbq",
+  "name": "Selector de Clientes Optimizado",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01e0861c-4123-4786-92cf-57c008cf60f8",
+              "name": "y",
+              "value": "={{ Number($json.adjustedactualsqty) }}",
+              "type": "number"
+            },
+            {
+              "id": "e075d05a-fb30-441e-80db-455d7cc49145",
+              "name": "yhat",
+              "value": "={{ Number($json.foreact) }}",
+              "type": "number"
+            },
+            {
+              "id": "de871df9-2396-4254-8b55-3657d404f107",
+              "name": "punitario",
+              "value": "={{ Number($json.punitario) }}",
+              "type": "number"
+            },
+            {
+              "id": "76104ada-943c-465c-92bc-c074686d9489",
+              "name": "pindex",
+              "value": "={{ Number($json.pindex) }}",
+              "type": "number"
+            },
+            {
+              "id": "9e1b7504-f38a-4d8a-8e66-eb4c2a293c71",
+              "name": "som",
+              "value": "={{ Number($json.som) }}",
+              "type": "number"
+            },
+            {
+              "id": "3e79412f-c1cc-419b-a8ee-49e102e4668d",
+              "name": "sov",
+              "value": "={{ Number($json.sov) }}",
+              "type": "number"
+            },
+            {
+              "id": "401ee443-5a40-4fa2-bd5b-fa9867c03336",
+              "name": "zselloutcliente",
+              "value": "={{ Number($json.zselloutcliente) }}",
+              "type": "number"
+            },
+            {
+              "id": "3fb24806-1570-433d-9c83-7fef8e5e55e7",
+              "name": "CUSTID",
+              "value": "={{ $json.custid }}",
+              "type": "string"
+            },
+            {
+              "id": "05415e07-a833-473b-aadc-0d0eb1068395",
+              "name": "PRDID",
+              "value": "={{ $json.prdid }}",
+              "type": "string"
+            },
+            {
+              "id": "c3171188-e2d8-48f4-addb-1333926b1df4",
+              "name": "periodid3",
+              "value": "={{ $json.periodid3.toDateTime().format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "752f209a-e824-4b02-b6be-66930039f40e",
+              "name": "custregion",
+              "value": "={{ $json.custregion }}",
+              "type": "string"
+            },
+            {
+              "id": "1c1dbf75-ae08-476f-8d23-f9eec9d9b699",
+              "name": "custgroup",
+              "value": "={{ $json.custgroup }}",
+              "type": "string"
+            },
+            {
+              "id": "ab5f1197-b132-4f68-ba60-25fca6e0fb41",
+              "name": "month",
+              "value": "={{ $json.month }}",
+              "type": "number"
+            },
+            {
+              "id": "9533c8c3-0fe1-4c02-ada8-8278c7cf0683",
+              "name": "year",
+              "value": "={{ $json.year }}",
+              "type": "number"
+            },
+            {
+              "id": "6cf58de8-a8d9-4152-819f-378d64709fc9",
+              "name": "season",
+              "value": "={{ $json.season }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2112,
+        192
+      ],
+      "id": "38c0dea5-d4b5-4b58-a643-cc148b43380b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "y"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "CUSTID, PRDID\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -1888,
+        272
+      ],
+      "id": "aaf045a6-9bf5-4efc-8600-53b91710b462",
+      "name": "Summarize",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "PRDID, CUSTID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1440,
+        192
+      ],
+      "id": "aee20c59-8813-4376-876f-3f23579aabc3",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "defa1d2c-bfa0-481a-a7de-54efb4515a88",
+              "name": "scale_avg",
+              "value": "={{ $json.average_y }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "PRDID, CUSTID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1664,
+        272
+      ],
+      "id": "bc10a08a-77ec-4571-9eda-a0aab7ccb505",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CUSTID, PRDID",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -768,
+        192
+      ],
+      "id": "79ea34ae-1c0c-4615-9ffc-99fe55640bc9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURACIÓN DE ESTRATEGIA (Sección 4) ---\nconst W_IMPACT = 0.60;\nconst W_SIGNAL = 0.40;\nconst THRESHOLD_PROBLEM = 0.3;\nconst CRITICAL_SHARE = 0.03;\n\n// Mapa de Prioridad para ordenar la lista final\nconst priorityMap = {\n  'MANUAL_REVIEW': 100,      // Rojo\n  'AGENT_INVESTIGATION': 80, // Naranja\n  'AUTO_ADJUST': 50,         // Amarillo\n  'MONITOR': 20,             // Gris\n  'KEEP_CURRENT': 0          // Verde\n};\n\n// 1. DEDUPLICACIÓN Y CLASIFICACIÓN\nconst uniquePairs = {};\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Clave única para el par Cliente-Producto\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  // Si ya procesamos este par, pasamos al siguiente (Deduplicación)\n  if (uniquePairs[key]) continue;\n\n  // --- OBTENER SCORES ---\n  const s_signal = Number(r.signal_score_final || 0);\n  const s_impact = Number(r.impact_score_final || 0);\n  const impact_share = Number(r.impact_share || 0);\n\n  // --- CÁLCULO DEL SCORE TOTAL ---\n  const total_score = (W_IMPACT * s_impact) + (W_SIGNAL * s_signal);\n\n  // --- MATRIZ DE DECISIÓN ---\n  let classification = 'STABLE';\n  let strategy = 'KEEP_CURRENT';\n  let justification = 'Bajo impacto y señal estable.';\n\n  // Regla 1: Impacto Crítico (Válvula de Seguridad)\n  if (impact_share > CRITICAL_SHARE) {\n    classification = 'CRITICAL';\n    strategy = 'MANUAL_REVIEW';\n    justification = `Impacto Crítico (${(impact_share*100).toFixed(1)}% del error global).`;\n  } \n  // Regla 2: Problemático (Score > 0.5)\n  else if (total_score >= THRESHOLD_PROBLEM) {\n    // Cuadrante B1: Impacto Alto, Señal Buena -> Oportunidad Técnica\n    if (s_impact > 0.5 && s_signal <= 0.4) {\n      classification = 'OPPORTUNITY';\n      strategy = 'AUTO_ADJUST';\n      justification = 'Alto impacto financiero, pero señal estable.';\n    } \n    // Cuadrante B2: Impacto Alto, Señal Mala -> Caos para el Agente\n    else if (s_impact > 0.5 && s_signal > 0.4) {\n      classification = 'CHAOS';\n      strategy = 'AGENT_INVESTIGATION';\n      justification = 'Alto impacto y comportamiento errático.';\n    } \n    // Resto de casos problemáticos\n    else {\n      classification = 'PROBLEMATIC';\n      strategy = 'MONITOR';\n      justification = `Score combinado alto (${total_score.toFixed(2)}).`;\n    }\n  }\n\n  // --- CONSTRUCCIÓN DEL OBJETO FINAL (PAR ÚNICO) ---\n  uniquePairs[key] = {\n    // Identificadores\n    CUSTID: r.CUSTID,\n    PRDID: r.PRDID,\n    REGION: r.custregion,\n\n    // Resultado de la Clasificación\n    STATUS: classification,\n    STRATEGY: strategy,\n    FINAL_SCORE: Number(total_score.toFixed(3)),\n    JUSTIFICATION: justification,\n\n    // Métricas Agregadas (Para referencia rápida)\n    IMPACT_SCORE: s_impact.toFixed(2),\n    SIGNAL_SCORE: s_signal.toFixed(2),\n    ERROR_SHARE: (impact_share * 100).toFixed(2) + '%',\n    TOTAL_SALES: Number(r.sum_y || 0),\n    BIAS: Number(r.bias || 0).toFixed(3),\n    WAPE: Number(r.wape || 0).toFixed(3)\n  };\n}\n\n// 2. ORDENAMIENTO (De más urgente a menos urgente)\nconst resultList = Object.values(uniquePairs);\n\nresultList.sort((a, b) => {\n  const prioA = priorityMap[a.STRATEGY] || 0;\n  const prioB = priorityMap[b.STRATEGY] || 0;\n  \n  // Primero por urgencia de estrategia\n  if (prioA !== prioB) return prioB - prioA;\n  \n  // Desempate por Score numérico\n  return b.FINAL_SCORE - a.FINAL_SCORE;\n});\n\nreturn resultList.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        192
+      ],
+      "id": "2aa29182-91d6-42f6-aaa6-7d69b3940352",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e38b8747-ac57-48a5-ac6e-b53d54b6f14b",
+              "leftValue": "={{ $json.STATUS }}",
+              "rightValue": "STABLE",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -320,
+        384
+      ],
+      "id": "d6b62716-8fbc-43c9-8c44-02c0625b549a",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "zivYLI1PlIMWk3fK",
+          "mode": "list",
+          "cachedResultName": "clientes problematicos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "REGION": "={{ $json.REGION }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "REGION",
+              "displayName": "REGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        480
+      ],
+      "id": "4c9ce8be-0e6e-4a94-9f6e-7f6edc8dc9fd",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "zivYLI1PlIMWk3fK",
+          "mode": "list",
+          "cachedResultName": "clientes problematicos",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "CUSTID",
+              "keyValue": "={{ $json.CUSTID }}"
+            },
+            {
+              "keyName": "PRDID",
+              "keyValue": "={{ $json.PRDID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        288
+      ],
+      "id": "ca393436-895e-4279-b692-f2ea5d3f2d72",
+      "name": "Delete row(s)",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "P9K8K4aE9VH0yVxE",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/P9K8K4aE9VH0yVxE",
+          "cachedResultName": "normalizacion 1.1 y 1.2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -1216,
+        192
+      ],
+      "name": "Call normalizacion 1.1 y 1.2",
+      "id": "dd3bbcda-0973-4e8a-a2d9-c4d467ea49b9"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "jLKrr1l2GKVl6fJY",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/jLKrr1l2GKVl6fJY",
+          "cachedResultName": "calculo de impacto 2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        288
+      ],
+      "name": "Call calculo de impacto 2",
+      "id": "d9ce9de2-be89-4639-b92e-f820ed73d60a"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "u59ywUfqcyy2xKzc",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/u59ywUfqcyy2xKzc",
+          "cachedResultName": "calculo de señal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        96
+      ],
+      "name": "Call calculo de señal",
+      "id": "b7585953-1a13-457e-9f12-d7846e91b932"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "YV6RAVPW84DWicjA",
+          "mode": "list",
+          "cachedResultName": "clientes clasificados",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "REGION": "={{ $json.REGION }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "REGION",
+              "displayName": "REGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        192
+      ],
+      "id": "88cf30f3-9fb0-4c34-b83e-77d6a6af3ea4",
+      "name": "Insert row2"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YV6RAVPW84DWicjA",
+          "mode": "list",
+          "cachedResultName": "clientes clasificados",
+          "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "CUSTID",
+              "keyValue": "={{ $json.CUSTID }}"
+            },
+            {
+              "keyName": "PRDID",
+              "keyValue": "={{ $json.PRDID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "de66954c-f747-4245-8da7-289fbf8948d6",
+      "name": "Delete row(s)1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        128,
+        480
+      ],
+      "id": "c3291b8e-04b9-43ce-a49d-c8981d5e6b43",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2560,
+        288
+      ],
+      "id": "a64893ef-9763-4d5e-9996-900db8bd045d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_consolidated_data",
+          "mode": "list",
+          "cachedResultName": "molinos_consolidated_data"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2336,
+        192
+      ],
+      "id": "a7a5cca5-84ef-46aa-a72a-4fd85e236461",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "iniciar-clasificacion",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization, Accept"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "http://localhost:5173"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2560,
+        80
+      ],
+      "id": "0612de27-5914-4dae-bcc0-203354c97178",
+      "name": "iniciar-clasificacion",
+      "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Call normalizacion 1.1 y 1.2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete row(s)1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert row2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call normalizacion 1.1 y 1.2": {
+      "main": [
+        [
+          {
+            "node": "Call calculo de impacto 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call calculo de señal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call calculo de impacto 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Call calculo de señal": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "iniciar-clasificacion": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "4e8892fc-1110-492f-8a49-3eabb1da7dc2",
+  "activeVersionId": "4e8892fc-1110-492f-8a49-3eabb1da7dc2",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-18T02:57:59.891Z",
+      "createdAt": "2026-02-18T02:57:59.891Z",
+      "role": "workflow:owner",
+      "workflowId": "I6UIeOYazVZEtSbq",
+      "projectId": "9axjLTcJCvAcwxP1"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-18T17:59:14.404Z",
+    "createdAt": "2026-02-18T17:59:12.018Z",
+    "versionId": "4e8892fc-1110-492f-8a49-3eabb1da7dc2",
+    "workflowId": "I6UIeOYazVZEtSbq",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "01e0861c-4123-4786-92cf-57c008cf60f8",
+                "name": "y",
+                "value": "={{ Number($json.adjustedactualsqty) }}",
+                "type": "number"
+              },
+              {
+                "id": "e075d05a-fb30-441e-80db-455d7cc49145",
+                "name": "yhat",
+                "value": "={{ Number($json.foreact) }}",
+                "type": "number"
+              },
+              {
+                "id": "de871df9-2396-4254-8b55-3657d404f107",
+                "name": "punitario",
+                "value": "={{ Number($json.punitario) }}",
+                "type": "number"
+              },
+              {
+                "id": "76104ada-943c-465c-92bc-c074686d9489",
+                "name": "pindex",
+                "value": "={{ Number($json.pindex) }}",
+                "type": "number"
+              },
+              {
+                "id": "9e1b7504-f38a-4d8a-8e66-eb4c2a293c71",
+                "name": "som",
+                "value": "={{ Number($json.som) }}",
+                "type": "number"
+              },
+              {
+                "id": "3e79412f-c1cc-419b-a8ee-49e102e4668d",
+                "name": "sov",
+                "value": "={{ Number($json.sov) }}",
+                "type": "number"
+              },
+              {
+                "id": "401ee443-5a40-4fa2-bd5b-fa9867c03336",
+                "name": "zselloutcliente",
+                "value": "={{ Number($json.zselloutcliente) }}",
+                "type": "number"
+              },
+              {
+                "id": "3fb24806-1570-433d-9c83-7fef8e5e55e7",
+                "name": "CUSTID",
+                "value": "={{ $json.custid }}",
+                "type": "string"
+              },
+              {
+                "id": "05415e07-a833-473b-aadc-0d0eb1068395",
+                "name": "PRDID",
+                "value": "={{ $json.prdid }}",
+                "type": "string"
+              },
+              {
+                "id": "c3171188-e2d8-48f4-addb-1333926b1df4",
+                "name": "periodid3",
+                "value": "={{ $json.periodid3.toDateTime().format('yyyy-MM-dd') }}",
+                "type": "string"
+              },
+              {
+                "id": "752f209a-e824-4b02-b6be-66930039f40e",
+                "name": "custregion",
+                "value": "={{ $json.custregion }}",
+                "type": "string"
+              },
+              {
+                "id": "1c1dbf75-ae08-476f-8d23-f9eec9d9b699",
+                "name": "custgroup",
+                "value": "={{ $json.custgroup }}",
+                "type": "string"
+              },
+              {
+                "id": "ab5f1197-b132-4f68-ba60-25fca6e0fb41",
+                "name": "month",
+                "value": "={{ $json.month }}",
+                "type": "number"
+              },
+              {
+                "id": "9533c8c3-0fe1-4c02-ada8-8278c7cf0683",
+                "name": "year",
+                "value": "={{ $json.year }}",
+                "type": "number"
+              },
+              {
+                "id": "6cf58de8-a8d9-4152-819f-378d64709fc9",
+                "name": "season",
+                "value": "={{ $json.season }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -2112,
+          192
+        ],
+        "id": "38c0dea5-d4b5-4b58-a643-cc148b43380b",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "y"
+              }
+            ]
+          },
+          "fieldsToSplitBy": "CUSTID, PRDID\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1,
+        "position": [
+          -1888,
+          272
+        ],
+        "id": "aaf045a6-9bf5-4efc-8600-53b91710b462",
+        "name": "Summarize",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "PRDID, CUSTID",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -1440,
+          192
+        ],
+        "id": "aee20c59-8813-4376-876f-3f23579aabc3",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "defa1d2c-bfa0-481a-a7de-54efb4515a88",
+                "name": "scale_avg",
+                "value": "={{ $json.average_y }}",
+                "type": "number"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "include": "selected",
+          "includeFields": "PRDID, CUSTID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1664,
+          272
+        ],
+        "id": "bc10a08a-77ec-4571-9eda-a0aab7ccb505",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "CUSTID, PRDID",
+          "joinMode": "enrichInput1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -768,
+          192
+        ],
+        "id": "79ea34ae-1c0c-4615-9ffc-99fe55640bc9",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "jsCode": "// --- CONFIGURACIÓN DE ESTRATEGIA (Sección 4) ---\nconst W_IMPACT = 0.60;\nconst W_SIGNAL = 0.40;\nconst THRESHOLD_PROBLEM = 0.3;\nconst CRITICAL_SHARE = 0.03;\n\n// Mapa de Prioridad para ordenar la lista final\nconst priorityMap = {\n  'MANUAL_REVIEW': 100,      // Rojo\n  'AGENT_INVESTIGATION': 80, // Naranja\n  'AUTO_ADJUST': 50,         // Amarillo\n  'MONITOR': 20,             // Gris\n  'KEEP_CURRENT': 0          // Verde\n};\n\n// 1. DEDUPLICACIÓN Y CLASIFICACIÓN\nconst uniquePairs = {};\n\nfor (const item of items) {\n  const r = item.json;\n  \n  // Clave única para el par Cliente-Producto\n  const key = `${r.CUSTID}_${r.PRDID}`;\n\n  // Si ya procesamos este par, pasamos al siguiente (Deduplicación)\n  if (uniquePairs[key]) continue;\n\n  // --- OBTENER SCORES ---\n  const s_signal = Number(r.signal_score_final || 0);\n  const s_impact = Number(r.impact_score_final || 0);\n  const impact_share = Number(r.impact_share || 0);\n\n  // --- CÁLCULO DEL SCORE TOTAL ---\n  const total_score = (W_IMPACT * s_impact) + (W_SIGNAL * s_signal);\n\n  // --- MATRIZ DE DECISIÓN ---\n  let classification = 'STABLE';\n  let strategy = 'KEEP_CURRENT';\n  let justification = 'Bajo impacto y señal estable.';\n\n  // Regla 1: Impacto Crítico (Válvula de Seguridad)\n  if (impact_share > CRITICAL_SHARE) {\n    classification = 'CRITICAL';\n    strategy = 'MANUAL_REVIEW';\n    justification = `Impacto Crítico (${(impact_share*100).toFixed(1)}% del error global).`;\n  } \n  // Regla 2: Problemático (Score > 0.5)\n  else if (total_score >= THRESHOLD_PROBLEM) {\n    // Cuadrante B1: Impacto Alto, Señal Buena -> Oportunidad Técnica\n    if (s_impact > 0.5 && s_signal <= 0.4) {\n      classification = 'OPPORTUNITY';\n      strategy = 'AUTO_ADJUST';\n      justification = 'Alto impacto financiero, pero señal estable.';\n    } \n    // Cuadrante B2: Impacto Alto, Señal Mala -> Caos para el Agente\n    else if (s_impact > 0.5 && s_signal > 0.4) {\n      classification = 'CHAOS';\n      strategy = 'AGENT_INVESTIGATION';\n      justification = 'Alto impacto y comportamiento errático.';\n    } \n    // Resto de casos problemáticos\n    else {\n      classification = 'PROBLEMATIC';\n      strategy = 'MONITOR';\n      justification = `Score combinado alto (${total_score.toFixed(2)}).`;\n    }\n  }\n\n  // --- CONSTRUCCIÓN DEL OBJETO FINAL (PAR ÚNICO) ---\n  uniquePairs[key] = {\n    // Identificadores\n    CUSTID: r.CUSTID,\n    PRDID: r.PRDID,\n    REGION: r.custregion,\n\n    // Resultado de la Clasificación\n    STATUS: classification,\n    STRATEGY: strategy,\n    FINAL_SCORE: Number(total_score.toFixed(3)),\n    JUSTIFICATION: justification,\n\n    // Métricas Agregadas (Para referencia rápida)\n    IMPACT_SCORE: s_impact.toFixed(2),\n    SIGNAL_SCORE: s_signal.toFixed(2),\n    ERROR_SHARE: (impact_share * 100).toFixed(2) + '%',\n    TOTAL_SALES: Number(r.sum_y || 0),\n    BIAS: Number(r.bias || 0).toFixed(3),\n    WAPE: Number(r.wape || 0).toFixed(3)\n  };\n}\n\n// 2. ORDENAMIENTO (De más urgente a menos urgente)\nconst resultList = Object.values(uniquePairs);\n\nresultList.sort((a, b) => {\n  const prioA = priorityMap[a.STRATEGY] || 0;\n  const prioB = priorityMap[b.STRATEGY] || 0;\n  \n  // Primero por urgencia de estrategia\n  if (prioA !== prioB) return prioB - prioA;\n  \n  // Desempate por Score numérico\n  return b.FINAL_SCORE - a.FINAL_SCORE;\n});\n\nreturn resultList.map(r => ({ json: r }));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -544,
+          192
+        ],
+        "id": "2aa29182-91d6-42f6-aaa6-7d69b3940352",
+        "name": "Code in JavaScript9"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e38b8747-ac57-48a5-ac6e-b53d54b6f14b",
+                "leftValue": "={{ $json.STATUS }}",
+                "rightValue": "STABLE",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          -320,
+          384
+        ],
+        "id": "d6b62716-8fbc-43c9-8c44-02c0625b549a",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "value": "zivYLI1PlIMWk3fK",
+            "mode": "list",
+            "cachedResultName": "clientes problematicos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "REGION": "={{ $json.REGION }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "REGION",
+                "displayName": "REGION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          -96,
+          480
+        ],
+        "id": "4c9ce8be-0e6e-4a94-9f6e-7f6edc8dc9fd",
+        "name": "Insert row"
+      },
+      {
+        "parameters": {
+          "operation": "deleteRows",
+          "dataTableId": {
+            "__rl": true,
+            "value": "zivYLI1PlIMWk3fK",
+            "mode": "list",
+            "cachedResultName": "clientes problematicos",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/zivYLI1PlIMWk3fK"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "CUSTID",
+                "keyValue": "={{ $json.CUSTID }}"
+              },
+              {
+                "keyName": "PRDID",
+                "keyValue": "={{ $json.PRDID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          -96,
+          288
+        ],
+        "id": "ca393436-895e-4279-b692-f2ea5d3f2d72",
+        "name": "Delete row(s)",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "P9K8K4aE9VH0yVxE",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/P9K8K4aE9VH0yVxE",
+            "cachedResultName": "normalizacion 1.1 y 1.2"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -1216,
+          192
+        ],
+        "name": "Call normalizacion 1.1 y 1.2",
+        "id": "dd3bbcda-0973-4e8a-a2d9-c4d467ea49b9"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "jLKrr1l2GKVl6fJY",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/jLKrr1l2GKVl6fJY",
+            "cachedResultName": "calculo de impacto 2"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -992,
+          288
+        ],
+        "name": "Call calculo de impacto 2",
+        "id": "d9ce9de2-be89-4639-b92e-f820ed73d60a"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "u59ywUfqcyy2xKzc",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/u59ywUfqcyy2xKzc",
+            "cachedResultName": "calculo de señal"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {
+            "waitForSubWorkflow": true
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          -992,
+          96
+        ],
+        "name": "Call calculo de señal",
+        "id": "b7585953-1a13-457e-9f12-d7846e91b932"
+      },
+      {
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "value": "YV6RAVPW84DWicjA",
+            "mode": "list",
+            "cachedResultName": "clientes clasificados",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "REGION": "={{ $json.REGION }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "REGION",
+                "displayName": "REGION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          -320,
+          192
+        ],
+        "id": "88cf30f3-9fb0-4c34-b83e-77d6a6af3ea4",
+        "name": "Insert row2"
+      },
+      {
+        "parameters": {
+          "operation": "deleteRows",
+          "dataTableId": {
+            "__rl": true,
+            "value": "YV6RAVPW84DWicjA",
+            "mode": "list",
+            "cachedResultName": "clientes clasificados",
+            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "CUSTID",
+                "keyValue": "={{ $json.CUSTID }}"
+              },
+              {
+                "keyName": "PRDID",
+                "keyValue": "={{ $json.PRDID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          -320,
+          0
+        ],
+        "id": "de66954c-f747-4245-8da7-289fbf8948d6",
+        "name": "Delete row(s)1",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "respondWith": "noData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          128,
+          480
+        ],
+        "id": "c3291b8e-04b9-43ce-a49d-c8981d5e6b43",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -2560,
+          288
+        ],
+        "id": "a64893ef-9763-4d5e-9996-900db8bd045d",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "operation": "select",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_consolidated_data",
+            "mode": "list",
+            "cachedResultName": "molinos_consolidated_data"
+          },
+          "returnAll": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -2336,
+          192
+        ],
+        "id": "a7a5cca5-84ef-46aa-a72a-4fd85e236461",
+        "name": "Select rows from a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "iniciar-clasificacion",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Authorization, Accept"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "GET, POST, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -2560,
+          80
+        ],
+        "id": "0612de27-5914-4dae-bcc0-203354c97178",
+        "name": "iniciar-clasificacion",
+        "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
+      }
+    ],
+    "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Summarize",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Summarize": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "node": "Call normalizacion 1.1 y 1.2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "Merge1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript9",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript9": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Delete row(s)1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Insert row2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Insert row",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Delete row(s)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call normalizacion 1.1 y 1.2": {
+        "main": [
+          [
+            {
+              "node": "Call calculo de impacto 2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Call calculo de señal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call calculo de impacto 2": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Call calculo de señal": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert row": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Select rows from a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select rows from a table": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "iniciar-clasificacion": {
+        "main": [
+          [
+            {
+              "node": "Select rows from a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version 4e8892fc",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
