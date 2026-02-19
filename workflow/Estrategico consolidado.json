@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2025-07-07T00:02:02.000Z",
-  "createdAt": "2025-06-30T05:56:48.947Z",
-  "id": "LS0i0Tkh3rH3QV8E",
+  "updatedAt": "2026-02-15T00:39:02.470Z",
+  "createdAt": "2026-02-15T00:31:09.023Z",
+  "id": "9stmfa3OkXkVjw97",
   "name": "Estrategico consolidado",
   "active": false,
   "isArchived": false,
@@ -617,23 +617,23 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "8c8c89a0-bea1-4a91-acc4-b91c9dde4052",
+  "meta": null,
+  "pinData": null,
+  "versionId": "7f9e6bbd-447d-4736-8230-d4b168961bca",
   "activeVersionId": null,
-  "triggerCount": 1,
+  "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-06-30T05:56:48.953Z",
-      "createdAt": "2025-06-30T05:56:48.953Z",
+      "updatedAt": "2026-02-15T00:31:09.023Z",
+      "createdAt": "2026-02-15T00:31:09.023Z",
       "role": "workflow:owner",
-      "workflowId": "LS0i0Tkh3rH3QV8E",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "9stmfa3OkXkVjw97",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
