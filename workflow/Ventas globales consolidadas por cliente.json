@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2025-07-23T06:45:13.000Z",
-  "createdAt": "2025-07-23T06:36:30.702Z",
-  "id": "7UavLCzt6Cw0j4Sq",
+  "updatedAt": "2026-02-15T00:37:25.971Z",
+  "createdAt": "2026-02-15T00:31:15.028Z",
+  "id": "ras9J9vFbXwFc6WD",
   "name": "Ventas globales consolidadas por cliente",
   "active": false,
   "isArchived": false,
@@ -181,21 +181,23 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
-  "versionId": "e1635821-555e-47d4-93eb-88985d064ae6",
+  "pinData": null,
+  "versionId": "9d9d6722-4948-4421-ada0-27f2a0746c11",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-07-23T06:36:30.716Z",
-      "createdAt": "2025-07-23T06:36:30.716Z",
+      "updatedAt": "2026-02-15T00:31:15.028Z",
+      "createdAt": "2026-02-15T00:31:15.028Z",
       "role": "workflow:owner",
-      "workflowId": "7UavLCzt6Cw0j4Sq",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "ras9J9vFbXwFc6WD",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
   "activeVersion": null,
