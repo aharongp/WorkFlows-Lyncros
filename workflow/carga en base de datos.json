@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T17:36:49.764Z",
+  "updatedAt": "2026-02-19T01:12:57.666Z",
   "createdAt": "2026-02-18T00:41:13.134Z",
   "id": "FVdfBxBWCqSQYOAVJ31Kb",
   "name": "carga en base de datos",
@@ -7,53 +7,19 @@
   "isArchived": false,
   "nodes": [
     {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "iniciar-clasificacion",
-        "responseMode": "responseNode",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Access-Control-Allow-Headers",
-                "value": "Content-Type, Authorization, Accept"
-              },
-              {
-                "name": "Access-Control-Allow-Methods",
-                "value": "GET, POST, OPTIONS"
-              },
-              {
-                "name": "Access-Control-Allow-Origin",
-                "value": "http://localhost:5173"
-              }
-            ]
-          }
-        }
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -768,
-        -272
-      ],
-      "id": "9269d67c-6ef0-4c52-8e1e-bcc3f411c19d",
-      "name": "iniciar-clasificacion",
-      "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
-    },
-    {
       "parameters": {},
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
         -768,
-        -80
+        -144
       ],
       "id": "4f84fd26-a0e7-4e0c-9d60-448fec2b7be2",
       "name": "When clicking ‘Execute workflow’"
     },
     {
       "parameters": {
-        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    // ARCHIVO \"70k\"\n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        transactions = parseCSV(buffer.toString('utf8'), ','); \n    }\n    \n    // ARCHIVO \"4k\"\n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const rows = parseCSV(buffer.toString('utf8'), ';');\n        \n        for (const row of rows) {\n            // parseCSV ya limpia los datos, no necesitamos String().trim() aquí\n            const key = `${row.PRDID}_${row.CUSTID}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y FILTRADO ---\nconst results = [];\nconst dateCache = {}; // <-- CACHÉ DE FECHAS PARA AHORRAR CPU\n\nfor (const txn of transactions) {\n    // Usamos las llaves limpias directamente\n    const key = `${txn.PRDID}_${txn.CUSTID}`;\n    const refData = referenceMap.get(key);\n    \n    if (!refData) continue; // Si no hay match en el 4k, saltamos a la siguiente fila inmediatamente\n\n    let foreActValue = null;\n\n    // --- Lógica de Fecha Optimizada con Caché ---\n    if (txn.PERIODID3) {\n        let dynamicColumn = dateCache[txn.PERIODID3];\n        \n        // Si no hemos calculado esta fecha antes, lo hacemos y la guardamos\n        if (dynamicColumn === undefined) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2);\n                const monthName = monthMap[parts[1]];\n                dynamicColumn = monthName ? `${yearShort}-${monthName}` : null;\n            } else {\n                dynamicColumn = null;\n            }\n            dateCache[txn.PERIODID3] = dynamicColumn; // Guardar en caché\n        }\n\n        // Extraer el valor del forecast\n        if (dynamicColumn) {\n            const val = refData[dynamicColumn];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = val;\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO Y ASIGNACIÓN ---\n    if (foreActValue !== null) {\n        // Mutamos el objeto original para ahorrar memoria RAM\n        txn['CUSTREGION'] = refData['CUSTREGION'];\n        txn['CUSTGROUP'] = refData['CUSTGROUP'];\n        txn['foreAct'] = foreActValue; \n\n        results.push({ json: txn });\n    }\n}\n\nreturn results;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            // parseCSV limpia espacios, así que los valores ya vienen listos\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
+        "jsCode": "// --- CONFIGURACIÓN ---\nconst monthMap = {\n    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',\n    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'\n};\n\n// --- 1. LECTURA Y PARSEO (BINARY -> JSON) ---\nconst referenceMap = new Map(); \nlet transactions = [];          \n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i];\n    \n    if (item.binary && item.binary['70k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '70k');\n        transactions = parseCSV(buffer.toString('utf8'), ','); \n    }\n    \n    if (item.binary && item.binary['4k']) {\n        const buffer = await this.helpers.getBinaryDataBuffer(i, '4k');\n        const rows = parseCSV(buffer.toString('utf8'), ';');\n        \n        for (const row of rows) {\n            const key = `${row.PRDID}_${row.CUSTID}`;\n            referenceMap.set(key, row);\n        }\n    }\n}\n\n// --- 2. CRUCE, RENOMBRADO Y AGREGACIÓN ---\nconst aggregatedItems = {}; // <-- AQUÍ GUARDAMOS LOS ÚNICOS\nconst dateCache = {}; \n\nfor (const txn of transactions) {\n    const keyRef = `${txn.PRDID}_${txn.CUSTID}`;\n    const refData = referenceMap.get(keyRef);\n    \n    if (!refData) continue; \n\n    let foreActValue = null;\n\n    // Lógica de Fecha Optimizada\n    if (txn.PERIODID3) {\n        let dynamicColumn = dateCache[txn.PERIODID3];\n        \n        if (dynamicColumn === undefined) {\n            const parts = txn.PERIODID3.split('-'); \n            if (parts.length >= 2) {\n                const yearShort = parts[0].slice(2);\n                const monthName = monthMap[parts[1]];\n                dynamicColumn = monthName ? `${yearShort}-${monthName}` : null;\n            } else {\n                dynamicColumn = null;\n            }\n            dateCache[txn.PERIODID3] = dynamicColumn; \n        }\n\n        if (dynamicColumn) {\n            const val = refData[dynamicColumn];\n            if (val !== undefined && val !== null && val !== \"\") {\n                foreActValue = val;\n            }\n        }\n    }\n\n    // --- FILTRO MAESTRO Y AGREGACIÓN DE DUPLICADOS ---\n    if (foreActValue !== null) {\n        // Llave única para la base de datos: Cliente + Producto + Fecha\n        const aggKey = `${txn.CUSTID}_${txn.PRDID}_${txn.PERIODID3}`;\n\n        if (!aggregatedItems[aggKey]) {\n            // Si es la primera vez que vemos este par en este mes, lo guardamos\n            aggregatedItems[aggKey] = { ...txn };\n            aggregatedItems[aggKey]['CUSTREGION'] = refData['CUSTREGION'];\n            aggregatedItems[aggKey]['CUSTGROUP'] = refData['CUSTGROUP'];\n            aggregatedItems[aggKey]['foreAct'] = parseFloat(foreActValue.toString().replace(',', '.') || 0); \n            \n            // Aseguramos que los campos a sumar sean números\n            aggregatedItems[aggKey]['ZSELLOUTCLIENTE'] = parseFloat((txn['ZSELLOUTCLIENTE'] || \"0\").toString().replace(',', '.'));\n            aggregatedItems[aggKey]['ADJUSTEDACTUALSQTY'] = parseFloat((txn['ADJUSTEDACTUALSQTY'] || \"0\").toString().replace(',', '.'));\n            aggregatedItems[aggKey]['PINDEX'] = parseFloat((txn['PINDEX'] || \"1.0\").toString().replace(',', '.'));\n            aggregatedItems[aggKey]._count = 1;\n        } else {\n            // Si ya existe (Factura duplicada), sumamos y acumulamos\n            aggregatedItems[aggKey]['ZSELLOUTCLIENTE'] += parseFloat((txn['ZSELLOUTCLIENTE'] || \"0\").toString().replace(',', '.'));\n            aggregatedItems[aggKey]['ADJUSTEDACTUALSQTY'] += parseFloat((txn['ADJUSTEDACTUALSQTY'] || \"0\").toString().replace(',', '.'));\n            aggregatedItems[aggKey]['PINDEX'] += parseFloat((txn['PINDEX'] || \"1.0\").toString().replace(',', '.'));\n            aggregatedItems[aggKey]._count += 1;\n        }\n    }\n}\n\n// --- 3. CÁLCULO DE PROMEDIOS Y FORMATO FINAL ---\nconst finalResults = Object.values(aggregatedItems).map(r => {\n    if (r._count > 1) {\n        r.PINDEX = r.PINDEX / r._count; // Promediamos el PINDEX\n    }\n    delete r._count; // Limpiamos la variable temporal\n    return { json: r };\n});\n\nreturn finalResults;\n\n// --- FUNCIONES DE PARSEO (Sin cambios) ---\nfunction parseCSV(csvText, separator) {\n    const lines = csvText.split('\\n');\n    if (lines.length < 2) return [];\n\n    const headers = parseCSVLine(lines[0], separator).map(h => h.trim().replace(/^[\"']|[\"']$/g, ''));\n    const parsedData = [];\n\n    for (let i = 1; i < lines.length; i++) {\n        const line = lines[i].trim();\n        if (!line) continue;\n        const values = parseCSVLine(line, separator);\n        const obj = {};\n        headers.forEach((header, index) => {\n            let val = values[index] ? values[index].trim() : null;\n            if (val && val.includes(',') && separator === ';') val = val.replace(',', '.'); \n            obj[header] = val;\n        });\n        parsedData.push(obj);\n    }\n    return parsedData;\n}\n\nfunction parseCSVLine(text, separator) {\n    const escapedSep = separator === '.' ? '\\\\.' : separator;\n    const re_value = new RegExp(`(?!\\\\s*$)\\\\s*(?:'([^']*)'|\"([^\"]*)\"|([^${escapedSep}'\"\\\\s\\\\\\\\]*(?:\\\\s+[^${escapedSep}'\"\\\\s\\\\\\\\]+)*))\\\\s*(?:${escapedSep}|$)`, 'g');\n    const a = [];\n    text.replace(re_value, function(m0, m1, m2, m3) {\n        if (m1 !== undefined) a.push(m1.replace(/\\\\'/g, \"'\"));\n        else if (m2 !== undefined) a.push(m2.replace(/\\\\\"/g, '\"'));\n        else if (m3 !== undefined) a.push(m3);\n        return '';\n    });\n    if (new RegExp(`${escapedSep}\\\\s*$`).test(text)) a.push('');\n    return a;\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -77,238 +43,6 @@
       ],
       "id": "70fe310c-abae-4cd8-a491-68037389514f",
       "name": "Loop Over Items"
-    },
-    {
-      "parameters": {
-        "schema": {
-          "__rl": true,
-          "value": "public",
-          "mode": "list",
-          "cachedResultName": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "molinos_consolidated_data",
-          "mode": "list",
-          "cachedResultName": "molinos_consolidated_data"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "pindex": "={{ $json.PINDEX }}",
-            "zselloutcliente": "={{ $json.ZSELLOUTCLIENTE }}",
-            "custid": "={{ $json.CUSTID }}",
-            "prdid": "={{ $json.PRDID }}",
-            "custregion": "={{ $json.CUSTREGION }}",
-            "custgroup": "={{ $json.CUSTGROUP }}",
-            "foreact": "={{ $json.foreAct }}",
-            "sov": "={{ $json.SOV }}",
-            "som": "={{ $json.SOM }}",
-            "punitario": "={{ $json.PUNITARIO }}",
-            "year": "={{ $json.YEAR }}",
-            "month": "={{ $json.MONTH }}",
-            "adjustedactualsqty": "={{ $json.ADJUSTEDACTUALSQTY }}",
-            "periodid3": "={{ $json.PERIODID3 }}",
-            "season": "={{ $json.SEASON }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "periodid3",
-              "displayName": "periodid3",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "prdid",
-              "displayName": "prdid",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "custid",
-              "displayName": "custid",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "adjustedactualsqty",
-              "displayName": "adjustedactualsqty",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "month",
-              "displayName": "month",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "year",
-              "displayName": "year",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "season",
-              "displayName": "season",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "punitario",
-              "displayName": "punitario",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "pindex",
-              "displayName": "pindex",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "som",
-              "displayName": "som",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "sov",
-              "displayName": "sov",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "zselloutcliente",
-              "displayName": "zselloutcliente",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "custregion",
-              "displayName": "custregion",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "custgroup",
-              "displayName": "custgroup",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "foreact",
-              "displayName": "foreact",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "createdat",
-              "displayName": "createdat",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "updatedat",
-              "displayName": "updatedat",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": true
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        800,
-        -176
-      ],
-      "id": "8fae6819-be75-4f17-9747-73edf42bef44",
-      "name": "Insert rows in a table",
-      "credentials": {
-        "postgres": {
-          "id": "ezJ6rP6dRWwFUGI9",
-          "name": "Postgres account"
-        }
-      }
     },
     {
       "parameters": {
@@ -409,20 +143,246 @@
       ],
       "id": "16428571-4b15-49c9-b997-a450d93f6264",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_consolidated_data",
+          "mode": "list",
+          "cachedResultName": "molinos_consolidated_data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pindex": "={{ $json.PINDEX }}",
+            "zselloutcliente": "={{ $json.ZSELLOUTCLIENTE }}",
+            "custid": "={{ $json.CUSTID }}",
+            "prdid": "={{ $json.PRDID }}",
+            "custregion": "={{ $json.CUSTREGION }}",
+            "custgroup": "={{ $json.CUSTGROUP }}",
+            "foreact": "={{ $json.foreAct }}",
+            "sov": "={{ $json.SOV }}",
+            "som": "={{ $json.SOM }}",
+            "punitario": "={{ $json.PUNITARIO }}",
+            "year": "={{ $json.YEAR }}",
+            "month": "={{ $json.MONTH }}",
+            "adjustedactualsqty": "={{ $json.ADJUSTEDACTUALSQTY }}",
+            "periodid3": "={{ $json.PERIODID3 }}",
+            "season": "={{ $json.SEASON }}"
+          },
+          "matchingColumns": [
+            "periodid3",
+            "prdid",
+            "custid"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "periodid3",
+              "displayName": "periodid3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "prdid",
+              "displayName": "prdid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "custid",
+              "displayName": "custid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "adjustedactualsqty",
+              "displayName": "adjustedactualsqty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "month",
+              "displayName": "month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "season",
+              "displayName": "season",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "punitario",
+              "displayName": "punitario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "pindex",
+              "displayName": "pindex",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "som",
+              "displayName": "som",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "sov",
+              "displayName": "sov",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "zselloutcliente",
+              "displayName": "zselloutcliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "custregion",
+              "displayName": "custregion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "custgroup",
+              "displayName": "custgroup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "foreact",
+              "displayName": "foreact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "createdat",
+              "displayName": "createdat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "updatedat",
+              "displayName": "updatedat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        800,
+        -176
+      ],
+      "id": "8fae6819-be75-4f17-9747-73edf42bef44",
+      "name": "Insert or update rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "connections": {
-    "iniciar-clasificacion": {
-      "main": [
-        [
-          {
-            "node": "Get row(s)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "When clicking ‘Execute workflow’": {
       "main": [
         [
@@ -450,18 +410,7 @@
         [],
         [
           {
-            "node": "Insert rows in a table",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Insert rows in a table": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
+            "node": "Insert or update rows in a table",
             "type": "main",
             "index": 0
           }
@@ -527,6 +476,17 @@
           }
         ]
       ]
+    },
+    "Insert or update rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -538,7 +498,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "018fa7e3-cee6-4383-b054-a9d9beb45d34",
+  "versionId": "a4643b5d-4564-4a5e-a4a5-e236e1ac0c0a",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
