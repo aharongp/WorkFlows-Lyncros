@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-07-23T06:22:36.000Z",
-  "createdAt": "2025-07-23T06:21:18.655Z",
-  "id": "MIgAwcdr5odDb0IC",
+  "updatedAt": "2026-02-15T00:39:04.153Z",
+  "createdAt": "2026-02-15T00:31:08.661Z",
+  "id": "vmMPMKgSCcAvfE6y",
   "name": "DisponibilidadInsumo.csv",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -139,173 +139,25 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
-  "pinData": {
-    "When Executed by Another Workflow": [
-      {
-        "json": {
-          "InsumoID": "INS-TRI-PAN"
-        }
-      }
-    ]
-  },
-  "versionId": "eb217d7c-9f89-4117-a888-dbabb4372f28",
-  "activeVersionId": "eb217d7c-9f89-4117-a888-dbabb4372f28",
+  "pinData": null,
+  "versionId": "5125887f-d262-4cf7-99a1-3cfc29a23557",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-07-23T06:21:18.679Z",
-      "createdAt": "2025-07-23T06:21:18.679Z",
+      "updatedAt": "2026-02-15T00:31:08.661Z",
+      "createdAt": "2026-02-15T00:31:08.661Z",
       "role": "workflow:owner",
-      "workflowId": "MIgAwcdr5odDb0IC",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "vmMPMKgSCcAvfE6y",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-17T21:03:07.932Z",
-    "createdAt": "2026-01-17T21:03:07.932Z",
-    "versionId": "eb217d7c-9f89-4117-a888-dbabb4372f28",
-    "workflowId": "MIgAwcdr5odDb0IC",
-    "nodes": [
-      {
-        "parameters": {
-          "jsCode": "\nfunction getLastStockFromSeparateArrays(insumoIDs, stocks) {\n  // Verificamos que ambos arrays tengan la misma longitud\n  if (insumoIDs.length !== stocks.length) {\n    return [];\n  }\n\n  const result = {};\n\n  for (let i = 0; i < insumoIDs.length; i++) {\n    const insumoID = insumoIDs[i]; \n    let stock = stocks[i];\n    stock = Number(stock);\n    if (isNaN(stock)) {\n      stock = 0; // O podrías saltar este item, lanzar un error, etc.\n    }\n    stock = Math.abs(stock);\n    result[insumoID]  = { insumoID: insumoID, Stock: stock };\n  }\n\n  return Object.values(result);\n}\n\nconst insumoIDsString = $input.first().json.InsumoID;\nconst stocksString = $input.first().json.StockResultante;\n\nconst lastStocksString = getLastStockFromSeparateArrays(insumoIDsString, stocksString);\n\n\n\nreturn lastStocksString;"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          440,
-          0
-        ],
-        "id": "daf424ee-28f0-4032-ba6a-2518ad9525ed",
-        "name": "Code"
-      },
-      {
-        "parameters": {
-          "fieldsToAggregate": {
-            "fieldToAggregate": [
-              {
-                "fieldToAggregate": "InsumoID"
-              },
-              {
-                "fieldToAggregate": "StockResultante"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.aggregate",
-        "typeVersion": 1,
-        "position": [
-          220,
-          0
-        ],
-        "id": "644c5c8e-e344-4c16-afab-bc25bc0eb73f",
-        "name": "Aggregate"
-      },
-      {
-        "parameters": {
-          "documentId": {
-            "__rl": true,
-            "value": "1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno",
-            "mode": "list",
-            "cachedResultName": "Base de datos sintetica arreglada",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit?usp=drivesdk"
-          },
-          "sheetName": {
-            "__rl": true,
-            "value": 2094296849,
-            "mode": "list",
-            "cachedResultName": "InventarioInsumos",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QEpBfdKvfiagRztrNz7EJN9Xm__hNVVqJMozv_dRSno/edit#gid=2094296849"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "InsumoID",
-                "lookupValue": "={{ $json.InsumoID }}"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.6,
-        "position": [
-          0,
-          0
-        ],
-        "id": "a1071c9f-dafa-4bff-9c74-fbac9ccf7550",
-        "name": "Get row(s) in sheet",
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "CWI2Yxp3gWinrW8v",
-            "name": "Google Sheets account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "workflowInputs": {
-            "values": [
-              {
-                "name": "InsumoID"
-              }
-            ]
-          }
-        },
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1,
-        "position": [
-          -260,
-          -20
-        ],
-        "id": "5cb9bd53-b450-4b4c-aba0-cd75f35424fb",
-        "name": "When Executed by Another Workflow"
-      }
-    ],
-    "connections": {
-      "Aggregate": {
-        "main": [
-          [
-            {
-              "node": "Code",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Get row(s) in sheet": {
-        "main": [
-          [
-            {
-              "node": "Aggregate",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Get row(s) in sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
-  },
+  "activeVersion": null,
   "tags": []
 }
