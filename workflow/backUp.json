@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-02-14T22:04:17.628Z",
-  "createdAt": "2026-02-14T21:48:57.448Z",
-  "id": "r0Fdxppiwk9OSggFVb6kW",
+  "updatedAt": "2026-02-19T00:48:53.101Z",
+  "createdAt": "2026-02-15T00:31:16.414Z",
+  "id": "RWwa2BaNpxwrnokF",
   "name": "backUp",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -73,7 +73,7 @@
       "name": "Get many workflows",
       "credentials": {
         "n8nApi": {
-          "id": "XE18JDowzzNYBUnY",
+          "id": "bWVWT9OL5JqJU9dd",
           "name": "n8n account"
         }
       }
@@ -120,7 +120,7 @@
       "webhookId": "281badb4-0ed5-4e92-976e-03a0e45d28b5",
       "credentials": {
         "githubApi": {
-          "id": "wNHSUGXCVHrHamaK",
+          "id": "DBmDD6xqRBes6abQ",
           "name": "GitHub account"
         }
       },
@@ -139,7 +139,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\n\n// 2. Obtenemos los datos ORIGINALES del workflow desde el Loop\n// CAMBIA 'Loop Over Items' por el nombre exacto de tu nodo Loop si es diferente\nconst localWorkflowData = $('Loop Over Items').item.json;\n\n// Preparamos el contenido local (tal como lo guardaríamos)\n// null, 2 es para que tenga formato bonito (saltos de linea) igual que en GitHub\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// LÓGICA DE ESTADOS\n\n// CASO 2: NUEVO (No existe en GitHub)\n// Si GitHub devolvió error o no tiene propiedad 'content'\nif (items[0].error || !githubData.content) {\n  return {\n    json: {\n      status: 2, // Nuevo\n      fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n      content: localContent\n    }\n  };\n}\n\n// Decodificar el contenido de GitHub (viene en Base64)\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\n// CASO 0: IGUAL (No hacer nada)\nif (remoteContent.trim() === localContent.trim()) {\n  return {\n    json: {\n      status: 0, // Igual\n      fileName: localWorkflowData.name,\n      message: \"Skipped - No changes\"\n    }\n  };\n}\n\n// CASO 1: DIFERENTE (Actualizar)\nreturn {\n  json: {\n    status: 1, // Modificado\n    fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n    content: localContent,\n    sha: githubData.sha // IMPORTANTE: Necesitamos el SHA para actualizar\n  }\n};"
+        "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\nconst localWorkflowData = $('Loop Over Items').item.json;\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// --- CAMBIO CLAVE AQUÍ ---\n// Verificamos si el archivo EXISTE usando el SHA, no el contenido\nconst fileExists = githubData.sha && githubData.sha !== \"\";\n\nif (!fileExists) {\n    return {\n        json: {\n            status: 2, // Nuevo\n            fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n            content: localContent\n        }\n    };\n}\n\n// Si el archivo es muy grande (>1MB), GitHub no manda el content.\n// En esos casos, para backups, lo mejor es asumir que hay que actualizar \n// o comparar de otra forma. De momento, forzamos el status 1 para que no falle.\nif (githubData.size > 1000000 && !githubData.content) {\n    return {\n        json: {\n            status: 1, // Modificado (por precaución al ser archivo grande)\n            fileName: githubData.name, // Usamos el nombre que ya tiene en GitHub\n            content: localContent,\n            sha: githubData.sha // ¡ESTO ES LO QUE EVITA EL ERROR 422!\n        }\n    };\n}\n\n// ... Resto de tu lógica de comparación para archivos pequeños ...\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\nif (remoteContent.trim() === localContent.trim()) {\n    return { json: { status: 0, message: \"Skipped - No changes\" } };\n}\n\nreturn {\n    json: {\n        status: 1,\n        fileName: githubData.name,\n        content: localContent,\n        sha: githubData.sha\n    }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -178,7 +178,7 @@
       "webhookId": "8930ea2e-8686-4637-bb3c-56013a7b253d",
       "credentials": {
         "githubApi": {
-          "id": "wNHSUGXCVHrHamaK",
+          "id": "DBmDD6xqRBes6abQ",
           "name": "GitHub account"
         }
       }
@@ -334,10 +334,23 @@
       "webhookId": "8930ea2e-8686-4637-bb3c-56013a7b253d",
       "credentials": {
         "githubApi": {
-          "id": "wNHSUGXCVHrHamaK",
+          "id": "DBmDD6xqRBes6abQ",
           "name": "GitHub account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\n\n// 2. Obtenemos los datos ORIGINALES del workflow desde el Loop\n// CAMBIA 'Loop Over Items' por el nombre exacto de tu nodo Loop si es diferente\nconst localWorkflowData = $('Loop Over Items').item.json;\n\n// Preparamos el contenido local (tal como lo guardaríamos)\n// null, 2 es para que tenga formato bonito (saltos de linea) igual que en GitHub\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// LÓGICA DE ESTADOS\n\n// CASO 2: NUEVO (No existe en GitHub)\n// Si GitHub devolvió error o no tiene propiedad 'content'\nif (items[0].error || !githubData.content) {\n  return {\n    json: {\n      status: 2, // Nuevo\n      fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n      content: localContent\n    }\n  };\n}\n\n// Decodificar el contenido de GitHub (viene en Base64)\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\n// CASO 0: IGUAL (No hacer nada)\nif (remoteContent.trim() === localContent.trim()) {\n  return {\n    json: {\n      status: 0, // Igual\n      fileName: localWorkflowData.name,\n      message: \"Skipped - No changes\"\n    }\n  };\n}\n\n// CASO 1: DIFERENTE (Actualizar)\nreturn {\n  json: {\n    status: 1, // Modificado\n    fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n    content: localContent,\n    sha: githubData.sha // IMPORTANTE: Necesitamos el SHA para actualizar\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "b3142be8-551e-4286-934a-682842e9eda4",
+      "name": "Code in JavaScript1"
     }
   ],
   "connections": {
@@ -502,43 +515,532 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
   },
-  "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
+  "staticData": {
+    "node:1dia": {
+      "recurrenceRules": []
+    }
   },
-  "pinData": {
-    "1dia": [
-      {
-        "json": {
-          "timestamp": "2025-11-20T17:39:40.459-05:00",
-          "Readable date": "November 20th 2025, 5:39:40 pm",
-          "Readable time": "5:39:40 pm",
-          "Day of week": "Thursday",
-          "Year": "2025",
-          "Month": "November",
-          "Day of month": "20",
-          "Hour": "17",
-          "Minute": "39",
-          "Second": "40",
-          "Timezone": "America/New_York (UTC-05:00)"
-        }
-      }
-    ]
-  },
-  "versionId": "d4c95912-d27f-4c39-99d5-82944cd0d634",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b1b3c3d8-fa13-48fb-b3cd-4deef0b27b43",
+  "activeVersionId": "062566c2-c66f-4a5a-9917-a430f6067a4e",
+  "triggerCount": 1,
   "shared": [
     {
-      "updatedAt": "2026-02-14T21:48:57.454Z",
-      "createdAt": "2026-02-14T21:48:57.454Z",
+      "updatedAt": "2026-02-15T00:31:16.414Z",
+      "createdAt": "2026-02-15T00:31:16.414Z",
       "role": "workflow:owner",
-      "workflowId": "r0Fdxppiwk9OSggFVb6kW",
-      "projectId": "cEfHDRqL69JgpIBq"
+      "workflowId": "RWwa2BaNpxwrnokF",
+      "projectId": "9axjLTcJCvAcwxP1"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-02-19T00:22:43.830Z",
+    "createdAt": "2026-02-15T00:31:16.423Z",
+    "versionId": "062566c2-c66f-4a5a-9917-a430f6067a4e",
+    "workflowId": "RWwa2BaNpxwrnokF",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1024,
+          272
+        ],
+        "id": "eb397963-f456-4211-8d3d-a0eb5f8641d5",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6713520a-9751-490f-b981-7595da4ffee4",
+                "name": "repo.owner",
+                "value": "aharongp",
+                "type": "string"
+              },
+              {
+                "id": "72e6950c-4b83-4e7e-9785-213847213ff0",
+                "name": "repo.name",
+                "value": "WorkFlows-Lyncros",
+                "type": "string"
+              },
+              {
+                "id": "78e28f22-2ac5-408f-8d98-088aa4cbd164",
+                "name": "repo.path",
+                "value": "workflow/",
+                "type": "string"
+              },
+              {
+                "id": "826304d8-bc25-4dc5-9c2a-da13434c35cd",
+                "name": "fecha",
+                "value": "=Update {{ $json['Readable date'] }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -800,
+          368
+        ],
+        "id": "49c4a131-f54c-4718-b630-1eb8832e2cfd",
+        "name": "Variables"
+      },
+      {
+        "parameters": {
+          "filters": {},
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "position": [
+          -576,
+          368
+        ],
+        "id": "65c4097d-7a92-4193-98e5-c4ea5feb8c5f",
+        "name": "Get many workflows",
+        "credentials": {
+          "n8nApi": {
+            "id": "bWVWT9OL5JqJU9dd",
+            "name": "n8n account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -352,
+          368
+        ],
+        "id": "2063cc86-605a-4e8e-aa92-2d5acd5d0f13",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Variables').item.json.repo.owner }}"
+          },
+          "repository": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Variables').item.json.repo.name }}"
+          },
+          "filePath": "={{ $('Variables').item.json.repo.path }}{{ $json.name.replace(/[^a-z0-9]/yi, '_') }}.json",
+          "asBinaryProperty": false,
+          "additionalParameters": {}
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          -128,
+          144
+        ],
+        "id": "19a2f77b-3189-4883-8eb8-725bcb61173e",
+        "name": "Get a file",
+        "webhookId": "281badb4-0ed5-4e92-976e-03a0e45d28b5",
+        "credentials": {
+          "githubApi": {
+            "id": "DBmDD6xqRBes6abQ",
+            "name": "GitHub account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          96,
+          224
+        ],
+        "id": "5db52388-3849-4d2e-9615-de374e4d668e",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "jsCode": "// 1. Obtenemos los datos del nodo anterior (GitHub)\nconst githubData = items[0].json;\n\n// 2. Obtenemos los datos ORIGINALES del workflow desde el Loop\n// CAMBIA 'Loop Over Items' por el nombre exacto de tu nodo Loop si es diferente\nconst localWorkflowData = $('Loop Over Items').item.json;\n\n// Preparamos el contenido local (tal como lo guardaríamos)\n// null, 2 es para que tenga formato bonito (saltos de linea) igual que en GitHub\nconst localContent = JSON.stringify(localWorkflowData, null, 2);\n\n// LÓGICA DE ESTADOS\n\n// CASO 2: NUEVO (No existe en GitHub)\n// Si GitHub devolvió error o no tiene propiedad 'content'\nif (items[0].error || !githubData.content) {\n  return {\n    json: {\n      status: 2, // Nuevo\n      fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n      content: localContent\n    }\n  };\n}\n\n// Decodificar el contenido de GitHub (viene en Base64)\nconst remoteContent = Buffer.from(githubData.content, 'base64').toString('utf-8');\n\n// CASO 0: IGUAL (No hacer nada)\nif (remoteContent.trim() === localContent.trim()) {\n  return {\n    json: {\n      status: 0, // Igual\n      fileName: localWorkflowData.name,\n      message: \"Skipped - No changes\"\n    }\n  };\n}\n\n// CASO 1: DIFERENTE (Actualizar)\nreturn {\n  json: {\n    status: 1, // Modificado\n    fileName: localWorkflowData.name.replace(/[^a-z0-9]/yi, '_') + '.json',\n    content: localContent,\n    sha: githubData.sha // IMPORTANTE: Necesitamos el SHA para actualizar\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          320,
+          224
+        ],
+        "id": "ff22047a-5a49-41a5-8e59-815cff8d6652",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Variables').first().json.repo.owner }}"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "=WorkFlows-Lyncros",
+            "mode": "name"
+          },
+          "filePath": "=workflow/{{ $json.fileName }}",
+          "fileContent": "={{ $json.content }}",
+          "commitMessage": "={{ $('Variables').first().json.fecha }}"
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          768,
+          688
+        ],
+        "id": "f0cf45e8-ddad-4fef-b768-eb3a8d59644f",
+        "name": "Create a file",
+        "webhookId": "8930ea2e-8686-4637-bb3c-56013a7b253d",
+        "credentials": {
+          "githubApi": {
+            "id": "DBmDD6xqRBes6abQ",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "name": "Fin",
+        "typeVersion": 1,
+        "position": [
+          -128,
+          -48
+        ],
+        "id": "5ba78cc0-b2e0-4258-b80d-bfd816b42568"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1024,
+          464
+        ],
+        "id": "a5505b60-2060-4593-b70e-0c190ed880b7",
+        "name": "1dia"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.status }}",
+                      "rightValue": 0,
+                      "operator": {
+                        "type": "number",
+                        "operation": "equals"
+                      },
+                      "id": "3a1ee12a-1f4b-4d42-8bc1-a032e8d8d649"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "6cf65801-3ecb-4c9f-abea-244edfb31969",
+                      "leftValue": "={{ $json.status }}",
+                      "rightValue": 1,
+                      "operator": {
+                        "type": "number",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "5a535d17-fef8-4809-9a22-a2aa752f8e05",
+                      "leftValue": "={{ $json.status }}",
+                      "rightValue": 2,
+                      "operator": {
+                        "type": "number",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.3,
+        "position": [
+          544,
+          208
+        ],
+        "id": "0740f4d5-40a0-4c01-afbe-e1732f71e684",
+        "name": "Status"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "name": "igual",
+        "typeVersion": 1,
+        "position": [
+          768,
+          304
+        ],
+        "id": "675416b2-4b50-4987-a51a-4d916f8ea0fb"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "edit",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Variables').first().json.repo.owner }}"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "=WorkFlows-Lyncros",
+            "mode": "name"
+          },
+          "filePath": "=workflow/{{ $json.fileName }}",
+          "fileContent": "={{ $json.content }}",
+          "commitMessage": "={{ $('Variables').first().json.fecha }}"
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          768,
+          496
+        ],
+        "id": "4a06b2a5-6b9f-4bc1-9e2f-3fd6c15a22e7",
+        "name": "Edit a file",
+        "webhookId": "8930ea2e-8686-4637-bb3c-56013a7b253d",
+        "credentials": {
+          "githubApi": {
+            "id": "DBmDD6xqRBes6abQ",
+            "name": "GitHub account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Variables",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Variables": {
+        "main": [
+          [
+            {
+              "node": "Get many workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many workflows": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Fin",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get a file",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Get a file": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a file": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "1dia": {
+        "main": [
+          [
+            {
+              "node": "Variables",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Status": {
+        "main": [
+          [
+            {
+              "node": "igual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Edit a file",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Create a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "igual": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit a file": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version 062566c2",
+    "description": "",
+    "autosaved": false
+  },
   "tags": []
 }
