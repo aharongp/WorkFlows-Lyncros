@@ -1,0 +1,3404 @@
+{
+  "updatedAt": "2026-02-20T03:38:56.536Z",
+  "createdAt": "2026-02-19T18:42:36.026Z",
+  "id": "bxu2VTNJ8LbdqZTK0qrgV",
+  "name": "agente explicador",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "239d10c0-eabf-42f7-aa09-18562fa51f3f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e0b3c6a-609b-4d00-a737-44d22f019f66",
+              "name": "periodid3",
+              "value": "={{ $json.query.date }}",
+              "type": "string"
+            },
+            {
+              "id": "7d121dc5-83f1-495f-b380-e7f49094b920",
+              "name": "PRDID",
+              "value": "={{ $json.query.PRDID }}",
+              "type": "string"
+            },
+            {
+              "id": "edbcc24f-5414-481f-88c0-c2a894395158",
+              "name": "CUSTID",
+              "value": "={{ $json.query.CUSTID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "9b309847-b5b9-4e3a-a2c8-b39be51e89de",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_forecast_corregido",
+          "mode": "list",
+          "cachedResultName": "molinos_forecast_corregido"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "CUSTID",
+              "value": "={{ $json.CUSTID || \"101699\"  }}"
+            },
+            {
+              "column": "PRDID",
+              "value": "={{ $json.PRDID || \"33631\"}}"
+            },
+            {
+              "column": "_meta_target_period",
+              "value": "={{ $json.periodid3 || \"2025-10-01\"}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "da2f4bdc-deca-470d-8fb7-00f46eadeda2",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_forecast_corregido",
+          "mode": "list",
+          "cachedResultName": "molinos_forecast_corregido"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "ADJUSTEDACTUALSQTY": "={{ $json.ADJUSTEDACTUALSQTY }}",
+            "LAST_MONTH_SALE": "={{ $json.LAST_MONTH_SALE }}",
+            "PUNITARIO": "={{ $json.PUNITARIO }}",
+            "PINDEX": "={{ $json.PINDEX }}",
+            "SOM": "={{ $json.SOM }}",
+            "SOV": "={{ $json.SOV }}",
+            "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
+            "foreAct": "={{ $json.foreAct }}",
+            "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
+            "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
+            "MONTH": "={{ $json.MONTH }}",
+            "YEAR": "={{ $json.YEAR }}",
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "_meta_target_period": "={{ $json._meta_target_period }}",
+            "CUSTREGION": "={{ $json.CUSTREGION }}",
+            "CUSTGROUP": "={{ $json.CUSTGROUP }}",
+            "SEASON": "={{ $json.SEASON }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "agent_explication": "={{ $json.agent_explication }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
+            "MODEL_drivers": "={{ $json.MODEL_drivers }}",
+            "PERIODID3": "={{ $json.PERIODID3 }}",
+            "_meta_data_period": "={{ $json._meta_data_period }}",
+            "_meta_forecast_col": "={{ $json._meta_forecast_col }}"
+          },
+          "matchingColumns": [
+            "CUSTID",
+            "PRDID",
+            "_meta_target_period"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CUSTREGION",
+              "displayName": "CUSTREGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "CUSTGROUP",
+              "displayName": "CUSTGROUP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SEASON",
+              "displayName": "SEASON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "agent_explication",
+              "displayName": "agent_explication",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_delta_pct",
+              "displayName": "MODEL_delta_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ADJUSTEDACTUALSQTY",
+              "displayName": "ADJUSTEDACTUALSQTY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "LAST_MONTH_SALE",
+              "displayName": "LAST_MONTH_SALE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "PUNITARIO",
+              "displayName": "PUNITARIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "PINDEX",
+              "displayName": "PINDEX",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SOM",
+              "displayName": "SOM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SOV",
+              "displayName": "SOV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ZSELLOUTCLIENTE",
+              "displayName": "ZSELLOUTCLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "foreAct",
+              "displayName": "foreAct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_forecast_original",
+              "displayName": "MODEL_forecast_original",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_forecast_corrected",
+              "displayName": "MODEL_forecast_corrected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_drivers",
+              "displayName": "MODEL_drivers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "PERIODID3",
+              "displayName": "PERIODID3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MONTH",
+              "displayName": "MONTH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "YEAR",
+              "displayName": "YEAR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "_meta_target_period",
+              "displayName": "_meta_target_period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "_meta_data_period",
+              "displayName": "_meta_data_period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "_meta_forecast_col",
+              "displayName": "_meta_forecast_col",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1904,
+        -176
+      ],
+      "id": "a58ea6d6-e56c-4b7c-87c0-6ace17a30e2d",
+      "name": "Insert or update rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b00f3564-65de-4a4b-931d-ed4c88d318e7",
+              "leftValue": "={{ $json.agent_explication }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        880,
+        -48
+      ],
+      "id": "652a3566-d488-4ff0-baf3-ecd579390106",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_forecast_corregido",
+          "mode": "list",
+          "cachedResultName": "molinos_forecast_corregido"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "ADJUSTEDACTUALSQTY": "={{ $json.ADJUSTEDACTUALSQTY }}",
+            "LAST_MONTH_SALE": "={{ $json.LAST_MONTH_SALE }}",
+            "PUNITARIO": "={{ $json.PUNITARIO }}",
+            "PINDEX": "={{ $json.PINDEX }}",
+            "SOM": "={{ $json.SOM }}",
+            "SOV": "={{ $json.SOV }}",
+            "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
+            "foreAct": "={{ $json.foreAct }}",
+            "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
+            "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
+            "MONTH": "={{ $json.MONTH }}",
+            "YEAR": "={{ $json.YEAR }}",
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "_meta_target_period": "={{ $json._meta_target_period }}",
+            "CUSTREGION": "={{ $json.CUSTREGION }}",
+            "CUSTGROUP": "={{ $json.CUSTGROUP }}",
+            "SEASON": "={{ $json.SEASON }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "agent_explication": "={{ $json.agent_explication }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+            "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
+            "MODEL_drivers": "={{ $json.MODEL_drivers }}",
+            "PERIODID3": "={{ $json.PERIODID3 }}",
+            "_meta_data_period": "={{ $json._meta_data_period }}",
+            "_meta_forecast_col": "={{ $json._meta_forecast_col }}"
+          },
+          "matchingColumns": [
+            "CUSTID",
+            "PRDID",
+            "_meta_target_period"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CUSTREGION",
+              "displayName": "CUSTREGION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "CUSTGROUP",
+              "displayName": "CUSTGROUP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SEASON",
+              "displayName": "SEASON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "agent_explication",
+              "displayName": "agent_explication",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_delta_pct",
+              "displayName": "MODEL_delta_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ADJUSTEDACTUALSQTY",
+              "displayName": "ADJUSTEDACTUALSQTY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "LAST_MONTH_SALE",
+              "displayName": "LAST_MONTH_SALE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "PUNITARIO",
+              "displayName": "PUNITARIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "PINDEX",
+              "displayName": "PINDEX",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SOM",
+              "displayName": "SOM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SOV",
+              "displayName": "SOV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ZSELLOUTCLIENTE",
+              "displayName": "ZSELLOUTCLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "foreAct",
+              "displayName": "foreAct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_forecast_original",
+              "displayName": "MODEL_forecast_original",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_forecast_corrected",
+              "displayName": "MODEL_forecast_corrected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MODEL_drivers",
+              "displayName": "MODEL_drivers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "PERIODID3",
+              "displayName": "PERIODID3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "MONTH",
+              "displayName": "MONTH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "YEAR",
+              "displayName": "YEAR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "_meta_target_period",
+              "displayName": "_meta_target_period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "_meta_data_period",
+              "displayName": "_meta_data_period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "_meta_forecast_col",
+              "displayName": "_meta_forecast_col",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1904,
+        208
+      ],
+      "id": "770b50de-ebd4-42db-8f6b-5baab8d49b65",
+      "name": "Insert or update rows in a table1",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5-nano"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        144
+      ],
+      "id": "165306be-3eef-47f8-8e06-79ccefae6bd0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Z9zPhNW2TDZXLiTT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2784475a-1084-4d4b-95e2-9c898313f421",
+              "name": "CUSTID",
+              "value": "={{ $json.CUSTID }}",
+              "type": "string"
+            },
+            {
+              "id": "2d28cffb-a076-4ecf-a9f7-feaace172fd2",
+              "name": "PRDID",
+              "value": "={{ $json.PRDID }}",
+              "type": "string"
+            },
+            {
+              "id": "0b63caf7-e9dc-40b5-a069-3b372467e428",
+              "name": "STATUS",
+              "value": "={{ $json.STATUS }}",
+              "type": "string"
+            },
+            {
+              "id": "1b4a936d-dfe3-477d-91d4-1c0dd02dd0c3",
+              "name": "STRATEGY",
+              "value": "={{ $json.STRATEGY }}",
+              "type": "string"
+            },
+            {
+              "id": "a69d2754-86ec-46ac-b9df-7073780be8b1",
+              "name": "FINAL_SCORE",
+              "value": "={{ $json.FINAL_SCORE }}",
+              "type": "number"
+            },
+            {
+              "id": "a707e5d8-499e-4701-9a5b-6c786d804856",
+              "name": "JUSTIFICATION",
+              "value": "={{ $json.JUSTIFICATION }}",
+              "type": "string"
+            },
+            {
+              "id": "26a72660-fe5a-4137-bfe4-4053643229aa",
+              "name": "ERROR_SHARE",
+              "value": "={{ $json.ERROR_SHARE }}",
+              "type": "string"
+            },
+            {
+              "id": "11f5b705-abe2-4ba6-9ada-949669c2d3a5",
+              "name": "IMPACT_SCORE",
+              "value": "={{ $json.IMPACT_SCORE }}",
+              "type": "string"
+            },
+            {
+              "id": "36e352b5-bc35-4b41-bf0b-ffebb93626bb",
+              "name": "SIGNAL_SCORE",
+              "value": "={{ $json.SIGNAL_SCORE }}",
+              "type": "string"
+            },
+            {
+              "id": "61413328-3386-42d8-8433-318eec04a44d",
+              "name": "TOTAL_SALES",
+              "value": "={{ $json.TOTAL_SALES }}",
+              "type": "number"
+            },
+            {
+              "id": "199b809c-e050-4a63-9916-e56bc2a21d49",
+              "name": "BIAS",
+              "value": "={{ $json.BIAS }}",
+              "type": "string"
+            },
+            {
+              "id": "016e4082-9568-4af1-ab21-44caebe47d63",
+              "name": "WAPE",
+              "value": "={{ $json.WAPE }}",
+              "type": "string"
+            },
+            {
+              "id": "198c1a37-e310-4c6b-bc2a-4c4b697a4af4",
+              "name": "PERIODID3",
+              "value": "={{ $json.PERIODID3 }}",
+              "type": "string"
+            },
+            {
+              "id": "fa623f20-0f99-4d9f-81be-938fea7aa865",
+              "name": "ADJUSTEDACTUALSQTY",
+              "value": "={{ $json.ADJUSTEDACTUALSQTY }}",
+              "type": "string"
+            },
+            {
+              "id": "fc9144b9-ceb0-4c76-a78e-14a77ca10e03",
+              "name": "MONTH",
+              "value": "={{ $json.MONTH }}",
+              "type": "string"
+            },
+            {
+              "id": "07762c64-0467-4ebd-b278-15223498c74d",
+              "name": "YEAR",
+              "value": "={{ $json.YEAR }}",
+              "type": "string"
+            },
+            {
+              "id": "5daeb1e9-427d-4118-bd93-3b8e36ec9375",
+              "name": "SEASON",
+              "value": "={{ $json.SEASON }}",
+              "type": "string"
+            },
+            {
+              "id": "3c991fca-69d8-4121-ade1-683f8f913e2e",
+              "name": "PUNITARIO",
+              "value": "={{ $json.PUNITARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "5406cc88-de7a-414a-a555-70887c3f5739",
+              "name": "PINDEX",
+              "value": "={{ $json.PINDEX }}",
+              "type": "number"
+            },
+            {
+              "id": "66c3b7de-f058-420f-9be1-275c41aed9bf",
+              "name": "SOM",
+              "value": "={{ $json.SOM }}",
+              "type": "string"
+            },
+            {
+              "id": "9dacff5f-3356-407f-828d-7c6f96477b90",
+              "name": "SOV",
+              "value": "={{ $json.SOV }}",
+              "type": "string"
+            },
+            {
+              "id": "03807724-b34d-416b-8082-2ac92d5373f8",
+              "name": "ZSELLOUTCLIENTE",
+              "value": "={{ $json.ZSELLOUTCLIENTE }}",
+              "type": "number"
+            },
+            {
+              "id": "76371e6b-a257-46c9-b7e1-aa8fe5d469f5",
+              "name": "foreAct",
+              "value": "={{ $json.foreAct }}",
+              "type": "number"
+            },
+            {
+              "id": "d8a8a45c-d9f4-45b9-9ab3-3e28eac7219a",
+              "name": "LAST_MONTH_SALE",
+              "value": "={{ $json.LAST_MONTH_SALE }}",
+              "type": "number"
+            },
+            {
+              "id": "79bde76a-dcd0-4e8f-a6c7-c94eea2cee5a",
+              "name": "CUSTREGION",
+              "value": "={{ $json.CUSTREGION }}",
+              "type": "string"
+            },
+            {
+              "id": "84af775b-e463-44a6-879a-c3fe7cc1700d",
+              "name": "CUSTGROUP",
+              "value": "={{ $json.CUSTGROUP }}",
+              "type": "string"
+            },
+            {
+              "id": "ac4716e7-311e-4ad8-b17f-419aa21a10c1",
+              "name": "_meta_target_period",
+              "value": "={{ $json._meta_target_period }}",
+              "type": "string"
+            },
+            {
+              "id": "6fafa67a-9e57-46b5-8752-172d6352db95",
+              "name": "_meta_data_period",
+              "value": "={{ $json._meta_data_period }}",
+              "type": "string"
+            },
+            {
+              "id": "0bf92e4e-a6de-41b6-b779-5068570dfdf0",
+              "name": "_meta_forecast_col",
+              "value": "={{ $json._meta_forecast_col }}",
+              "type": "string"
+            },
+            {
+              "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
+              "name": "agent_explication",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "1422b2c6-8973-4c48-b1ed-7328e999ec21",
+              "name": "MODEL_forecast_original",
+              "value": "={{ $json.MODEL_forecast_original }}",
+              "type": "string"
+            },
+            {
+              "id": "cc265cee-46c2-4fdf-9d8d-682ad80ebb4c",
+              "name": "MODEL_forecast_corrected",
+              "value": "={{ $json.MODEL_forecast_corrected }}",
+              "type": "string"
+            },
+            {
+              "id": "aa1d6966-b8a5-4774-af27-e2bada6b1963",
+              "name": "MODEL_forecast_no_cap",
+              "value": "={{ $json.MODEL_forecast_no_cap }}",
+              "type": "string"
+            },
+            {
+              "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
+              "name": "MODEL_delta_pct",
+              "value": "={{ $json.MODEL_delta_pct }}",
+              "type": "string"
+            },
+            {
+              "id": "f2f352b6-26a5-4d01-a5bc-13c4e3cd1262",
+              "name": "MODEL_raw_delta_pct",
+              "value": "={{ $json.MODEL_raw_delta_pct }}",
+              "type": "string"
+            },
+            {
+              "id": "9d3baadb-cb2e-4034-b190-64f672c9f17c",
+              "name": "MODEL_drivers",
+              "value": "={{ $json.MODEL_drivers }}",
+              "type": "string"
+            },
+            {
+              "id": "e4a7513b-201f-4d0e-b222-e3f9dc0ffaee",
+              "name": "_debug_status",
+              "value": "={{ $json._debug_status }}",
+              "type": "string"
+            },
+            {
+              "id": "79494e37-6e86-42b9-878a-fea28e6002e3",
+              "name": "_count",
+              "value": "={{ $json._count }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        -176
+      ],
+      "id": "85b94b99-1533-46ea-876d-d64eb9e5d59c",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1456,
+        -176
+      ],
+      "id": "895ad2f2-d169-4fb7-a300-d13ab06d7207",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of items) {\n    const r = item.json;\n    \n    // Si el forecast es cero, texto genérico\n    if (r.MODEL_forecast_corrected === 0) {\n        r.agent_explication = \"Sin pronóstico activo para este periodo.\";\n    } \n    // Si está estable, texto genérico con sus variables\n    else if (r.STATUS === 'STABLE') {\n        r.agent_explication = \"Mantenimiento de tendencia normal. Sin anomalías detectadas. Corrección de \" + r.MODEL_delta_pct + \" con max cap de 80%.\";\n    }\n    // Si no cae en los de arriba (CRITICAL, CHAOS, OPPORTUNITY), \n    // r.agent_explication quedará vacío/undefined, listo para tu Switch.\n\n    results.push({ json: r });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -48
+      ],
+      "id": "350ba57e-5ebc-4913-a816-3e05bb727272",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2784475a-1084-4d4b-95e2-9c898313f421",
+              "name": "CUSTID",
+              "value": "={{ $json.CUSTID }}",
+              "type": "string"
+            },
+            {
+              "id": "2d28cffb-a076-4ecf-a9f7-feaace172fd2",
+              "name": "PRDID",
+              "value": "={{ $json.PRDID }}",
+              "type": "string"
+            },
+            {
+              "id": "0b63caf7-e9dc-40b5-a069-3b372467e428",
+              "name": "STATUS",
+              "value": "={{ $json.STATUS }}",
+              "type": "string"
+            },
+            {
+              "id": "1b4a936d-dfe3-477d-91d4-1c0dd02dd0c3",
+              "name": "STRATEGY",
+              "value": "={{ $json.STRATEGY }}",
+              "type": "string"
+            },
+            {
+              "id": "a69d2754-86ec-46ac-b9df-7073780be8b1",
+              "name": "FINAL_SCORE",
+              "value": "={{ $json.FINAL_SCORE }}",
+              "type": "number"
+            },
+            {
+              "id": "a707e5d8-499e-4701-9a5b-6c786d804856",
+              "name": "JUSTIFICATION",
+              "value": "={{ $json.JUSTIFICATION }}",
+              "type": "string"
+            },
+            {
+              "id": "26a72660-fe5a-4137-bfe4-4053643229aa",
+              "name": "ERROR_SHARE",
+              "value": "={{ $json.ERROR_SHARE }}",
+              "type": "string"
+            },
+            {
+              "id": "11f5b705-abe2-4ba6-9ada-949669c2d3a5",
+              "name": "IMPACT_SCORE",
+              "value": "={{ $json.IMPACT_SCORE }}",
+              "type": "string"
+            },
+            {
+              "id": "36e352b5-bc35-4b41-bf0b-ffebb93626bb",
+              "name": "SIGNAL_SCORE",
+              "value": "={{ $json.SIGNAL_SCORE }}",
+              "type": "string"
+            },
+            {
+              "id": "61413328-3386-42d8-8433-318eec04a44d",
+              "name": "TOTAL_SALES",
+              "value": "={{ $json.TOTAL_SALES }}",
+              "type": "number"
+            },
+            {
+              "id": "199b809c-e050-4a63-9916-e56bc2a21d49",
+              "name": "BIAS",
+              "value": "={{ $json.BIAS }}",
+              "type": "string"
+            },
+            {
+              "id": "016e4082-9568-4af1-ab21-44caebe47d63",
+              "name": "WAPE",
+              "value": "={{ $json.WAPE }}",
+              "type": "string"
+            },
+            {
+              "id": "198c1a37-e310-4c6b-bc2a-4c4b697a4af4",
+              "name": "PERIODID3",
+              "value": "={{ $json.PERIODID3 }}",
+              "type": "string"
+            },
+            {
+              "id": "fa623f20-0f99-4d9f-81be-938fea7aa865",
+              "name": "ADJUSTEDACTUALSQTY",
+              "value": "={{ $json.ADJUSTEDACTUALSQTY }}",
+              "type": "string"
+            },
+            {
+              "id": "fc9144b9-ceb0-4c76-a78e-14a77ca10e03",
+              "name": "MONTH",
+              "value": "={{ $json.MONTH }}",
+              "type": "string"
+            },
+            {
+              "id": "07762c64-0467-4ebd-b278-15223498c74d",
+              "name": "YEAR",
+              "value": "={{ $json.YEAR }}",
+              "type": "string"
+            },
+            {
+              "id": "5daeb1e9-427d-4118-bd93-3b8e36ec9375",
+              "name": "SEASON",
+              "value": "={{ $json.SEASON }}",
+              "type": "string"
+            },
+            {
+              "id": "3c991fca-69d8-4121-ade1-683f8f913e2e",
+              "name": "PUNITARIO",
+              "value": "={{ $json.PUNITARIO }}",
+              "type": "string"
+            },
+            {
+              "id": "5406cc88-de7a-414a-a555-70887c3f5739",
+              "name": "PINDEX",
+              "value": "={{ $json.PINDEX }}",
+              "type": "number"
+            },
+            {
+              "id": "66c3b7de-f058-420f-9be1-275c41aed9bf",
+              "name": "SOM",
+              "value": "={{ $json.SOM }}",
+              "type": "string"
+            },
+            {
+              "id": "9dacff5f-3356-407f-828d-7c6f96477b90",
+              "name": "SOV",
+              "value": "={{ $json.SOV }}",
+              "type": "string"
+            },
+            {
+              "id": "03807724-b34d-416b-8082-2ac92d5373f8",
+              "name": "ZSELLOUTCLIENTE",
+              "value": "={{ $json.ZSELLOUTCLIENTE }}",
+              "type": "number"
+            },
+            {
+              "id": "76371e6b-a257-46c9-b7e1-aa8fe5d469f5",
+              "name": "foreAct",
+              "value": "={{ $json.foreAct }}",
+              "type": "number"
+            },
+            {
+              "id": "d8a8a45c-d9f4-45b9-9ab3-3e28eac7219a",
+              "name": "LAST_MONTH_SALE",
+              "value": "={{ $json.LAST_MONTH_SALE }}",
+              "type": "number"
+            },
+            {
+              "id": "79bde76a-dcd0-4e8f-a6c7-c94eea2cee5a",
+              "name": "CUSTREGION",
+              "value": "={{ $json.CUSTREGION }}",
+              "type": "string"
+            },
+            {
+              "id": "84af775b-e463-44a6-879a-c3fe7cc1700d",
+              "name": "CUSTGROUP",
+              "value": "={{ $json.CUSTGROUP }}",
+              "type": "string"
+            },
+            {
+              "id": "ac4716e7-311e-4ad8-b17f-419aa21a10c1",
+              "name": "_meta_target_period",
+              "value": "={{ $json._meta_target_period }}",
+              "type": "string"
+            },
+            {
+              "id": "6fafa67a-9e57-46b5-8752-172d6352db95",
+              "name": "_meta_data_period",
+              "value": "={{ $json._meta_data_period }}",
+              "type": "string"
+            },
+            {
+              "id": "0bf92e4e-a6de-41b6-b779-5068570dfdf0",
+              "name": "_meta_forecast_col",
+              "value": "={{ $json._meta_forecast_col }}",
+              "type": "string"
+            },
+            {
+              "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
+              "name": "agent_explication",
+              "value": "={{ $json.agent_explication }}",
+              "type": "string"
+            },
+            {
+              "id": "1422b2c6-8973-4c48-b1ed-7328e999ec21",
+              "name": "MODEL_forecast_original",
+              "value": "={{ $json.MODEL_forecast_original }}",
+              "type": "string"
+            },
+            {
+              "id": "cc265cee-46c2-4fdf-9d8d-682ad80ebb4c",
+              "name": "MODEL_forecast_corrected",
+              "value": "={{ $json.MODEL_forecast_corrected }}",
+              "type": "string"
+            },
+            {
+              "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
+              "name": "MODEL_delta_pct",
+              "value": "={{ $json.MODEL_delta_pct }}",
+              "type": "string"
+            },
+            {
+              "id": "9d3baadb-cb2e-4034-b190-64f672c9f17c",
+              "name": "MODEL_drivers",
+              "value": "={{ $json.MODEL_drivers }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        208
+      ],
+      "id": "1d74748d-4ea1-4322-87cf-eb8fe0697261",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json.STATUS }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1136,
+        -64
+      ],
+      "id": "700acb92-1337-4e86-b8c7-3812fda49cd6",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "path": "agente-explicador",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -144
+      ],
+      "id": "b46f7576-6214-48a9-ba10-4fdcbaa9d87b",
+      "name": "agente-explicador",
+      "webhookId": "a316b28e-3d6e-4248-abf8-31e874d4263f"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Insert or update rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Insert or update rows in a table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente-explicador": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "agente-explicador": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0",
+            "sec-ch-ua": "\"Opera\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es;q=0.8,id;q=0.7,th;q=0.6"
+          },
+          "params": {},
+          "query": {
+            "month": "1",
+            "MONTH": "1",
+            "mes": "1",
+            "year": "2025",
+            "YEAR": "2025",
+            "anio": "2025",
+            "customerId": "101151",
+            "CUSTID": "101151",
+            "cliente": "101151",
+            "productId": "32000",
+            "PRDID": "32000",
+            "producto": "32000",
+            "date": "2025-01-01",
+            "fecha": "2025-01-01"
+          },
+          "body": {},
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/agente-explicador",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "1117dd63-028b-4da4-aace-c1c8da756299",
+  "activeVersionId": "1117dd63-028b-4da4-aace-c1c8da756299",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T18:42:36.026Z",
+      "createdAt": "2026-02-19T18:42:36.026Z",
+      "role": "workflow:owner",
+      "workflowId": "bxu2VTNJ8LbdqZTK0qrgV",
+      "projectId": "9axjLTcJCvAcwxP1"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-20T03:38:58.932Z",
+    "createdAt": "2026-02-20T03:38:56.538Z",
+    "versionId": "1117dd63-028b-4da4-aace-c1c8da756299",
+    "workflowId": "bxu2VTNJ8LbdqZTK0qrgV",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "239d10c0-eabf-42f7-aa09-18562fa51f3f",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2e0b3c6a-609b-4d00-a737-44d22f019f66",
+                "name": "periodid3",
+                "value": "={{ $json.query.date }}",
+                "type": "string"
+              },
+              {
+                "id": "7d121dc5-83f1-495f-b380-e7f49094b920",
+                "name": "PRDID",
+                "value": "={{ $json.query.PRDID }}",
+                "type": "string"
+              },
+              {
+                "id": "edbcc24f-5414-481f-88c0-c2a894395158",
+                "name": "CUSTID",
+                "value": "={{ $json.query.CUSTID }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          -64
+        ],
+        "id": "9b309847-b5b9-4e3a-a2c8-b39be51e89de",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "select",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_forecast_corregido",
+            "mode": "list",
+            "cachedResultName": "molinos_forecast_corregido"
+          },
+          "returnAll": true,
+          "where": {
+            "values": [
+              {
+                "column": "CUSTID",
+                "value": "={{ $json.CUSTID || \"101699\"  }}"
+              },
+              {
+                "column": "PRDID",
+                "value": "={{ $json.PRDID || \"33631\"}}"
+              },
+              {
+                "column": "_meta_target_period",
+                "value": "={{ $json.periodid3 || \"2025-10-01\"}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          432,
+          -64
+        ],
+        "id": "da2f4bdc-deca-470d-8fb7-00f46eadeda2",
+        "name": "Select rows from a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_forecast_corregido",
+            "mode": "list",
+            "cachedResultName": "molinos_forecast_corregido"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "ADJUSTEDACTUALSQTY": "={{ $json.ADJUSTEDACTUALSQTY }}",
+              "LAST_MONTH_SALE": "={{ $json.LAST_MONTH_SALE }}",
+              "PUNITARIO": "={{ $json.PUNITARIO }}",
+              "PINDEX": "={{ $json.PINDEX }}",
+              "SOM": "={{ $json.SOM }}",
+              "SOV": "={{ $json.SOV }}",
+              "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
+              "foreAct": "={{ $json.foreAct }}",
+              "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
+              "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
+              "MONTH": "={{ $json.MONTH }}",
+              "YEAR": "={{ $json.YEAR }}",
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "_meta_target_period": "={{ $json._meta_target_period }}",
+              "CUSTREGION": "={{ $json.CUSTREGION }}",
+              "CUSTGROUP": "={{ $json.CUSTGROUP }}",
+              "SEASON": "={{ $json.SEASON }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "agent_explication": "={{ $json.agent_explication }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+              "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
+              "MODEL_drivers": "={{ $json.MODEL_drivers }}",
+              "PERIODID3": "={{ $json.PERIODID3 }}",
+              "_meta_data_period": "={{ $json._meta_data_period }}",
+              "_meta_forecast_col": "={{ $json._meta_forecast_col }}"
+            },
+            "matchingColumns": [
+              "CUSTID",
+              "PRDID",
+              "_meta_target_period"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "CUSTREGION",
+                "displayName": "CUSTREGION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "CUSTGROUP",
+                "displayName": "CUSTGROUP",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SEASON",
+                "displayName": "SEASON",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "agent_explication",
+                "displayName": "agent_explication",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_delta_pct",
+                "displayName": "MODEL_delta_pct",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ADJUSTEDACTUALSQTY",
+                "displayName": "ADJUSTEDACTUALSQTY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "LAST_MONTH_SALE",
+                "displayName": "LAST_MONTH_SALE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "PUNITARIO",
+                "displayName": "PUNITARIO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "PINDEX",
+                "displayName": "PINDEX",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SOM",
+                "displayName": "SOM",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SOV",
+                "displayName": "SOV",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ZSELLOUTCLIENTE",
+                "displayName": "ZSELLOUTCLIENTE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "foreAct",
+                "displayName": "foreAct",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_forecast_original",
+                "displayName": "MODEL_forecast_original",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_forecast_corrected",
+                "displayName": "MODEL_forecast_corrected",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_drivers",
+                "displayName": "MODEL_drivers",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "PERIODID3",
+                "displayName": "PERIODID3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MONTH",
+                "displayName": "MONTH",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "YEAR",
+                "displayName": "YEAR",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "_meta_target_period",
+                "displayName": "_meta_target_period",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "_meta_data_period",
+                "displayName": "_meta_data_period",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "_meta_forecast_col",
+                "displayName": "_meta_forecast_col",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "createdAt",
+                "displayName": "createdAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false,
+                "removed": true
+              },
+              {
+                "id": "updatedAt",
+                "displayName": "updatedAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1904,
+          -176
+        ],
+        "id": "a58ea6d6-e56c-4b7c-87c0-6ace17a30e2d",
+        "name": "Insert or update rows in a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "b00f3564-65de-4a4b-931d-ed4c88d318e7",
+                "leftValue": "={{ $json.agent_explication }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          880,
+          -48
+        ],
+        "id": "652a3566-d488-4ff0-baf3-ecd579390106",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_forecast_corregido",
+            "mode": "list",
+            "cachedResultName": "molinos_forecast_corregido"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "ADJUSTEDACTUALSQTY": "={{ $json.ADJUSTEDACTUALSQTY }}",
+              "LAST_MONTH_SALE": "={{ $json.LAST_MONTH_SALE }}",
+              "PUNITARIO": "={{ $json.PUNITARIO }}",
+              "PINDEX": "={{ $json.PINDEX }}",
+              "SOM": "={{ $json.SOM }}",
+              "SOV": "={{ $json.SOV }}",
+              "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
+              "foreAct": "={{ $json.foreAct }}",
+              "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
+              "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
+              "MONTH": "={{ $json.MONTH }}",
+              "YEAR": "={{ $json.YEAR }}",
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "_meta_target_period": "={{ $json._meta_target_period }}",
+              "CUSTREGION": "={{ $json.CUSTREGION }}",
+              "CUSTGROUP": "={{ $json.CUSTGROUP }}",
+              "SEASON": "={{ $json.SEASON }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "agent_explication": "={{ $json.agent_explication }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
+              "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
+              "MODEL_drivers": "={{ $json.MODEL_drivers }}",
+              "PERIODID3": "={{ $json.PERIODID3 }}",
+              "_meta_data_period": "={{ $json._meta_data_period }}",
+              "_meta_forecast_col": "={{ $json._meta_forecast_col }}"
+            },
+            "matchingColumns": [
+              "CUSTID",
+              "PRDID",
+              "_meta_target_period"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "CUSTREGION",
+                "displayName": "CUSTREGION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "CUSTGROUP",
+                "displayName": "CUSTGROUP",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SEASON",
+                "displayName": "SEASON",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "agent_explication",
+                "displayName": "agent_explication",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_delta_pct",
+                "displayName": "MODEL_delta_pct",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ADJUSTEDACTUALSQTY",
+                "displayName": "ADJUSTEDACTUALSQTY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "LAST_MONTH_SALE",
+                "displayName": "LAST_MONTH_SALE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "PUNITARIO",
+                "displayName": "PUNITARIO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "PINDEX",
+                "displayName": "PINDEX",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SOM",
+                "displayName": "SOM",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SOV",
+                "displayName": "SOV",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ZSELLOUTCLIENTE",
+                "displayName": "ZSELLOUTCLIENTE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "foreAct",
+                "displayName": "foreAct",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_forecast_original",
+                "displayName": "MODEL_forecast_original",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_forecast_corrected",
+                "displayName": "MODEL_forecast_corrected",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MODEL_drivers",
+                "displayName": "MODEL_drivers",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "PERIODID3",
+                "displayName": "PERIODID3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "MONTH",
+                "displayName": "MONTH",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "YEAR",
+                "displayName": "YEAR",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "_meta_target_period",
+                "displayName": "_meta_target_period",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "_meta_data_period",
+                "displayName": "_meta_data_period",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "_meta_forecast_col",
+                "displayName": "_meta_forecast_col",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "createdAt",
+                "displayName": "createdAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false,
+                "removed": true
+              },
+              {
+                "id": "updatedAt",
+                "displayName": "updatedAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          1904,
+          208
+        ],
+        "id": "770b50de-ebd4-42db-8f6b-5baab8d49b65",
+        "name": "Insert or update rows in a table1",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-5-nano",
+            "mode": "list",
+            "cachedResultName": "gpt-5-nano"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1168,
+          144
+        ],
+        "id": "165306be-3eef-47f8-8e06-79ccefae6bd0",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "Z9zPhNW2TDZXLiTT",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2784475a-1084-4d4b-95e2-9c898313f421",
+                "name": "CUSTID",
+                "value": "={{ $json.CUSTID }}",
+                "type": "string"
+              },
+              {
+                "id": "2d28cffb-a076-4ecf-a9f7-feaace172fd2",
+                "name": "PRDID",
+                "value": "={{ $json.PRDID }}",
+                "type": "string"
+              },
+              {
+                "id": "0b63caf7-e9dc-40b5-a069-3b372467e428",
+                "name": "STATUS",
+                "value": "={{ $json.STATUS }}",
+                "type": "string"
+              },
+              {
+                "id": "1b4a936d-dfe3-477d-91d4-1c0dd02dd0c3",
+                "name": "STRATEGY",
+                "value": "={{ $json.STRATEGY }}",
+                "type": "string"
+              },
+              {
+                "id": "a69d2754-86ec-46ac-b9df-7073780be8b1",
+                "name": "FINAL_SCORE",
+                "value": "={{ $json.FINAL_SCORE }}",
+                "type": "number"
+              },
+              {
+                "id": "a707e5d8-499e-4701-9a5b-6c786d804856",
+                "name": "JUSTIFICATION",
+                "value": "={{ $json.JUSTIFICATION }}",
+                "type": "string"
+              },
+              {
+                "id": "26a72660-fe5a-4137-bfe4-4053643229aa",
+                "name": "ERROR_SHARE",
+                "value": "={{ $json.ERROR_SHARE }}",
+                "type": "string"
+              },
+              {
+                "id": "11f5b705-abe2-4ba6-9ada-949669c2d3a5",
+                "name": "IMPACT_SCORE",
+                "value": "={{ $json.IMPACT_SCORE }}",
+                "type": "string"
+              },
+              {
+                "id": "36e352b5-bc35-4b41-bf0b-ffebb93626bb",
+                "name": "SIGNAL_SCORE",
+                "value": "={{ $json.SIGNAL_SCORE }}",
+                "type": "string"
+              },
+              {
+                "id": "61413328-3386-42d8-8433-318eec04a44d",
+                "name": "TOTAL_SALES",
+                "value": "={{ $json.TOTAL_SALES }}",
+                "type": "number"
+              },
+              {
+                "id": "199b809c-e050-4a63-9916-e56bc2a21d49",
+                "name": "BIAS",
+                "value": "={{ $json.BIAS }}",
+                "type": "string"
+              },
+              {
+                "id": "016e4082-9568-4af1-ab21-44caebe47d63",
+                "name": "WAPE",
+                "value": "={{ $json.WAPE }}",
+                "type": "string"
+              },
+              {
+                "id": "198c1a37-e310-4c6b-bc2a-4c4b697a4af4",
+                "name": "PERIODID3",
+                "value": "={{ $json.PERIODID3 }}",
+                "type": "string"
+              },
+              {
+                "id": "fa623f20-0f99-4d9f-81be-938fea7aa865",
+                "name": "ADJUSTEDACTUALSQTY",
+                "value": "={{ $json.ADJUSTEDACTUALSQTY }}",
+                "type": "string"
+              },
+              {
+                "id": "fc9144b9-ceb0-4c76-a78e-14a77ca10e03",
+                "name": "MONTH",
+                "value": "={{ $json.MONTH }}",
+                "type": "string"
+              },
+              {
+                "id": "07762c64-0467-4ebd-b278-15223498c74d",
+                "name": "YEAR",
+                "value": "={{ $json.YEAR }}",
+                "type": "string"
+              },
+              {
+                "id": "5daeb1e9-427d-4118-bd93-3b8e36ec9375",
+                "name": "SEASON",
+                "value": "={{ $json.SEASON }}",
+                "type": "string"
+              },
+              {
+                "id": "3c991fca-69d8-4121-ade1-683f8f913e2e",
+                "name": "PUNITARIO",
+                "value": "={{ $json.PUNITARIO }}",
+                "type": "string"
+              },
+              {
+                "id": "5406cc88-de7a-414a-a555-70887c3f5739",
+                "name": "PINDEX",
+                "value": "={{ $json.PINDEX }}",
+                "type": "number"
+              },
+              {
+                "id": "66c3b7de-f058-420f-9be1-275c41aed9bf",
+                "name": "SOM",
+                "value": "={{ $json.SOM }}",
+                "type": "string"
+              },
+              {
+                "id": "9dacff5f-3356-407f-828d-7c6f96477b90",
+                "name": "SOV",
+                "value": "={{ $json.SOV }}",
+                "type": "string"
+              },
+              {
+                "id": "03807724-b34d-416b-8082-2ac92d5373f8",
+                "name": "ZSELLOUTCLIENTE",
+                "value": "={{ $json.ZSELLOUTCLIENTE }}",
+                "type": "number"
+              },
+              {
+                "id": "76371e6b-a257-46c9-b7e1-aa8fe5d469f5",
+                "name": "foreAct",
+                "value": "={{ $json.foreAct }}",
+                "type": "number"
+              },
+              {
+                "id": "d8a8a45c-d9f4-45b9-9ab3-3e28eac7219a",
+                "name": "LAST_MONTH_SALE",
+                "value": "={{ $json.LAST_MONTH_SALE }}",
+                "type": "number"
+              },
+              {
+                "id": "79bde76a-dcd0-4e8f-a6c7-c94eea2cee5a",
+                "name": "CUSTREGION",
+                "value": "={{ $json.CUSTREGION }}",
+                "type": "string"
+              },
+              {
+                "id": "84af775b-e463-44a6-879a-c3fe7cc1700d",
+                "name": "CUSTGROUP",
+                "value": "={{ $json.CUSTGROUP }}",
+                "type": "string"
+              },
+              {
+                "id": "ac4716e7-311e-4ad8-b17f-419aa21a10c1",
+                "name": "_meta_target_period",
+                "value": "={{ $json._meta_target_period }}",
+                "type": "string"
+              },
+              {
+                "id": "6fafa67a-9e57-46b5-8752-172d6352db95",
+                "name": "_meta_data_period",
+                "value": "={{ $json._meta_data_period }}",
+                "type": "string"
+              },
+              {
+                "id": "0bf92e4e-a6de-41b6-b779-5068570dfdf0",
+                "name": "_meta_forecast_col",
+                "value": "={{ $json._meta_forecast_col }}",
+                "type": "string"
+              },
+              {
+                "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
+                "name": "agent_explication",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              },
+              {
+                "id": "1422b2c6-8973-4c48-b1ed-7328e999ec21",
+                "name": "MODEL_forecast_original",
+                "value": "={{ $json.MODEL_forecast_original }}",
+                "type": "string"
+              },
+              {
+                "id": "cc265cee-46c2-4fdf-9d8d-682ad80ebb4c",
+                "name": "MODEL_forecast_corrected",
+                "value": "={{ $json.MODEL_forecast_corrected }}",
+                "type": "string"
+              },
+              {
+                "id": "aa1d6966-b8a5-4774-af27-e2bada6b1963",
+                "name": "MODEL_forecast_no_cap",
+                "value": "={{ $json.MODEL_forecast_no_cap }}",
+                "type": "string"
+              },
+              {
+                "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
+                "name": "MODEL_delta_pct",
+                "value": "={{ $json.MODEL_delta_pct }}",
+                "type": "string"
+              },
+              {
+                "id": "f2f352b6-26a5-4d01-a5bc-13c4e3cd1262",
+                "name": "MODEL_raw_delta_pct",
+                "value": "={{ $json.MODEL_raw_delta_pct }}",
+                "type": "string"
+              },
+              {
+                "id": "9d3baadb-cb2e-4034-b190-64f672c9f17c",
+                "name": "MODEL_drivers",
+                "value": "={{ $json.MODEL_drivers }}",
+                "type": "string"
+              },
+              {
+                "id": "e4a7513b-201f-4d0e-b222-e3f9dc0ffaee",
+                "name": "_debug_status",
+                "value": "={{ $json._debug_status }}",
+                "type": "string"
+              },
+              {
+                "id": "79494e37-6e86-42b9-878a-fea28e6002e3",
+                "name": "_count",
+                "value": "={{ $json._count }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1680,
+          -176
+        ],
+        "id": "85b94b99-1533-46ea-876d-d64eb9e5d59c",
+        "name": "Edit Fields3"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByPosition",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1456,
+          -176
+        ],
+        "id": "895ad2f2-d169-4fb7-a300-d13ab06d7207",
+        "name": "Merge3"
+      },
+      {
+        "parameters": {
+          "jsCode": "const results = [];\n\nfor (const item of items) {\n    const r = item.json;\n    \n    // Si el forecast es cero, texto genérico\n    if (r.MODEL_forecast_corrected === 0) {\n        r.agent_explication = \"Sin pronóstico activo para este periodo.\";\n    } \n    // Si está estable, texto genérico con sus variables\n    else if (r.STATUS === 'STABLE') {\n        r.agent_explication = \"Mantenimiento de tendencia normal. Sin anomalías detectadas. Corrección de \" + r.MODEL_delta_pct + \" con max cap de 80%.\";\n    }\n    // Si no cae en los de arriba (CRITICAL, CHAOS, OPPORTUNITY), \n    // r.agent_explication quedará vacío/undefined, listo para tu Switch.\n\n    results.push({ json: r });\n}\n\nreturn results;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          656,
+          -48
+        ],
+        "id": "350ba57e-5ebc-4913-a816-3e05bb727272",
+        "name": "Code in JavaScript2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2784475a-1084-4d4b-95e2-9c898313f421",
+                "name": "CUSTID",
+                "value": "={{ $json.CUSTID }}",
+                "type": "string"
+              },
+              {
+                "id": "2d28cffb-a076-4ecf-a9f7-feaace172fd2",
+                "name": "PRDID",
+                "value": "={{ $json.PRDID }}",
+                "type": "string"
+              },
+              {
+                "id": "0b63caf7-e9dc-40b5-a069-3b372467e428",
+                "name": "STATUS",
+                "value": "={{ $json.STATUS }}",
+                "type": "string"
+              },
+              {
+                "id": "1b4a936d-dfe3-477d-91d4-1c0dd02dd0c3",
+                "name": "STRATEGY",
+                "value": "={{ $json.STRATEGY }}",
+                "type": "string"
+              },
+              {
+                "id": "a69d2754-86ec-46ac-b9df-7073780be8b1",
+                "name": "FINAL_SCORE",
+                "value": "={{ $json.FINAL_SCORE }}",
+                "type": "number"
+              },
+              {
+                "id": "a707e5d8-499e-4701-9a5b-6c786d804856",
+                "name": "JUSTIFICATION",
+                "value": "={{ $json.JUSTIFICATION }}",
+                "type": "string"
+              },
+              {
+                "id": "26a72660-fe5a-4137-bfe4-4053643229aa",
+                "name": "ERROR_SHARE",
+                "value": "={{ $json.ERROR_SHARE }}",
+                "type": "string"
+              },
+              {
+                "id": "11f5b705-abe2-4ba6-9ada-949669c2d3a5",
+                "name": "IMPACT_SCORE",
+                "value": "={{ $json.IMPACT_SCORE }}",
+                "type": "string"
+              },
+              {
+                "id": "36e352b5-bc35-4b41-bf0b-ffebb93626bb",
+                "name": "SIGNAL_SCORE",
+                "value": "={{ $json.SIGNAL_SCORE }}",
+                "type": "string"
+              },
+              {
+                "id": "61413328-3386-42d8-8433-318eec04a44d",
+                "name": "TOTAL_SALES",
+                "value": "={{ $json.TOTAL_SALES }}",
+                "type": "number"
+              },
+              {
+                "id": "199b809c-e050-4a63-9916-e56bc2a21d49",
+                "name": "BIAS",
+                "value": "={{ $json.BIAS }}",
+                "type": "string"
+              },
+              {
+                "id": "016e4082-9568-4af1-ab21-44caebe47d63",
+                "name": "WAPE",
+                "value": "={{ $json.WAPE }}",
+                "type": "string"
+              },
+              {
+                "id": "198c1a37-e310-4c6b-bc2a-4c4b697a4af4",
+                "name": "PERIODID3",
+                "value": "={{ $json.PERIODID3 }}",
+                "type": "string"
+              },
+              {
+                "id": "fa623f20-0f99-4d9f-81be-938fea7aa865",
+                "name": "ADJUSTEDACTUALSQTY",
+                "value": "={{ $json.ADJUSTEDACTUALSQTY }}",
+                "type": "string"
+              },
+              {
+                "id": "fc9144b9-ceb0-4c76-a78e-14a77ca10e03",
+                "name": "MONTH",
+                "value": "={{ $json.MONTH }}",
+                "type": "string"
+              },
+              {
+                "id": "07762c64-0467-4ebd-b278-15223498c74d",
+                "name": "YEAR",
+                "value": "={{ $json.YEAR }}",
+                "type": "string"
+              },
+              {
+                "id": "5daeb1e9-427d-4118-bd93-3b8e36ec9375",
+                "name": "SEASON",
+                "value": "={{ $json.SEASON }}",
+                "type": "string"
+              },
+              {
+                "id": "3c991fca-69d8-4121-ade1-683f8f913e2e",
+                "name": "PUNITARIO",
+                "value": "={{ $json.PUNITARIO }}",
+                "type": "string"
+              },
+              {
+                "id": "5406cc88-de7a-414a-a555-70887c3f5739",
+                "name": "PINDEX",
+                "value": "={{ $json.PINDEX }}",
+                "type": "number"
+              },
+              {
+                "id": "66c3b7de-f058-420f-9be1-275c41aed9bf",
+                "name": "SOM",
+                "value": "={{ $json.SOM }}",
+                "type": "string"
+              },
+              {
+                "id": "9dacff5f-3356-407f-828d-7c6f96477b90",
+                "name": "SOV",
+                "value": "={{ $json.SOV }}",
+                "type": "string"
+              },
+              {
+                "id": "03807724-b34d-416b-8082-2ac92d5373f8",
+                "name": "ZSELLOUTCLIENTE",
+                "value": "={{ $json.ZSELLOUTCLIENTE }}",
+                "type": "number"
+              },
+              {
+                "id": "76371e6b-a257-46c9-b7e1-aa8fe5d469f5",
+                "name": "foreAct",
+                "value": "={{ $json.foreAct }}",
+                "type": "number"
+              },
+              {
+                "id": "d8a8a45c-d9f4-45b9-9ab3-3e28eac7219a",
+                "name": "LAST_MONTH_SALE",
+                "value": "={{ $json.LAST_MONTH_SALE }}",
+                "type": "number"
+              },
+              {
+                "id": "79bde76a-dcd0-4e8f-a6c7-c94eea2cee5a",
+                "name": "CUSTREGION",
+                "value": "={{ $json.CUSTREGION }}",
+                "type": "string"
+              },
+              {
+                "id": "84af775b-e463-44a6-879a-c3fe7cc1700d",
+                "name": "CUSTGROUP",
+                "value": "={{ $json.CUSTGROUP }}",
+                "type": "string"
+              },
+              {
+                "id": "ac4716e7-311e-4ad8-b17f-419aa21a10c1",
+                "name": "_meta_target_period",
+                "value": "={{ $json._meta_target_period }}",
+                "type": "string"
+              },
+              {
+                "id": "6fafa67a-9e57-46b5-8752-172d6352db95",
+                "name": "_meta_data_period",
+                "value": "={{ $json._meta_data_period }}",
+                "type": "string"
+              },
+              {
+                "id": "0bf92e4e-a6de-41b6-b779-5068570dfdf0",
+                "name": "_meta_forecast_col",
+                "value": "={{ $json._meta_forecast_col }}",
+                "type": "string"
+              },
+              {
+                "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
+                "name": "agent_explication",
+                "value": "={{ $json.agent_explication }}",
+                "type": "string"
+              },
+              {
+                "id": "1422b2c6-8973-4c48-b1ed-7328e999ec21",
+                "name": "MODEL_forecast_original",
+                "value": "={{ $json.MODEL_forecast_original }}",
+                "type": "string"
+              },
+              {
+                "id": "cc265cee-46c2-4fdf-9d8d-682ad80ebb4c",
+                "name": "MODEL_forecast_corrected",
+                "value": "={{ $json.MODEL_forecast_corrected }}",
+                "type": "string"
+              },
+              {
+                "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
+                "name": "MODEL_delta_pct",
+                "value": "={{ $json.MODEL_delta_pct }}",
+                "type": "string"
+              },
+              {
+                "id": "9d3baadb-cb2e-4034-b190-64f672c9f17c",
+                "name": "MODEL_drivers",
+                "value": "={{ $json.MODEL_drivers }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1680,
+          208
+        ],
+        "id": "1d74748d-4ea1-4322-87cf-eb8fe0697261",
+        "name": "Edit Fields4"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json.STATUS }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:",
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
+              }
+            ]
+          },
+          "batching": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.9,
+        "position": [
+          1136,
+          -64
+        ],
+        "id": "700acb92-1337-4e86-b8c7-3812fda49cd6",
+        "name": "Basic LLM Chain1"
+      },
+      {
+        "parameters": {
+          "path": "agente-explicador",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -16,
+          -144
+        ],
+        "id": "b46f7576-6214-48a9-ba10-4fdcbaa9d87b",
+        "name": "agente-explicador",
+        "webhookId": "a316b28e-3d6e-4248-abf8-31e874d4263f"
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Select rows from a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain1",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "Insert or update rows in a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript2": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields4": {
+        "main": [
+          [
+            {
+              "node": "Insert or update rows in a table1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain1": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Select rows from a table": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "agente-explicador": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version 1117dd63",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
