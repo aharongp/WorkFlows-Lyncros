@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T17:59:12.016Z",
+  "updatedAt": "2026-02-19T23:35:52.525Z",
   "createdAt": "2026-02-18T02:57:59.891Z",
   "id": "I6UIeOYazVZEtSbq",
   "name": "Selector de Clientes Optimizado",
@@ -253,8 +253,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "CUSTID": "={{ $json.CUSTID }}",
-            "PRDID": "={{ $json.PRDID }}",
-            "REGION": "={{ $json.REGION }}",
+            "PRDID": "={{ $json.PRDID }} ",
             "STATUS": "={{ $json.STATUS }}",
             "STRATEGY": "={{ $json.STRATEGY }}",
             "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
@@ -296,7 +295,7 @@
               "display": true,
               "type": "string",
               "readOnly": false,
-              "removed": false
+              "removed": true
             },
             {
               "id": "STATUS",
@@ -549,7 +548,6 @@
             "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
             "CUSTID": "={{ $json.CUSTID }}",
             "PRDID": "={{ $json.PRDID }}",
-            "REGION": "={{ $json.REGION }}",
             "STATUS": "={{ $json.STATUS }}",
             "STRATEGY": "={{ $json.STRATEGY }}",
             "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
@@ -589,7 +587,7 @@
               "display": true,
               "type": "string",
               "readOnly": false,
-              "removed": false
+              "removed": true
             },
             {
               "id": "STATUS",
@@ -700,8 +698,8 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        -320,
-        192
+        16,
+        80
       ],
       "id": "88cf30f3-9fb0-4c34-b83e-77d6a6af3ea4",
       "name": "Insert row2"
@@ -733,8 +731,8 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        -320,
-        0
+        16,
+        -112
       ],
       "id": "de66954c-f747-4245-8da7-289fbf8948d6",
       "name": "Delete row(s)1",
@@ -830,6 +828,202 @@
       "id": "0612de27-5914-4dae-bcc0-203354c97178",
       "name": "iniciar-clasificacion",
       "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_segmentacion",
+          "mode": "list",
+          "cachedResultName": "molinos_segmentacion"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+            "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+            "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+            "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+            "BIAS": "={{ $json.BIAS }}",
+            "WAPE": "={{ $json.WAPE }}",
+            "CUSTID": "={{ $json.CUSTID }}",
+            "PRDID": "={{ $json.PRDID }}",
+            "STATUS": "={{ $json.STATUS }}",
+            "STRATEGY": "={{ $json.STRATEGY }}",
+            "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+            "ERROR_SHARE": "={{ $json.ERROR_SHARE }}"
+          },
+          "matchingColumns": [
+            "CUSTID",
+            "PRDID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CUSTID",
+              "displayName": "CUSTID",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PRDID",
+              "displayName": "PRDID",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "STRATEGY",
+              "displayName": "STRATEGY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "FINAL_SCORE",
+              "displayName": "FINAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "JUSTIFICATION",
+              "displayName": "JUSTIFICATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ERROR_SHARE",
+              "displayName": "ERROR_SHARE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "IMPACT_SCORE",
+              "displayName": "IMPACT_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "SIGNAL_SCORE",
+              "displayName": "SIGNAL_SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "TOTAL_SALES",
+              "displayName": "TOTAL_SALES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "BIAS",
+              "displayName": "BIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "WAPE",
+              "displayName": "WAPE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -368,
+        96
+      ],
+      "id": "4e3fc0ca-5130-4d7c-8e7e-f37e2d9d3aa4",
+      "name": "Insert or update rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "connections": {
@@ -902,12 +1096,7 @@
             "index": 0
           },
           {
-            "node": "Delete row(s)1",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Insert row2",
+            "node": "Insert or update rows in a table",
             "type": "main",
             "index": 0
           }
@@ -1011,6 +1200,11 @@
           }
         ]
       ]
+    },
+    "Insert row2": {
+      "main": [
+        []
+      ]
     }
   },
   "settings": {
@@ -1031,8 +1225,8 @@
       }
     ]
   },
-  "versionId": "4e8892fc-1110-492f-8a49-3eabb1da7dc2",
-  "activeVersionId": "4e8892fc-1110-492f-8a49-3eabb1da7dc2",
+  "versionId": "0fbab08f-d6bc-49f9-b6d9-5e704a04aa52",
+  "activeVersionId": "0fbab08f-d6bc-49f9-b6d9-5e704a04aa52",
   "triggerCount": 1,
   "shared": [
     {
@@ -1044,9 +1238,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-18T17:59:14.404Z",
-    "createdAt": "2026-02-18T17:59:12.018Z",
-    "versionId": "4e8892fc-1110-492f-8a49-3eabb1da7dc2",
+    "updatedAt": "2026-02-20T02:08:46.556Z",
+    "createdAt": "2026-02-19T23:35:52.527Z",
+    "versionId": "0fbab08f-d6bc-49f9-b6d9-5e704a04aa52",
     "workflowId": "I6UIeOYazVZEtSbq",
     "nodes": [
       {
@@ -1296,8 +1490,7 @@
             "mappingMode": "defineBelow",
             "value": {
               "CUSTID": "={{ $json.CUSTID }}",
-              "PRDID": "={{ $json.PRDID }}",
-              "REGION": "={{ $json.REGION }}",
+              "PRDID": "={{ $json.PRDID }} ",
               "STATUS": "={{ $json.STATUS }}",
               "STRATEGY": "={{ $json.STRATEGY }}",
               "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
@@ -1339,7 +1532,7 @@
                 "display": true,
                 "type": "string",
                 "readOnly": false,
-                "removed": false
+                "removed": true
               },
               {
                 "id": "STATUS",
@@ -1592,7 +1785,6 @@
               "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
               "CUSTID": "={{ $json.CUSTID }}",
               "PRDID": "={{ $json.PRDID }}",
-              "REGION": "={{ $json.REGION }}",
               "STATUS": "={{ $json.STATUS }}",
               "STRATEGY": "={{ $json.STRATEGY }}",
               "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
@@ -1632,7 +1824,7 @@
                 "display": true,
                 "type": "string",
                 "readOnly": false,
-                "removed": false
+                "removed": true
               },
               {
                 "id": "STATUS",
@@ -1743,8 +1935,8 @@
         "type": "n8n-nodes-base.dataTable",
         "typeVersion": 1.1,
         "position": [
-          -320,
-          192
+          16,
+          80
         ],
         "id": "88cf30f3-9fb0-4c34-b83e-77d6a6af3ea4",
         "name": "Insert row2"
@@ -1776,8 +1968,8 @@
         "type": "n8n-nodes-base.dataTable",
         "typeVersion": 1.1,
         "position": [
-          -320,
-          0
+          16,
+          -112
         ],
         "id": "de66954c-f747-4245-8da7-289fbf8948d6",
         "name": "Delete row(s)1",
@@ -1873,6 +2065,202 @@
         "id": "0612de27-5914-4dae-bcc0-203354c97178",
         "name": "iniciar-clasificacion",
         "webhookId": "559ce6e4-a48b-46d8-8646-ec7dd28020a8"
+      },
+      {
+        "parameters": {
+          "operation": "upsert",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_segmentacion",
+            "mode": "list",
+            "cachedResultName": "molinos_segmentacion"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
+              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
+              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
+              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
+              "BIAS": "={{ $json.BIAS }}",
+              "WAPE": "={{ $json.WAPE }}",
+              "CUSTID": "={{ $json.CUSTID }}",
+              "PRDID": "={{ $json.PRDID }}",
+              "STATUS": "={{ $json.STATUS }}",
+              "STRATEGY": "={{ $json.STRATEGY }}",
+              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
+              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}"
+            },
+            "matchingColumns": [
+              "CUSTID",
+              "PRDID"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "CUSTID",
+                "displayName": "CUSTID",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "PRDID",
+                "displayName": "PRDID",
+                "required": true,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "STRATEGY",
+                "displayName": "STRATEGY",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "FINAL_SCORE",
+                "displayName": "FINAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "JUSTIFICATION",
+                "displayName": "JUSTIFICATION",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "ERROR_SHARE",
+                "displayName": "ERROR_SHARE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "IMPACT_SCORE",
+                "displayName": "IMPACT_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "SIGNAL_SCORE",
+                "displayName": "SIGNAL_SCORE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "TOTAL_SALES",
+                "displayName": "TOTAL_SALES",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "BIAS",
+                "displayName": "BIAS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "WAPE",
+                "displayName": "WAPE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "createdAt",
+                "displayName": "createdAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false,
+                "removed": true
+              },
+              {
+                "id": "updatedAt",
+                "displayName": "updatedAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "dateTime",
+                "canBeUsedToMatch": false,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -368,
+          96
+        ],
+        "id": "4e3fc0ca-5130-4d7c-8e7e-f37e2d9d3aa4",
+        "name": "Insert or update rows in a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
       }
     ],
     "connections": {
@@ -1945,12 +2333,7 @@
               "index": 0
             },
             {
-              "node": "Delete row(s)1",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Insert row2",
+              "node": "Insert or update rows in a table",
               "type": "main",
               "index": 0
             }
@@ -2054,10 +2437,15 @@
             }
           ]
         ]
+      },
+      "Insert row2": {
+        "main": [
+          []
+        ]
       }
     },
     "authors": "Juan  lyncros",
-    "name": "Version 4e8892fc",
+    "name": "Version 0fbab08f",
     "description": "",
     "autosaved": false
   },
