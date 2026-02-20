@@ -1,0 +1,949 @@
+{
+  "updatedAt": "2026-02-20T03:32:20.451Z",
+  "createdAt": "2026-02-19T14:28:10.515Z",
+  "id": "5R0WRVRo46_uakYP9lOfS",
+  "name": "Datos globales",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    fc.\"_meta_target_period\" AS \"Mes_Objetivo\",\n    \n    -- Venta Real Total del mes\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- WAPE Original\n    SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Original\",\n    \n    -- WAPE Corregido (Modelo IA)\n    SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Corregido\",\n    \n    -- BIAS Original\n    SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Original\",\n    \n    -- BIAS Corregido (Modelo IA)\n    SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Corregido\",\n\n    -- Unidades Totales Agregadas o Quitadas por el modelo\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3\nGROUP BY \n    fc.\"_meta_target_period\"\nORDER BY \n    fc.\"_meta_target_period\" DESC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -224,
+        80
+      ],
+      "id": "3f96a4c0-26c8-40d2-9638-a3001fc32f8f",
+      "name": "extraer datos globales completos",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "datos-globales-completos",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        -160
+      ],
+      "id": "042b8244-ceac-4c1f-a424-f329d5b01f99",
+      "name": "completo",
+      "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    -- Venta Real Total (Toda la historia)\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- WAPE Original Global\n    SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Original_Global\",\n    \n    -- WAPE Corregido Global (Modelo IA)\n    SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Corregido_Global\",\n    \n    -- BIAS Original Global\n    SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Original_Global\",\n    \n    -- BIAS Corregido Global (Modelo IA)\n    SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Corregido_Global\",\n\n    -- Unidades Totales Agregadas o Quitadas en toda la historia\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -224,
+        -160
+      ],
+      "id": "7510bb7c-a8b9-4320-bc89-d294d276f734",
+      "name": "extraer datos globales por mes",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    fc.\"STATUS\",\n    \n    -- Volumen de datos en este segmento\n    COUNT(*) AS \"Cantidad_Items\",\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- Rendimiento WAPE\n    ROUND((SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Original\",\n    \n    ROUND((SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Corregido\",\n    \n    -- Rendimiento BIAS\n    ROUND((SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Original\",\n    \n    ROUND((SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Corregido\",\n\n    -- Modificaciones del Modelo\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3\nGROUP BY \n    fc.\"STATUS\"\nORDER BY \n    \"Venta_Real_Total\" DESC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -224,
+        512
+      ],
+      "id": "3671e096-a594-4ef9-9858-8674d0f7bf5b",
+      "name": "extraer datos globales por status",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    TO_CHAR(fc.\"_meta_target_period\", 'YYYY-MM') AS \"Mes\",\n    fc.\"STATUS\" AS \"Estatus\",\n    \n    -- Volumen de datos\n    COUNT(*) AS \"Cantidad_Items\",\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- Rendimiento WAPE\n    ROUND((SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Original\",\n    \n    ROUND((SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Corregido\",\n    \n    -- Rendimiento BIAS\n    ROUND((SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Original\",\n    \n    ROUND((SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Corregido\",\n\n    -- Modificaciones netas del Modelo\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3\nGROUP BY \n    fc.\"_meta_target_period\",\n    fc.\"STATUS\"\nORDER BY \n    fc.\"_meta_target_period\" DESC,\n    \"Venta_Real_Total\" DESC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -224,
+        704
+      ],
+      "id": "4f5f4fe5-f601-495d-8c6d-f076c982b7d7",
+      "name": "extraer datos globales por status y mes",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "datos-globales-mes",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "e8b21472-6a6e-45d4-86ca-2ddb81a1a5ea",
+      "name": "mes",
+      "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+    },
+    {
+      "parameters": {
+        "path": "datos-globales-status",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        608
+      ],
+      "id": "28b61b9e-ed15-41bf-b9e5-a81b28c3676c",
+      "name": "status",
+      "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+    },
+    {
+      "parameters": {
+        "path": "datos-globales-status-mes",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        800
+      ],
+      "id": "c7881a1a-ebb7-4882-a08d-0be5652bb78e",
+      "name": "status-mes",
+      "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        272
+      ],
+      "id": "42d8c32d-b22b-40d5-b281-22ab4ef7a8b6",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4526de09-f20f-4e0b-9fa8-ad5e2e12caf5",
+              "leftValue": "={{ $json.STATUS }}",
+              "rightValue": "={{ $('status').item.json.query.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -16,
+        512
+      ],
+      "id": "7c5d60eb-754a-4850-bf3e-2dd151a86f78",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4526de09-f20f-4e0b-9fa8-ad5e2e12caf5",
+              "leftValue": "={{ $json.Estatus }}",
+              "rightValue": "={{ $('status-mes').item.json.query.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "a294b9ae-b69e-4668-a0a5-92e1ef0033f7",
+              "leftValue": "={{ $json.Mes }}",
+              "rightValue": "={{ $('status-mes').item.json.query.date.toDateTime().format('yyyy-MM') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -16,
+        704
+      ],
+      "id": "fcbf39b3-0aad-4710-b80d-113029d621e8",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a294b9ae-b69e-4668-a0a5-92e1ef0033f7",
+              "leftValue": "={{ $json.Mes_Objetivo.toDateTime().format('yyyy-MM-dd') }}",
+              "rightValue": "={{ $('mes').item.json.query.date }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        16,
+        96
+      ],
+      "id": "638d4194-8af4-4830-88d8-469c99e0351c",
+      "name": "Filter3"
+    }
+  ],
+  "connections": {
+    "extraer datos globales completos": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "completo": {
+      "main": [
+        [
+          {
+            "node": "extraer datos globales por mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mes": {
+      "main": [
+        [
+          {
+            "node": "extraer datos globales completos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status": {
+      "main": [
+        [
+          {
+            "node": "extraer datos globales por status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status-mes": {
+      "main": [
+        [
+          {
+            "node": "extraer datos globales por status y mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extraer datos globales por mes": {
+      "main": [
+        []
+      ]
+    },
+    "extraer datos globales por status": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extraer datos globales por status y mes": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "extraer datos globales completos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "extraer datos globales por mes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "extraer datos globales por status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "extraer datos globales por status y mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "completo": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0 (Edition std-2)",
+            "sec-ch-ua": "\"Opera GX\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es-419,es;q=0.9,en;q=0.8,id;q=0.7,uk;q=0.6,th;q=0.5",
+            "if-none-match": "W/\"217d-8IV6REIv3fqdbVYxe1PE95lCbmw\""
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/datos-globales-completos",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "status": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0",
+            "sec-ch-ua": "\"Opera\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es;q=0.8,id;q=0.7,th;q=0.6"
+          },
+          "params": {},
+          "query": {
+            "status": "CRITICAL",
+            "STATUS": "CRITICAL",
+            "category": "CRITICAL",
+            "categoria": "CRITICAL"
+          },
+          "body": {},
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/datos-globales-status",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "status-mes": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0",
+            "sec-ch-ua": "\"Opera\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es;q=0.8,id;q=0.7,th;q=0.6"
+          },
+          "params": {},
+          "query": {
+            "date": "2023-01-01",
+            "fecha": "2023-01-01",
+            "status": "CHAOS",
+            "STATUS": "CHAOS",
+            "category": "CHAOS",
+            "categoria": "CHAOS",
+            "month": "1",
+            "MONTH": "1",
+            "mes": "1",
+            "year": "2023",
+            "YEAR": "2023",
+            "anio": "2023"
+          },
+          "body": {},
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/datos-globales-status-mes",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "mes": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0",
+            "sec-ch-ua": "\"Opera\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es;q=0.8,id;q=0.7,th;q=0.6"
+          },
+          "params": {},
+          "query": {
+            "date": "2024-01-01",
+            "fecha": "2024-01-01"
+          },
+          "body": {},
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/datos-globales-mes",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "f95b87e9-5f0d-46c0-9a93-a10535ac4e04",
+  "activeVersionId": "f95b87e9-5f0d-46c0-9a93-a10535ac4e04",
+  "triggerCount": 4,
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T14:28:10.515Z",
+      "createdAt": "2026-02-19T14:28:10.515Z",
+      "role": "workflow:owner",
+      "workflowId": "5R0WRVRo46_uakYP9lOfS",
+      "projectId": "9axjLTcJCvAcwxP1"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-20T03:32:23.310Z",
+    "createdAt": "2026-02-20T03:32:20.452Z",
+    "versionId": "f95b87e9-5f0d-46c0-9a93-a10535ac4e04",
+    "workflowId": "5R0WRVRo46_uakYP9lOfS",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n    fc.\"_meta_target_period\" AS \"Mes_Objetivo\",\n    \n    -- Venta Real Total del mes\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- WAPE Original\n    SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Original\",\n    \n    -- WAPE Corregido (Modelo IA)\n    SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Corregido\",\n    \n    -- BIAS Original\n    SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Original\",\n    \n    -- BIAS Corregido (Modelo IA)\n    SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Corregido\",\n\n    -- Unidades Totales Agregadas o Quitadas por el modelo\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3\nGROUP BY \n    fc.\"_meta_target_period\"\nORDER BY \n    fc.\"_meta_target_period\" DESC;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -224,
+          80
+        ],
+        "id": "3f96a4c0-26c8-40d2-9638-a3001fc32f8f",
+        "name": "extraer datos globales completos",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "path": "datos-globales-completos",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -448,
+          -160
+        ],
+        "id": "042b8244-ceac-4c1f-a424-f329d5b01f99",
+        "name": "completo",
+        "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n    -- Venta Real Total (Toda la historia)\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- WAPE Original Global\n    SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Original_Global\",\n    \n    -- WAPE Corregido Global (Modelo IA)\n    SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"WAPE_Corregido_Global\",\n    \n    -- BIAS Original Global\n    SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Original_Global\",\n    \n    -- BIAS Corregido Global (Modelo IA)\n    SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0) AS \"BIAS_Corregido_Global\",\n\n    -- Unidades Totales Agregadas o Quitadas en toda la historia\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -224,
+          -160
+        ],
+        "id": "7510bb7c-a8b9-4320-bc89-d294d276f734",
+        "name": "extraer datos globales por mes",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n    fc.\"STATUS\",\n    \n    -- Volumen de datos en este segmento\n    COUNT(*) AS \"Cantidad_Items\",\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- Rendimiento WAPE\n    ROUND((SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Original\",\n    \n    ROUND((SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Corregido\",\n    \n    -- Rendimiento BIAS\n    ROUND((SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Original\",\n    \n    ROUND((SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Corregido\",\n\n    -- Modificaciones del Modelo\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3\nGROUP BY \n    fc.\"STATUS\"\nORDER BY \n    \"Venta_Real_Total\" DESC;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -224,
+          512
+        ],
+        "id": "3671e096-a594-4ef9-9858-8674d0f7bf5b",
+        "name": "extraer datos globales por status",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n    TO_CHAR(fc.\"_meta_target_period\", 'YYYY-MM') AS \"Mes\",\n    fc.\"STATUS\" AS \"Estatus\",\n    \n    -- Volumen de datos\n    COUNT(*) AS \"Cantidad_Items\",\n    SUM(COALESCE(real_data.adjustedactualsqty, 0)) AS \"Venta_Real_Total\",\n    \n    -- Rendimiento WAPE\n    ROUND((SUM(ABS(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Original\",\n    \n    ROUND((SUM(ABS(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0))) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"WAPE_Corregido\",\n    \n    -- Rendimiento BIAS\n    ROUND((SUM(fc.\"MODEL_forecast_original\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Original\",\n    \n    ROUND((SUM(fc.\"MODEL_forecast_corrected\" - COALESCE(real_data.adjustedactualsqty, 0)) / \n    NULLIF(SUM(COALESCE(real_data.adjustedactualsqty, 0)), 0)), 4) AS \"BIAS_Corregido\",\n\n    -- Modificaciones netas del Modelo\n    SUM(fc.\"MODEL_forecast_corrected\") - SUM(fc.\"MODEL_forecast_original\") AS \"Unidades_Modificadas_Netas\"\n\nFROM molinos_forecast_corregido fc\nLEFT JOIN molinos_consolidated_data real_data\n    ON fc.\"CUSTID\" = real_data.custid\n    AND fc.\"PRDID\" = real_data.prdid\n    AND fc.\"_meta_target_period\" = real_data.periodid3\nGROUP BY \n    fc.\"_meta_target_period\",\n    fc.\"STATUS\"\nORDER BY \n    fc.\"_meta_target_period\" DESC,\n    \"Venta_Real_Total\" DESC;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          -224,
+          704
+        ],
+        "id": "4f5f4fe5-f601-495d-8c6d-f076c982b7d7",
+        "name": "extraer datos globales por status y mes",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "path": "datos-globales-mes",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -448,
+          32
+        ],
+        "id": "e8b21472-6a6e-45d4-86ca-2ddb81a1a5ea",
+        "name": "mes",
+        "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+      },
+      {
+        "parameters": {
+          "path": "datos-globales-status",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -448,
+          608
+        ],
+        "id": "28b61b9e-ed15-41bf-b9e5-a81b28c3676c",
+        "name": "status",
+        "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+      },
+      {
+        "parameters": {
+          "path": "datos-globales-status-mes",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -448,
+          800
+        ],
+        "id": "c7881a1a-ebb7-4882-a08d-0be5652bb78e",
+        "name": "status-mes",
+        "webhookId": "fc4df680-1c0c-460f-98df-9c91992a9eb6"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -448,
+          272
+        ],
+        "id": "42d8c32d-b22b-40d5-b281-22ab4ef7a8b6",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "4526de09-f20f-4e0b-9fa8-ad5e2e12caf5",
+                "leftValue": "={{ $json.STATUS }}",
+                "rightValue": "={{ $('status').item.json.query.status }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          -16,
+          512
+        ],
+        "id": "7c5d60eb-754a-4850-bf3e-2dd151a86f78",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "4526de09-f20f-4e0b-9fa8-ad5e2e12caf5",
+                "leftValue": "={{ $json.Estatus }}",
+                "rightValue": "={{ $('status-mes').item.json.query.status }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "a294b9ae-b69e-4668-a0a5-92e1ef0033f7",
+                "leftValue": "={{ $json.Mes }}",
+                "rightValue": "={{ $('status-mes').item.json.query.date.toDateTime().format('yyyy-MM') }}",
+                "operator": {
+                  "type": "dateTime",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          -16,
+          704
+        ],
+        "id": "fcbf39b3-0aad-4710-b80d-113029d621e8",
+        "name": "Filter1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a294b9ae-b69e-4668-a0a5-92e1ef0033f7",
+                "leftValue": "={{ $json.Mes_Objetivo.toDateTime().format('yyyy-MM-dd') }}",
+                "rightValue": "={{ $('mes').item.json.query.date }}",
+                "operator": {
+                  "type": "dateTime",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          16,
+          96
+        ],
+        "id": "638d4194-8af4-4830-88d8-469c99e0351c",
+        "name": "Filter3"
+      }
+    ],
+    "connections": {
+      "extraer datos globales completos": {
+        "main": [
+          [
+            {
+              "node": "Filter3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "completo": {
+        "main": [
+          [
+            {
+              "node": "extraer datos globales por mes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "mes": {
+        "main": [
+          [
+            {
+              "node": "extraer datos globales completos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "status": {
+        "main": [
+          [
+            {
+              "node": "extraer datos globales por status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "status-mes": {
+        "main": [
+          [
+            {
+              "node": "extraer datos globales por status y mes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "extraer datos globales por mes": {
+        "main": [
+          []
+        ]
+      },
+      "extraer datos globales por status": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "extraer datos globales por status y mes": {
+        "main": [
+          [
+            {
+              "node": "Filter1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "extraer datos globales completos",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "extraer datos globales por mes",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "extraer datos globales por status",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "extraer datos globales por status y mes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version f95b87e9",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
