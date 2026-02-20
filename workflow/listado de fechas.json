@@ -1,0 +1,242 @@
+{
+  "updatedAt": "2026-02-19T18:02:56.763Z",
+  "createdAt": "2026-02-19T15:46:45.463Z",
+  "id": "zwPfanHcxDBUJApsatMl0",
+  "name": "listado de fechas",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "listadofechas",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "94167c29-0836-4a46-8c8e-bdb605f2f689",
+      "name": "Webhook",
+      "webhookId": "a35cc4c3-b7af-4d9e-98b0-80ed2faf4bc0"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_forecast_corregido",
+          "mode": "list",
+          "cachedResultName": "molinos_forecast_corregido"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "YEAR",
+              "value": "={{ $json.body.year }}"
+            },
+            {
+              "column": "MONTH",
+              "value": "={{ $json.body.month }}"
+            },
+            {
+              "column": "STATUS",
+              "condition": "LIKE",
+              "value": "={{ $json.body.STATUS || '%' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        416,
+        0
+      ],
+      "id": "8aad1024-1884-4f04-a2c5-7294fa229ebc",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "content-length": "606",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0 (Edition std-2)",
+            "sec-ch-ua": "\"Opera GX\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "content-type": "multipart/form-data; boundary=----WebKitFormBoundary9XhaN1f6ZsN0aTIp",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5174",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5174/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es-419,es;q=0.9,en;q=0.8,id;q=0.7,uk;q=0.6,th;q=0.5"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "month": "6",
+            "MONTH": "6",
+            "mes": "6",
+            "year": "2023",
+            "YEAR": "2023",
+            "anio": "2023"
+          },
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/listadofechas",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "d119bcce-831e-4259-86fd-a814af07a05e",
+  "activeVersionId": "d119bcce-831e-4259-86fd-a814af07a05e",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T15:46:45.463Z",
+      "createdAt": "2026-02-19T15:46:45.463Z",
+      "role": "workflow:owner",
+      "workflowId": "zwPfanHcxDBUJApsatMl0",
+      "projectId": "9axjLTcJCvAcwxP1"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-19T18:02:58.741Z",
+    "createdAt": "2026-02-19T18:02:56.766Z",
+    "versionId": "d119bcce-831e-4259-86fd-a814af07a05e",
+    "workflowId": "zwPfanHcxDBUJApsatMl0",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "listadofechas",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "94167c29-0836-4a46-8c8e-bdb605f2f689",
+        "name": "Webhook",
+        "webhookId": "a35cc4c3-b7af-4d9e-98b0-80ed2faf4bc0"
+      },
+      {
+        "parameters": {
+          "operation": "select",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_forecast_corregido",
+            "mode": "list",
+            "cachedResultName": "molinos_forecast_corregido"
+          },
+          "returnAll": true,
+          "where": {
+            "values": [
+              {
+                "column": "YEAR",
+                "value": "={{ $json.body.year }}"
+              },
+              {
+                "column": "MONTH",
+                "value": "={{ $json.body.month }}"
+              },
+              {
+                "column": "STATUS",
+                "condition": "LIKE",
+                "value": "={{ $json.body.STATUS || '%' }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          416,
+          0
+        ],
+        "id": "8aad1024-1884-4f04-a2c5-7294fa229ebc",
+        "name": "Select rows from a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Select rows from a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version d119bcce",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
