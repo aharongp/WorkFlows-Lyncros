@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-16T15:14:22.839Z",
+  "updatedAt": "2026-02-19T05:21:12.742Z",
   "createdAt": "2026-02-16T15:13:10.835Z",
   "id": "69J3jTAxKZnp-pdpQM7DK",
   "name": "listado de clientes",
@@ -10,6 +10,7 @@
       "parameters": {
         "path": "listado-clientes",
         "responseMode": "lastNode",
+        "responseData": "allEntries",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -31,7 +32,8 @@
           "mode": "list",
           "cachedResultName": "clientes clasificados",
           "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
-        }
+        },
+        "returnAll": true
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
@@ -52,7 +54,8 @@
             "type": "main",
             "index": 0
           }
-        ]
+        ],
+        []
       ]
     }
   },
@@ -63,8 +66,8 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "43f717eb-827d-4b8a-8d4f-7456e25122cd",
-  "activeVersionId": "43f717eb-827d-4b8a-8d4f-7456e25122cd",
+  "versionId": "6dfeafa4-cf46-47a2-8b81-10c1398388a3",
+  "activeVersionId": "6dfeafa4-cf46-47a2-8b81-10c1398388a3",
   "triggerCount": 1,
   "shared": [
     {
@@ -76,15 +79,16 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-18T00:29:07.909Z",
-    "createdAt": "2026-02-16T15:14:17.302Z",
-    "versionId": "43f717eb-827d-4b8a-8d4f-7456e25122cd",
+    "updatedAt": "2026-02-19T05:21:14.690Z",
+    "createdAt": "2026-02-19T05:21:12.746Z",
+    "versionId": "6dfeafa4-cf46-47a2-8b81-10c1398388a3",
     "workflowId": "69J3jTAxKZnp-pdpQM7DK",
     "nodes": [
       {
         "parameters": {
           "path": "listado-clientes",
           "responseMode": "lastNode",
+          "responseData": "allEntries",
           "options": {}
         },
         "type": "n8n-nodes-base.webhook",
@@ -106,7 +110,8 @@
             "mode": "list",
             "cachedResultName": "clientes clasificados",
             "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
-          }
+          },
+          "returnAll": true
         },
         "type": "n8n-nodes-base.dataTable",
         "typeVersion": 1.1,
@@ -127,12 +132,13 @@
               "type": "main",
               "index": 0
             }
-          ]
+          ],
+          []
         ]
       }
     },
     "authors": "Juan  lyncros",
-    "name": "Version 43f717eb",
+    "name": "Version 6dfeafa4",
     "description": "",
     "autosaved": false
   },
