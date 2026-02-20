@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-19T01:12:57.666Z",
+  "updatedAt": "2026-02-20T03:59:33.484Z",
   "createdAt": "2026-02-18T00:41:13.134Z",
   "id": "FVdfBxBWCqSQYOAVJ31Kb",
   "name": "carga en base de datos",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {},
@@ -498,7 +498,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a4643b5d-4564-4a5e-a4a5-e236e1ac0c0a",
+  "versionId": "864caa40-1cff-4cde-b8ff-4036080c6bfb",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
