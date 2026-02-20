@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-17T19:20:49.021Z",
+  "updatedAt": "2026-02-20T03:10:02.689Z",
   "createdAt": "2026-02-17T19:14:16.848Z",
   "id": "dIfIQ9G2jmX2IfG1",
   "name": "correcto completo copy",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {},
@@ -1334,7 +1334,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "da3be550-9529-4fe4-965e-19003a0d18f9",
+  "versionId": "8ac91cf2-ebc1-4712-bcaf-afa32168d8f0",
   "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
