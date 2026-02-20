@@ -1,0 +1,312 @@
+{
+  "updatedAt": "2026-02-19T16:43:23.389Z",
+  "createdAt": "2026-02-19T16:29:46.887Z",
+  "id": "3HGggHSoEjfj1OX7UHJa0",
+  "name": "venta del mes pasado",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ventas-pasadas",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e582cb3c-c0f2-4652-91be-65f338b14020",
+      "name": "Webhook",
+      "webhookId": "a35cc4c3-b7af-4d9e-98b0-80ed2faf4bc0"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "molinos_forecast_corregido",
+          "mode": "list",
+          "cachedResultName": "molinos_forecast_corregido"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "CUSTID",
+              "value": "={{ $json.body.customerId }}"
+            },
+            {
+              "column": "PRDID",
+              "value": "={{ $json.body.PRDID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        256,
+        0
+      ],
+      "id": "09fad62f-ea60-45a7-ac46-3f97c698508e",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "ezJ6rP6dRWwFUGI9",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bccaf06a-5653-46c2-aa24-044da494a387",
+              "name": "MONTH",
+              "value": "={{ $json.MONTH }}",
+              "type": "number"
+            },
+            {
+              "id": "fca0364b-4682-42db-b3b0-3e00c3709d77",
+              "name": "LAST_MONTH_SALE",
+              "value": "={{ $json.LAST_MONTH_SALE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        0
+      ],
+      "id": "61a4c2ef-f71e-4b80-9837-c3159cf8f69f",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "content-length": "644",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0 (Edition std-2)",
+            "sec-ch-ua": "\"Opera GX\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "content-type": "multipart/form-data; boundary=----WebKitFormBoundary2oA4c1pf6yoFbsyK",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5174",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5174/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es-419,es;q=0.9,en;q=0.8,id;q=0.7,uk;q=0.6,th;q=0.5"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "customerId": "101151",
+            "CUSTID": "101151",
+            "cliente": "101151",
+            "productId": "32011",
+            "PRDID": "32011",
+            "producto": "32011"
+          },
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/ventas-pasadas",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "ce5d95d2-8eb1-454d-86f1-18741f357e8c",
+  "activeVersionId": "ce5d95d2-8eb1-454d-86f1-18741f357e8c",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T16:29:46.887Z",
+      "createdAt": "2026-02-19T16:29:46.887Z",
+      "role": "workflow:owner",
+      "workflowId": "3HGggHSoEjfj1OX7UHJa0",
+      "projectId": "9axjLTcJCvAcwxP1"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-19T16:43:25.678Z",
+    "createdAt": "2026-02-19T16:43:23.392Z",
+    "versionId": "ce5d95d2-8eb1-454d-86f1-18741f357e8c",
+    "workflowId": "3HGggHSoEjfj1OX7UHJa0",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "ventas-pasadas",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "e582cb3c-c0f2-4652-91be-65f338b14020",
+        "name": "Webhook",
+        "webhookId": "a35cc4c3-b7af-4d9e-98b0-80ed2faf4bc0"
+      },
+      {
+        "parameters": {
+          "operation": "select",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_forecast_corregido",
+            "mode": "list",
+            "cachedResultName": "molinos_forecast_corregido"
+          },
+          "returnAll": true,
+          "where": {
+            "values": [
+              {
+                "column": "CUSTID",
+                "value": "={{ $json.body.customerId }}"
+              },
+              {
+                "column": "PRDID",
+                "value": "={{ $json.body.PRDID }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          256,
+          0
+        ],
+        "id": "09fad62f-ea60-45a7-ac46-3f97c698508e",
+        "name": "Select rows from a table",
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "bccaf06a-5653-46c2-aa24-044da494a387",
+                "name": "MONTH",
+                "value": "={{ $json.MONTH }}",
+                "type": "number"
+              },
+              {
+                "id": "fca0364b-4682-42db-b3b0-3e00c3709d77",
+                "name": "LAST_MONTH_SALE",
+                "value": "={{ $json.LAST_MONTH_SALE }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          512,
+          0
+        ],
+        "id": "61a4c2ef-f71e-4b80-9837-c3159cf8f69f",
+        "name": "Edit Fields"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Select rows from a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select rows from a table": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Juan  lyncros",
+    "name": "Version ce5d95d2",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
