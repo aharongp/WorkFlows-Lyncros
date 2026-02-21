@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-20T03:38:56.536Z",
+  "updatedAt": "2026-02-20T04:04:15.880Z",
   "createdAt": "2026-02-19T18:42:36.026Z",
   "id": "bxu2VTNJ8LbdqZTK0qrgV",
   "name": "agente explicador",
@@ -75,7 +75,7 @@
             },
             {
               "column": "PRDID",
-              "value": "={{ $json.PRDID || \"33631\"}}"
+              "value": "={{ $json.PRDID || \"33632\"}}"
             },
             {
               "column": "_meta_target_period",
@@ -506,7 +506,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1904,
+        2272,
         -176
       ],
       "id": "a58ea6d6-e56c-4b7c-87c0-6ace17a30e2d",
@@ -972,32 +972,6 @@
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-5-nano",
-          "mode": "list",
-          "cachedResultName": "gpt-5-nano"
-        },
-        "builtInTools": {},
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
-      "position": [
-        1168,
-        144
-      ],
-      "id": "165306be-3eef-47f8-8e06-79ccefae6bd0",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "Z9zPhNW2TDZXLiTT",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -1177,7 +1151,7 @@
             {
               "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
               "name": "agent_explication",
-              "value": "={{ $json.text }}",
+              "value": "={{ $json.output[0].content[0].text }}",
               "type": "string"
             },
             {
@@ -1193,21 +1167,9 @@
               "type": "string"
             },
             {
-              "id": "aa1d6966-b8a5-4774-af27-e2bada6b1963",
-              "name": "MODEL_forecast_no_cap",
-              "value": "={{ $json.MODEL_forecast_no_cap }}",
-              "type": "string"
-            },
-            {
               "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
               "name": "MODEL_delta_pct",
               "value": "={{ $json.MODEL_delta_pct }}",
-              "type": "string"
-            },
-            {
-              "id": "f2f352b6-26a5-4d01-a5bc-13c4e3cd1262",
-              "name": "MODEL_raw_delta_pct",
-              "value": "={{ $json.MODEL_raw_delta_pct }}",
               "type": "string"
             },
             {
@@ -1215,18 +1177,6 @@
               "name": "MODEL_drivers",
               "value": "={{ $json.MODEL_drivers }}",
               "type": "string"
-            },
-            {
-              "id": "e4a7513b-201f-4d0e-b222-e3f9dc0ffaee",
-              "name": "_debug_status",
-              "value": "={{ $json._debug_status }}",
-              "type": "string"
-            },
-            {
-              "id": "79494e37-6e86-42b9-878a-fea28e6002e3",
-              "name": "_count",
-              "value": "={{ $json._count }}",
-              "type": "number"
             }
           ]
         },
@@ -1235,7 +1185,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1680,
+        2048,
         -176
       ],
       "id": "85b94b99-1533-46ea-876d-d64eb9e5d59c",
@@ -1250,7 +1200,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1456,
+        1824,
         -176
       ],
       "id": "895ad2f2-d169-4fb7-a300-d13ab06d7207",
@@ -1492,28 +1442,6 @@
     },
     {
       "parameters": {
-        "promptType": "define",
-        "text": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json.STATUS }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "=Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
-            }
-          ]
-        },
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        1136,
-        -64
-      ],
-      "id": "700acb92-1337-4e86-b8c7-3812fda49cd6",
-      "name": "Basic LLM Chain1"
-    },
-    {
-      "parameters": {
         "path": "agente-explicador",
         "responseMode": "lastNode",
         "options": {}
@@ -1527,6 +1455,43 @@
       "id": "b46f7576-6214-48a9-ba10-4fdcbaa9d87b",
       "name": "agente-explicador",
       "webhookId": "a316b28e-3d6e-4248-abf8-31e874d4263f"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
+            },
+            {
+              "content": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json.STATUS }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1264,
+        -48
+      ],
+      "id": "3ea16cb4-522b-4271-af12-8d561f42317a",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Z9zPhNW2TDZXLiTT",
+          "name": "OpenAi account"
+        }
+      }
     }
   ],
   "connections": {
@@ -1556,12 +1521,12 @@
       "main": [
         [
           {
-            "node": "Basic LLM Chain1",
+            "node": "Merge3",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Merge3",
+            "node": "Message a model",
             "type": "main",
             "index": 0
           }
@@ -1570,17 +1535,6 @@
           {
             "node": "Edit Fields4",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain1",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -1630,17 +1584,6 @@
         ]
       ]
     },
-    "Basic LLM Chain1": {
-      "main": [
-        [
-          {
-            "node": "Merge3",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
     "Select rows from a table": {
       "main": [
         [
@@ -1659,6 +1602,17 @@
             "node": "Edit Fields",
             "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
@@ -1719,8 +1673,8 @@
       }
     ]
   },
-  "versionId": "1117dd63-028b-4da4-aace-c1c8da756299",
-  "activeVersionId": "1117dd63-028b-4da4-aace-c1c8da756299",
+  "versionId": "5f40e218-8da9-429e-942c-550b713fff3f",
+  "activeVersionId": "5f40e218-8da9-429e-942c-550b713fff3f",
   "triggerCount": 1,
   "shared": [
     {
@@ -1732,9 +1686,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-20T03:38:58.932Z",
-    "createdAt": "2026-02-20T03:38:56.538Z",
-    "versionId": "1117dd63-028b-4da4-aace-c1c8da756299",
+    "updatedAt": "2026-02-20T04:04:18.467Z",
+    "createdAt": "2026-02-20T04:04:15.884Z",
+    "versionId": "5f40e218-8da9-429e-942c-550b713fff3f",
     "workflowId": "bxu2VTNJ8LbdqZTK0qrgV",
     "nodes": [
       {
@@ -1806,7 +1760,7 @@
               },
               {
                 "column": "PRDID",
-                "value": "={{ $json.PRDID || \"33631\"}}"
+                "value": "={{ $json.PRDID || \"33632\"}}"
               },
               {
                 "column": "_meta_target_period",
@@ -2237,7 +2191,7 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6,
         "position": [
-          1904,
+          2272,
           -176
         ],
         "id": "a58ea6d6-e56c-4b7c-87c0-6ace17a30e2d",
@@ -2703,32 +2657,6 @@
       },
       {
         "parameters": {
-          "model": {
-            "__rl": true,
-            "value": "gpt-5-nano",
-            "mode": "list",
-            "cachedResultName": "gpt-5-nano"
-          },
-          "builtInTools": {},
-          "options": {}
-        },
-        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-        "typeVersion": 1.3,
-        "position": [
-          1168,
-          144
-        ],
-        "id": "165306be-3eef-47f8-8e06-79ccefae6bd0",
-        "name": "OpenAI Chat Model",
-        "credentials": {
-          "openAiApi": {
-            "id": "Z9zPhNW2TDZXLiTT",
-            "name": "OpenAi account"
-          }
-        }
-      },
-      {
-        "parameters": {
           "assignments": {
             "assignments": [
               {
@@ -2908,7 +2836,7 @@
               {
                 "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
                 "name": "agent_explication",
-                "value": "={{ $json.text }}",
+                "value": "={{ $json.output[0].content[0].text }}",
                 "type": "string"
               },
               {
@@ -2924,21 +2852,9 @@
                 "type": "string"
               },
               {
-                "id": "aa1d6966-b8a5-4774-af27-e2bada6b1963",
-                "name": "MODEL_forecast_no_cap",
-                "value": "={{ $json.MODEL_forecast_no_cap }}",
-                "type": "string"
-              },
-              {
                 "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
                 "name": "MODEL_delta_pct",
                 "value": "={{ $json.MODEL_delta_pct }}",
-                "type": "string"
-              },
-              {
-                "id": "f2f352b6-26a5-4d01-a5bc-13c4e3cd1262",
-                "name": "MODEL_raw_delta_pct",
-                "value": "={{ $json.MODEL_raw_delta_pct }}",
                 "type": "string"
               },
               {
@@ -2946,18 +2862,6 @@
                 "name": "MODEL_drivers",
                 "value": "={{ $json.MODEL_drivers }}",
                 "type": "string"
-              },
-              {
-                "id": "e4a7513b-201f-4d0e-b222-e3f9dc0ffaee",
-                "name": "_debug_status",
-                "value": "={{ $json._debug_status }}",
-                "type": "string"
-              },
-              {
-                "id": "79494e37-6e86-42b9-878a-fea28e6002e3",
-                "name": "_count",
-                "value": "={{ $json._count }}",
-                "type": "number"
               }
             ]
           },
@@ -2966,7 +2870,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          1680,
+          2048,
           -176
         ],
         "id": "85b94b99-1533-46ea-876d-d64eb9e5d59c",
@@ -2981,7 +2885,7 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          1456,
+          1824,
           -176
         ],
         "id": "895ad2f2-d169-4fb7-a300-d13ab06d7207",
@@ -3223,28 +3127,6 @@
       },
       {
         "parameters": {
-          "promptType": "define",
-          "text": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json.STATUS }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:",
-          "messages": {
-            "messageValues": [
-              {
-                "message": "=Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
-              }
-            ]
-          },
-          "batching": {}
-        },
-        "type": "@n8n/n8n-nodes-langchain.chainLlm",
-        "typeVersion": 1.9,
-        "position": [
-          1136,
-          -64
-        ],
-        "id": "700acb92-1337-4e86-b8c7-3812fda49cd6",
-        "name": "Basic LLM Chain1"
-      },
-      {
-        "parameters": {
           "path": "agente-explicador",
           "responseMode": "lastNode",
           "options": {}
@@ -3258,6 +3140,43 @@
         "id": "b46f7576-6214-48a9-ba10-4fdcbaa9d87b",
         "name": "agente-explicador",
         "webhookId": "a316b28e-3d6e-4248-abf8-31e874d4263f"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-5-nano",
+            "mode": "list",
+            "cachedResultName": "GPT-5-NANO"
+          },
+          "responses": {
+            "values": [
+              {
+                "role": "system",
+                "content": "Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
+              },
+              {
+                "content": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json.STATUS }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:"
+              }
+            ]
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 2.1,
+        "position": [
+          1264,
+          -48
+        ],
+        "id": "3ea16cb4-522b-4271-af12-8d561f42317a",
+        "name": "Message a model",
+        "credentials": {
+          "openAiApi": {
+            "id": "Z9zPhNW2TDZXLiTT",
+            "name": "OpenAi account"
+          }
+        }
       }
     ],
     "connections": {
@@ -3287,12 +3206,12 @@
         "main": [
           [
             {
-              "node": "Basic LLM Chain1",
+              "node": "Merge3",
               "type": "main",
               "index": 0
             },
             {
-              "node": "Merge3",
+              "node": "Message a model",
               "type": "main",
               "index": 0
             }
@@ -3301,17 +3220,6 @@
             {
               "node": "Edit Fields4",
               "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "OpenAI Chat Model": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "Basic LLM Chain1",
-              "type": "ai_languageModel",
               "index": 0
             }
           ]
@@ -3361,17 +3269,6 @@
           ]
         ]
       },
-      "Basic LLM Chain1": {
-        "main": [
-          [
-            {
-              "node": "Merge3",
-              "type": "main",
-              "index": 1
-            }
-          ]
-        ]
-      },
       "Select rows from a table": {
         "main": [
           [
@@ -3393,10 +3290,21 @@
             }
           ]
         ]
+      },
+      "Message a model": {
+        "main": [
+          [
+            {
+              "node": "Merge3",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
       }
     },
     "authors": "Juan  lyncros",
-    "name": "Version 1117dd63",
+    "name": "Version 5f40e218",
     "description": "",
     "autosaved": false
   },
