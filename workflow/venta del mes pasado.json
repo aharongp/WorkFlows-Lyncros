@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-19T16:43:23.389Z",
+  "updatedAt": "2026-02-20T22:16:42.694Z",
   "createdAt": "2026-02-19T16:29:46.887Z",
   "id": "3HGggHSoEjfj1OX7UHJa0",
   "name": "venta del mes pasado",
@@ -153,18 +153,15 @@
           "params": {},
           "query": {},
           "body": {
-            "customerId": "101151",
-            "CUSTID": "101151",
-            "cliente": "101151",
-            "productId": "32011",
-            "PRDID": "32011",
-            "producto": "32011"
+            "customerId": "101699",
+            "CUSTID": "101699",
+            "cliente": "101699",
+            "productId": "33631",
+            "PRDID": "33631",
+            "producto": "33631"
           },
           "webhookUrl": "https://lab.lyncros.com:5678/webhook/ventas-pasadas",
           "executionMode": "production"
-        },
-        "pairedItem": {
-          "item": 0
         }
       }
     ]
