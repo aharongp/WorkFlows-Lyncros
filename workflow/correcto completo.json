@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-20T02:49:59.706Z",
+  "updatedAt": "2026-02-20T23:06:06.228Z",
   "createdAt": "2026-02-15T00:31:17.331Z",
   "id": "NE79qj90G17n8JtH",
   "name": "correcto completo",
@@ -59,7 +59,7 @@
             {
               "id": "ea2200fe-169e-4a9d-96b1-74e2b99d5ada",
               "name": "forecast_offset",
-              "value": 1,
+              "value": 2,
               "type": "number"
             }
           ]
@@ -586,24 +586,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "http://172.17.0.1:8000/predict",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }}\n  }\n] ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        4032,
-        1408
-      ],
-      "id": "c7df5c7d-cdb8-4b04-87ad-b5545e0e3f0c",
-      "name": "HTTP Request"
-    },
-    {
-      "parameters": {
         "operation": "select",
         "schema": {
           "__rl": true,
@@ -637,19 +619,35 @@
     {
       "parameters": {
         "mode": "combine",
-        "fieldsToMatchString": "CUSTID, PRDID",
-        "options": {
-          "multipleMatches": "first"
-        }
+        "fieldsToMatchString": "CUSTID, PRDID, _meta_data_period",
+        "options": {}
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4240,
-        1264
+        4208,
+        1328
       ],
-      "id": "196eb5e4-60fc-47c2-84f1-912e62102dd8",
-      "name": "Merge1"
+      "id": "4ee2eb18-7ee8-4bfc-8a51-cd30476407c8",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://172.17.0.1:8000/predict",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }},\n    \"_meta_data_period\": \"{{ $json._meta_data_period }}\"\n}\n] ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3984,
+        1424
+      ],
+      "id": "7da5bcdb-6b1b-4660-9c0a-c0bbc749ab64",
+      "name": "HTTP Request1"
     }
   ],
   "connections": {
@@ -668,12 +666,12 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
+            "node": "HTTP Request1",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Merge1",
+            "node": "Merge2",
             "type": "main",
             "index": 0
           }
@@ -758,17 +756,6 @@
         ]
       ]
     },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Merge1",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
     "Select rows from a table": {
       "main": [
         [
@@ -780,7 +767,18 @@
         ]
       ]
     },
-    "Merge1": {
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
       "main": [
         [
           {
@@ -802,8 +800,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b93d0e2d-50fc-4fb1-bf32-b33d4ed5e54c",
-  "activeVersionId": "b93d0e2d-50fc-4fb1-bf32-b33d4ed5e54c",
+  "versionId": "4d733b1a-fbcc-4769-a5ae-760cd2283f10",
+  "activeVersionId": "4ea54f07-26c8-433c-b049-016c87a1fe05",
   "triggerCount": 1,
   "shared": [
     {
@@ -815,9 +813,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-20T03:07:20.736Z",
-    "createdAt": "2026-02-20T02:49:59.709Z",
-    "versionId": "b93d0e2d-50fc-4fb1-bf32-b33d4ed5e54c",
+    "updatedAt": "2026-02-20T22:51:05.887Z",
+    "createdAt": "2026-02-20T22:51:03.414Z",
+    "versionId": "4ea54f07-26c8-433c-b049-016c87a1fe05",
     "workflowId": "NE79qj90G17n8JtH",
     "nodes": [
       {
@@ -826,7 +824,7 @@
         "typeVersion": 1,
         "position": [
           2640,
-          1408
+          1400
         ],
         "id": "551dd98e-40d9-4c8e-b410-74c16a705f81",
         "name": "When clicking ‘Execute workflow’"
@@ -917,7 +915,7 @@
         "typeVersion": 2.1,
         "position": [
           2640,
-          1216
+          1208
         ],
         "id": "038e28f5-241c-410d-ac95-6facddd905fe",
         "name": "iniciar-modelo-corrector",
@@ -1387,7 +1385,7 @@
         "typeVersion": 2.6,
         "position": [
           4432,
-          1408
+          1400
         ],
         "id": "6b3b482f-1542-4a7c-9ea8-716732ef4e7d",
         "name": "Insert or update rows in a table1",
@@ -1397,24 +1395,6 @@
             "name": "Postgres account"
           }
         }
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://172.17.0.1:8000/predict",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }}\n  }\n] ",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.3,
-        "position": [
-          4032,
-          1408
-        ],
-        "id": "c7df5c7d-cdb8-4b04-87ad-b5545e0e3f0c",
-        "name": "HTTP Request"
       },
       {
         "parameters": {
@@ -1451,19 +1431,35 @@
       {
         "parameters": {
           "mode": "combine",
-          "fieldsToMatchString": "CUSTID, PRDID",
-          "options": {
-            "multipleMatches": "first"
-          }
+          "fieldsToMatchString": "CUSTID, PRDID, _meta_data_period",
+          "options": {}
         },
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          4240,
-          1264
+          4208,
+          1328
         ],
-        "id": "196eb5e4-60fc-47c2-84f1-912e62102dd8",
-        "name": "Merge1"
+        "id": "4ee2eb18-7ee8-4bfc-8a51-cd30476407c8",
+        "name": "Merge2"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.17.0.1:8000/predict",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }},\n    \"_meta_data_period\": \"{{ $json._meta_data_period }}\"\n}\n] ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          3984,
+          1424
+        ],
+        "id": "7da5bcdb-6b1b-4660-9c0a-c0bbc749ab64",
+        "name": "HTTP Request1"
       }
     ],
     "connections": {
@@ -1482,12 +1478,12 @@
         "main": [
           [
             {
-              "node": "HTTP Request",
+              "node": "HTTP Request1",
               "type": "main",
               "index": 0
             },
             {
-              "node": "Merge1",
+              "node": "Merge2",
               "type": "main",
               "index": 0
             }
@@ -1572,17 +1568,6 @@
           ]
         ]
       },
-      "HTTP Request": {
-        "main": [
-          [
-            {
-              "node": "Merge1",
-              "type": "main",
-              "index": 1
-            }
-          ]
-        ]
-      },
       "Select rows from a table": {
         "main": [
           [
@@ -1594,7 +1579,18 @@
           ]
         ]
       },
-      "Merge1": {
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Merge2",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge2": {
         "main": [
           [
             {
@@ -1607,7 +1603,7 @@
       }
     },
     "authors": "Juan  lyncros",
-    "name": "Version b93d0e2d",
+    "name": "Version 4ea54f07",
     "description": "",
     "autosaved": false
   },
