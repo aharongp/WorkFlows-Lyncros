@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-20T03:02:08.095Z",
+  "updatedAt": "2026-02-20T22:48:20.922Z",
   "createdAt": "2026-02-15T00:31:21.179Z",
   "id": "j30ej6IzqhxPv6js",
   "name": "modelo de correccion heuristica",
@@ -19,8 +19,9 @@
     },
     {
       "parameters": {
-        "path": "correccion heuristica",
+        "path": "correccion-por-mes",
         "responseMode": "lastNode",
+        "responseData": "allEntries",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -32,24 +33,6 @@
       "id": "53b72be3-eb74-49d8-999a-18d17b7e89ad",
       "name": "Webhook",
       "webhookId": "26c81a1c-692d-4204-917c-4389c954ea66"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://172.17.0.1:8000/predict",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }}\n  }\n] ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        656,
-        -120
-      ],
-      "id": "046aa029-b98b-4c00-ad6d-81784e7b1c67",
-      "name": "HTTP Request"
     },
     {
       "parameters": {
@@ -86,10 +69,8 @@
     {
       "parameters": {
         "mode": "combine",
-        "fieldsToMatchString": "CUSTID, PRDID",
-        "options": {
-          "multipleMatches": "first"
-        }
+        "fieldsToMatchString": "CUSTID, PRDID, _meta_data_period",
+        "options": {}
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
@@ -122,7 +103,7 @@
             {
               "id": "547848bf-5f11-4a16-888a-cb5f3c04137f",
               "name": "target_period",
-              "value": "={{ $json.PERIODID3 }}",
+              "value": "={{ $json.query.date }}",
               "type": "string"
             },
             {
@@ -583,6 +564,24 @@
           "name": "Postgres account"
         }
       }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://172.17.0.1:8000/predict",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }},\n    \"_meta_data_period\": \"{{ $json._meta_data_period }}\"\n}\n] ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        656,
+        -128
+      ],
+      "id": "046aa029-b98b-4c00-ad6d-81784e7b1c67",
+      "name": "HTTP Request"
     }
   ],
   "connections": {
@@ -604,17 +603,6 @@
             "node": "Edit Fields",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Merge1",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -683,6 +671,17 @@
           }
         ]
       ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -702,10 +701,40 @@
           "item": 0
         }
       }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "lab.lyncros.com:5678",
+            "connection": "keep-alive",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0 (Edition std-2)",
+            "sec-ch-ua": "\"Opera GX\";v=\"127\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es-419,es;q=0.9,en;q=0.8,id;q=0.7,uk;q=0.6,th;q=0.5"
+          },
+          "params": {},
+          "query": {
+            "date": "2025-02-01",
+            "fecha": "2025-02-01"
+          },
+          "body": {},
+          "webhookUrl": "https://lab.lyncros.com:5678/webhook/correccion-por-mes",
+          "executionMode": "production"
+        }
+      }
     ]
   },
-  "versionId": "f5d0c5a5-3813-4663-a52e-d62f5b8e766c",
-  "activeVersionId": "d4801a28-b20b-484f-98f6-92c19f9ebbd4",
+  "versionId": "38ada449-2691-40bb-9d4b-fad89bafce5b",
+  "activeVersionId": "38ada449-2691-40bb-9d4b-fad89bafce5b",
   "triggerCount": 1,
   "shared": [
     {
@@ -717,9 +746,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-19T19:50:17.486Z",
-    "createdAt": "2026-02-19T19:50:05.497Z",
-    "versionId": "d4801a28-b20b-484f-98f6-92c19f9ebbd4",
+    "updatedAt": "2026-02-20T22:51:09.897Z",
+    "createdAt": "2026-02-20T22:48:20.924Z",
+    "versionId": "38ada449-2691-40bb-9d4b-fad89bafce5b",
     "workflowId": "j30ej6IzqhxPv6js",
     "nodes": [
       {
@@ -735,8 +764,9 @@
       },
       {
         "parameters": {
-          "path": "correccion heuristica",
+          "path": "correccion-por-mes",
           "responseMode": "lastNode",
+          "responseData": "allEntries",
           "options": {}
         },
         "type": "n8n-nodes-base.webhook",
@@ -751,6 +781,53 @@
       },
       {
         "parameters": {
+          "operation": "select",
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "value": "molinos_segmentacion",
+            "mode": "name"
+          },
+          "returnAll": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [
+          208,
+          -288
+        ],
+        "id": "f25fb598-b3f8-4aaf-835e-fb6d5e144f9c",
+        "name": "Select rows from a table",
+        "executeOnce": true,
+        "credentials": {
+          "postgres": {
+            "id": "ezJ6rP6dRWwFUGI9",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "fieldsToMatchString": "CUSTID, PRDID, _meta_data_period",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          880,
+          -192
+        ],
+        "id": "e4a4a97b-8644-44e9-af4c-2dc9b550565a",
+        "name": "Merge1"
+      },
+      {
+        "parameters": {
           "mode": "combine",
           "fieldsToMatchString": "CUSTID, PRDID",
           "options": {}
@@ -761,8 +838,8 @@
           432,
           -192
         ],
-        "id": "72847e27-860f-4c70-93f2-af1b2b6f810f",
-        "name": "Merge"
+        "id": "4b8b9d69-a0fe-4023-83d0-ed4028f17fb5",
+        "name": "Merge2"
       },
       {
         "parameters": {
@@ -771,7 +848,7 @@
               {
                 "id": "547848bf-5f11-4a16-888a-cb5f3c04137f",
                 "name": "target_period",
-                "value": "={{ $json.PERIODID3 || \"2025-10-01\" }}",
+                "value": "={{ $json.query.date }}",
                 "type": "string"
               },
               {
@@ -790,48 +867,13 @@
           -16,
           -192
         ],
-        "id": "e20d286f-0769-4eb0-bb9b-83352dde4fcc",
-        "name": "Edit Fields2"
-      },
-      {
-        "parameters": {
-          "operation": "get",
-          "dataTableId": {
-            "__rl": true,
-            "value": "YV6RAVPW84DWicjA",
-            "mode": "list",
-            "cachedResultName": "clientes clasificados",
-            "cachedResultUrl": "/projects/9axjLTcJCvAcwxP1/datatables/YV6RAVPW84DWicjA"
-          },
-          "limit": 1000
-        },
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1,
-        "position": [
-          208,
-          -288
-        ],
-        "id": "c6eeeaa4-a878-4156-afdc-1d061b03d09c",
-        "name": "Get row(s)1",
-        "executeOnce": true
-      },
-      {
-        "parameters": {
-          "jsCode": "// --- CONFIGURACIÓN AVANZADA ---\nconst PARAMS = {\n    ELASTICITY_PRICE: 1.5,      // Sensibilidad al precio\n    STOCK_PRESSURE_FACTOR: 0.8, // Reacción ante quiebres de stock\n    BIAS_CORRECTION: 1.0,       // Corrección total del error histórico\n    MOMENTUM_FACTOR: 0.65       // Peso de la inercia del mes anterior\n};\n\n// --- 1. PRE-PROCESAMIENTO: AGREGACIÓN DE DUPLICADOS ---\n// Unificamos filas que tengan mismo CUSTID y PRDID\nconst aggregatedItems = {};\n\nfor (const item of items) {\n    const r = item.json;\n  const key = `${r.CUSTID}_${r.PRDID}_${r.PERIODID3}`; \n  \n    if (!aggregatedItems[key]) {\n        // Inicializamos con el primer registro encontrado\n        aggregatedItems[key] = { ...r };\n        aggregatedItems[key]._count = 1;\n        // Aseguramos números\n        aggregatedItems[key].ZSELLOUTCLIENTE = parseFloat(r.ZSELLOUTCLIENTE || 0);\n        aggregatedItems[key].PINDEX = parseFloat(r.PINDEX || 0);\n        aggregatedItems[key].LAST_MONTH_SALE = parseFloat(r.LAST_MONTH_SALE || 0);\n        aggregatedItems[key].foreAct = parseFloat(r.foreAct || 0);\n    } else {\n        // Si ya existe, acumulamos\n        aggregatedItems[key]._count += 1;\n        // Sumamos Sellout (Venta total de todas las tiendas)\n        aggregatedItems[key].ZSELLOUTCLIENTE += parseFloat(r.ZSELLOUTCLIENTE || 0);\n        // Sumamos Pindex para luego promediar\n        aggregatedItems[key].PINDEX += parseFloat(r.PINDEX || 0);\n    }\n}\n\n// Convertimos de vuelta a array y promediamos PINDEX\n// AQUÍ SE DEFINE uniqueItems (Esta era la línea que faltaba)\nconst uniqueItems = Object.values(aggregatedItems).map(r => {\n    if (r._count > 1) {\n        r.PINDEX = r.PINDEX / r._count; // Promedio simple\n    }\n    return { json: r };\n});\n\n// --- 2. MODELO CORRECTOR BIDIRECCIONAL ---\nreturn uniqueItems.map(item => {\n    const r = item.json;\n\n    // A. INPUTS\n    const fcst_original = parseFloat(r.foreAct || 0);\n    const sellout_units = parseFloat(r.ZSELLOUTCLIENTE || 0); \n    const p_index = parseFloat(r.PINDEX || 1.0);\n    const bias_historico = parseFloat(r.BIAS || 0);\n    const last_month_sale = parseFloat(r.LAST_MONTH_SALE || 0);\n    const status = r.STATUS || 'STABLE';\n\n    // ¡AQUÍ ESTÁ EL CAMBIO! Devolvemos la estructura completa en cero.\n    if (fcst_original <= 0) {\n        return {\n            json: {\n                ...r,\n                MODEL_forecast_original: 0,\n                MODEL_forecast_corrected: 0,\n                MODEL_forecast_no_cap: 0,\n                MODEL_delta_pct: '0.0%',\n                MODEL_raw_delta_pct: '0.0%',\n                MODEL_drivers: '',\n                _debug_status: status\n            }\n        };\n    }\n\n    // B. CAP DINÁMICO\n    let MAX_CAP = 0.80;\n    if (status === 'CRITICAL') MAX_CAP = 3.0;      \n    if (status === 'OPPORTUNITY') MAX_CAP = 1.0;  \n    if (status === 'CHAOS') MAX_CAP = 2.0;  \n\n    // C. DRIVERS\n    const price_delta = (1.0 - p_index) * PARAMS.ELASTICITY_PRICE;\n\n    let sellout_delta = 0;\n    if (sellout_units > 0) {\n        const ratio = sellout_units / fcst_original;\n        if (ratio > 1.10) {\n            sellout_delta = (ratio - 1.0) * PARAMS.STOCK_PRESSURE_FACTOR;\n        } else if (ratio < 0.30) {\n            sellout_delta = (ratio - 1.0) * 0.5;\n        }\n    }\n\n    // AJUSTE BIAS\n    let bias_delta = 0;\n    if (Math.abs(bias_historico) > 0.05) {\n        bias_delta = -(bias_historico / (1 + Math.abs(bias_historico))) * PARAMS.BIAS_CORRECTION;\n    }\n\n    let momentum_delta = 0;\n    if (last_month_sale > 0) {\n        const momentum_ratio = last_month_sale / fcst_original;\n        momentum_delta = (momentum_ratio - 1.0) * PARAMS.MOMENTUM_FACTOR;\n    }\n\n    // D. RESULTADO Y PROTECCIÓN DE NEGATIVOS\n    const raw_delta = price_delta + sellout_delta + bias_delta + momentum_delta;\n    \n    // Aplicar Cap\n    let capped_delta = raw_delta;\n    if (capped_delta > MAX_CAP) capped_delta = MAX_CAP;\n    if (capped_delta < -0.95) capped_delta = -0.95; \n    \n    // Segunda capa de seguridad: el CAP por Status\n    if (capped_delta < -MAX_CAP) capped_delta = -MAX_CAP;\n\n    // CÁLCULO FINAL \n    const fcst_corrected = Math.max(0, Math.round(fcst_original * (1 + capped_delta)));\n    const fcst_no_cap = Math.max(0, Math.round(fcst_original * (1 + raw_delta)));\n\n    // Explicación\n    const drivers = [];\n    if (Math.abs(price_delta) > 0.01) drivers.push(`Precio ${(price_delta*100).toFixed(0)}%`);\n    if (Math.abs(sellout_delta) > 0.01) drivers.push(`Sellout ${(sellout_delta*100).toFixed(0)}%`);\n    if (Math.abs(bias_delta) > 0.01) drivers.push(`Bias ${(bias_delta*100).toFixed(0)}%`);\n    if (Math.abs(momentum_delta) > 0.01) drivers.push(`Inercia ${(momentum_delta*100).toFixed(0)}%`);\n\n    return {\n        json: {\n            ...r,\n            MODEL_forecast_original: Math.round(fcst_original),\n            MODEL_forecast_corrected: fcst_corrected,\n            MODEL_forecast_no_cap: fcst_no_cap,\n            MODEL_delta_pct: (capped_delta * 100).toFixed(1) + '%',\n            MODEL_raw_delta_pct: (raw_delta * 100).toFixed(1) + '%',\n            MODEL_drivers: drivers.join(', '),\n            _debug_status: status\n        }\n    };\n});"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          656,
-          -192
-        ],
-        "id": "606d11f6-cc09-4125-9def-62c703a1362b",
-        "name": "Code in JavaScript"
+        "id": "aa4bdcdf-862b-44eb-8f12-277f4d0c7f44",
+        "name": "Edit Fields"
       },
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "SELECT \n    -- 1. IDENTIFICADORES Y FECHA DE LOS DATOS HISTÓRICOS (dataFilter)\n    TO_CHAR(futuro.periodid3 - ($2 || ' month')::INTERVAL, 'YYYY-MM-DD') AS \"PERIODID3\",\n    futuro.prdid AS \"PRDID\",\n    futuro.custid AS \"CUSTID\",\n    \n    -- 2. MÉTRICAS HISTÓRICAS (Vienen del mes pasado. Si no hay, ponemos 0)\n    COALESCE(pasado.adjustedactualsqty, 0) AS \"ADJUSTEDACTUALSQTY\",\n    EXTRACT(MONTH FROM (futuro.periodid3 - ($2 || ' month')::INTERVAL)) AS \"MONTH\",\n    EXTRACT(YEAR FROM (futuro.periodid3 - ($2 || ' month')::INTERVAL)) AS \"YEAR\",\n    COALESCE(pasado.season, futuro.season) AS \"SEASON\",\n    COALESCE(pasado.punitario, 0) AS \"PUNITARIO\",\n    COALESCE(pasado.pindex, 0) AS \"PINDEX\",\n    COALESCE(pasado.som, 0) AS \"SOM\",\n    COALESCE(pasado.sov, 0) AS \"SOV\",\n    COALESCE(pasado.zselloutcliente, 0) AS \"ZSELLOUTCLIENTE\",\n    \n    -- 3. EL FORECAST (Viene del mes objetivo)\n    COALESCE(futuro.foreact, 0) AS \"foreAct\",\n    \n    -- 4. RENOMBRES ESPECÍFICOS PARA TU FLUJO\n    COALESCE(pasado.adjustedactualsqty, 0) AS \"LAST_MONTH_SALE\",\n    futuro.custregion AS \"CUSTREGION\",\n    futuro.custgroup AS \"CUSTGROUP\",\n    \n    -- 5. METADATA GENERADA AUTOMÁTICAMENTE\n    TO_CHAR(futuro.periodid3, 'YYYY-MM-DD') AS \"_meta_target_period\",\n    TO_CHAR(futuro.periodid3 - ($2 || ' month')::INTERVAL, 'YYYY-MM-DD') AS \"_meta_data_period\",\n    TO_CHAR(futuro.periodid3, 'YY-Mon') AS \"_meta_forecast_col\"\n\nFROM \n    molinos_consolidated_data futuro\n\n-- Hacemos un LEFT JOIN para buscar cómo estaba este mismo cliente el mes anterior (o según el offset)\nLEFT JOIN \n    molinos_consolidated_data pasado \n    ON futuro.custid = pasado.custid \n    AND futuro.prdid = pasado.prdid\n    AND pasado.periodid3 = (futuro.periodid3 - ($2 || ' month')::INTERVAL)\n\nWHERE \n    futuro.periodid3 = $1::DATE;",
+          "query": "SELECT \n    -- 1. IDENTIFICADORES Y FECHA DE LOS DATOS HISTÓRICOS (dataFilter)\n    TO_CHAR(futuro.periodid3 - ($2 || ' month')::INTERVAL, 'YYYY-MM-DD') AS \"PERIODID3\",\n    futuro.prdid AS \"PRDID\",\n    futuro.custid AS \"CUSTID\",\n    \n    -- 2. MÉTRICAS HISTÓRICAS (Vienen del mes pasado. Si no hay, ponemos 0)\n    COALESCE(pasado.adjustedactualsqty, 0) AS \"ADJUSTEDACTUALSQTY\",\n    EXTRACT(MONTH FROM (futuro.periodid3 - ($2 || ' month')::INTERVAL)) AS \"MONTH\",\n    EXTRACT(YEAR FROM (futuro.periodid3 - ($2 || ' month')::INTERVAL)) AS \"YEAR\",\n    COALESCE(pasado.season, futuro.season) AS \"SEASON\",\n    COALESCE(pasado.punitario, 0) AS \"PUNITARIO\",\n    COALESCE(pasado.pindex, 0) AS \"PINDEX\",\n    COALESCE(pasado.som, 0) AS \"SOM\",\n    COALESCE(pasado.sov, 0) AS \"SOV\",\n    COALESCE(pasado.zselloutcliente, 0) AS \"ZSELLOUTCLIENTE\",\n    \n    -- 3. EL FORECAST (Viene del mes objetivo)\n    COALESCE(futuro.foreact, 0) AS \"foreAct\",\n    \n    -- 4. RENOMBRES ESPECÍFICOS PARA TU FLUJO\n    COALESCE(pasado.adjustedactualsqty, 0) AS \"LAST_MONTH_SALE\",\n    \n    -- --- NUEVO: CÁLCULO DEL ROLLING 3 MESES ---\n    COALESCE((\n        SELECT AVG(sub.adjustedactualsqty)\n        FROM molinos_consolidated_data sub\n        WHERE sub.custid = futuro.custid \n          AND sub.prdid = futuro.prdid\n          AND sub.periodid3 < futuro.periodid3 -- Meses anteriores al forecast objetivo\n          AND sub.periodid3 >= (futuro.periodid3 - INTERVAL '3 months')\n    ), 0) AS \"rolling_3m_sale\",\n    -- -----------------------------------------\n\n    futuro.custregion AS \"CUSTREGION\",\n    futuro.custgroup AS \"CUSTGROUP\",\n    \n    -- 5. METADATA GENERADA AUTOMÁTICAMENTE\n    TO_CHAR(futuro.periodid3, 'YYYY-MM-DD') AS \"_meta_target_period\",\n    TO_CHAR(futuro.periodid3 - ($2 || ' month')::INTERVAL, 'YYYY-MM-DD') AS \"_meta_data_period\",\n    TO_CHAR(futuro.periodid3, 'YY-Mon') AS \"_meta_forecast_col\"\n\nFROM \n    molinos_consolidated_data futuro\n\n-- Hacemos un LEFT JOIN para buscar cómo estaba este mismo cliente el mes anterior (o según el offset)\nLEFT JOIN \n    molinos_consolidated_data pasado \n    ON futuro.custid = pasado.custid \n    AND futuro.prdid = pasado.prdid\n    AND pasado.periodid3 = (futuro.periodid3 - ($2 || ' month')::INTERVAL)\n\nWHERE \n    futuro.periodid3 = $1::DATE;",
           "options": {
             "queryReplacement": "={{ $json.target_period }}, {{ $json.forecast_offset }}"
           }
@@ -842,8 +884,8 @@
           208,
           -96
         ],
-        "id": "14dd8d91-21d8-4683-9b8c-831b039a9c53",
-        "name": "Execute a SQL query1",
+        "id": "1ee1aa5f-9c8c-42ae-a9f3-c9cd8f685671",
+        "name": "Execute a SQL query",
         "credentials": {
           "postgres": {
             "id": "ezJ6rP6dRWwFUGI9",
@@ -862,8 +904,7 @@
           "table": {
             "__rl": true,
             "value": "molinos_forecast_corregido",
-            "mode": "list",
-            "cachedResultName": "molinos_forecast_corregido"
+            "mode": "name"
           },
           "columns": {
             "mappingMode": "defineBelow",
@@ -882,12 +923,10 @@
               "SOV": "={{ $json.SOV }}",
               "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
               "foreAct": "={{ $json.foreAct }}",
-              "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
+              "MODEL_forecast_original": "={{ $json.foreAct }}",
               "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
-              "MODEL_forecast_no_cap": "={{ $json.MODEL_forecast_no_cap }}",
               "MONTH": "={{ $json.MONTH }}",
               "YEAR": "={{ $json.YEAR }}",
-              "_count": "={{ $json._count }}",
               "CUSTID": "={{ $json.CUSTID }}",
               "PRDID": "={{ $json.PRDID }}",
               "_meta_target_period": "={{ $json._meta_target_period }}",
@@ -898,10 +937,8 @@
               "STRATEGY": "={{ $json.STRATEGY }}",
               "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
               "agent_explication": "={{ $json.agent_explication }}",
-              "_debug_status": "={{ $json._debug_status }}",
               "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
               "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
-              "MODEL_raw_delta_pct": "={{ $json.MODEL_raw_delta_pct }}",
               "MODEL_drivers": "={{ $json.MODEL_drivers }}",
               "PERIODID3": "={{ $json.PERIODID3 }}",
               "_meta_data_period": "={{ $json._meta_data_period }}",
@@ -1007,15 +1044,6 @@
                 "canBeUsedToMatch": false
               },
               {
-                "id": "_debug_status",
-                "displayName": "_debug_status",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
                 "id": "FINAL_SCORE",
                 "displayName": "FINAL_SCORE",
                 "required": false,
@@ -1072,15 +1100,6 @@
               {
                 "id": "MODEL_delta_pct",
                 "displayName": "MODEL_delta_pct",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_raw_delta_pct",
-                "displayName": "MODEL_raw_delta_pct",
                 "required": false,
                 "defaultMatch": false,
                 "display": true,
@@ -1187,15 +1206,6 @@
                 "canBeUsedToMatch": false
               },
               {
-                "id": "MODEL_forecast_no_cap",
-                "displayName": "MODEL_forecast_no_cap",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
                 "id": "MODEL_drivers",
                 "displayName": "MODEL_drivers",
                 "required": false,
@@ -1260,15 +1270,6 @@
                 "canBeUsedToMatch": false
               },
               {
-                "id": "_count",
-                "displayName": "_count",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
                 "id": "createdAt",
                 "displayName": "createdAt",
                 "required": false,
@@ -1296,504 +1297,12 @@
         },
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6,
-        "position": [
-          2128,
-          -320
-        ],
-        "id": "f3c247b8-d5a3-4f5d-917c-c33f3ddf607a",
-        "name": "Insert or update rows in a table",
-        "credentials": {
-          "postgres": {
-            "id": "ezJ6rP6dRWwFUGI9",
-            "name": "Postgres account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 3
-            },
-            "conditions": [
-              {
-                "id": "b00f3564-65de-4a4b-931d-ed4c88d318e7",
-                "leftValue": "={{ $json.agent_explication }}",
-                "rightValue": "",
-                "operator": {
-                  "type": "string",
-                  "operation": "empty",
-                  "singleValue": true
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.3,
         "position": [
           1104,
           -192
         ],
-        "id": "cc9b8a26-204f-4c8d-aa6c-32a5430ee891",
-        "name": "If"
-      },
-      {
-        "parameters": {
-          "operation": "upsert",
-          "schema": {
-            "__rl": true,
-            "mode": "list",
-            "value": "public"
-          },
-          "table": {
-            "__rl": true,
-            "value": "molinos_forecast_corregido",
-            "mode": "list",
-            "cachedResultName": "molinos_forecast_corregido"
-          },
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "FINAL_SCORE": "={{ $json.FINAL_SCORE }}",
-              "IMPACT_SCORE": "={{ $json.IMPACT_SCORE }}",
-              "SIGNAL_SCORE": "={{ $json.SIGNAL_SCORE }}",
-              "BIAS": "={{ $json.BIAS }}",
-              "WAPE": "={{ $json.WAPE }}",
-              "TOTAL_SALES": "={{ $json.TOTAL_SALES }}",
-              "ADJUSTEDACTUALSQTY": "={{ $json.ADJUSTEDACTUALSQTY }}",
-              "LAST_MONTH_SALE": "={{ $json.LAST_MONTH_SALE }}",
-              "PUNITARIO": "={{ $json.PUNITARIO }}",
-              "PINDEX": "={{ $json.PINDEX }}",
-              "SOM": "={{ $json.SOM }}",
-              "SOV": "={{ $json.SOV }}",
-              "ZSELLOUTCLIENTE": "={{ $json.ZSELLOUTCLIENTE }}",
-              "foreAct": "={{ $json.foreAct }}",
-              "MODEL_forecast_original": "={{ $json.MODEL_forecast_original }}",
-              "MODEL_forecast_corrected": "={{ $json.MODEL_forecast_corrected }}",
-              "MODEL_forecast_no_cap": "={{ $json.MODEL_forecast_no_cap }}",
-              "MONTH": "={{ $json.MONTH }}",
-              "YEAR": "={{ $json.YEAR }}",
-              "_count": "={{ $json._count }}",
-              "CUSTID": "={{ $json.CUSTID }}",
-              "PRDID": "={{ $json.PRDID }}",
-              "_meta_target_period": "={{ $json._meta_target_period }}",
-              "CUSTREGION": "={{ $json.CUSTREGION }}",
-              "CUSTGROUP": "={{ $json.CUSTGROUP }}",
-              "SEASON": "={{ $json.SEASON }}",
-              "STATUS": "={{ $json.STATUS }}",
-              "STRATEGY": "={{ $json.STRATEGY }}",
-              "JUSTIFICATION": "={{ $json.JUSTIFICATION }}",
-              "agent_explication": "={{ $json.agent_explication }}",
-              "_debug_status": "={{ $json._debug_status }}",
-              "ERROR_SHARE": "={{ $json.ERROR_SHARE }}",
-              "MODEL_delta_pct": "={{ $json.MODEL_delta_pct }}",
-              "MODEL_raw_delta_pct": "={{ $json.MODEL_raw_delta_pct }}",
-              "MODEL_drivers": "={{ $json.MODEL_drivers }}",
-              "PERIODID3": "={{ $json.PERIODID3 }}",
-              "_meta_data_period": "={{ $json._meta_data_period }}",
-              "_meta_forecast_col": "={{ $json._meta_forecast_col }}"
-            },
-            "matchingColumns": [
-              "CUSTID",
-              "PRDID",
-              "_meta_target_period"
-            ],
-            "schema": [
-              {
-                "id": "id",
-                "displayName": "id",
-                "required": false,
-                "defaultMatch": true,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "CUSTID",
-                "displayName": "CUSTID",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": false
-              },
-              {
-                "id": "PRDID",
-                "displayName": "PRDID",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": false
-              },
-              {
-                "id": "CUSTREGION",
-                "displayName": "CUSTREGION",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "CUSTGROUP",
-                "displayName": "CUSTGROUP",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "SEASON",
-                "displayName": "SEASON",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "STATUS",
-                "displayName": "STATUS",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "STRATEGY",
-                "displayName": "STRATEGY",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "JUSTIFICATION",
-                "displayName": "JUSTIFICATION",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "agent_explication",
-                "displayName": "agent_explication",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "_debug_status",
-                "displayName": "_debug_status",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "FINAL_SCORE",
-                "displayName": "FINAL_SCORE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "IMPACT_SCORE",
-                "displayName": "IMPACT_SCORE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "SIGNAL_SCORE",
-                "displayName": "SIGNAL_SCORE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "BIAS",
-                "displayName": "BIAS",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "WAPE",
-                "displayName": "WAPE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "ERROR_SHARE",
-                "displayName": "ERROR_SHARE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_delta_pct",
-                "displayName": "MODEL_delta_pct",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_raw_delta_pct",
-                "displayName": "MODEL_raw_delta_pct",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "TOTAL_SALES",
-                "displayName": "TOTAL_SALES",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "ADJUSTEDACTUALSQTY",
-                "displayName": "ADJUSTEDACTUALSQTY",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "LAST_MONTH_SALE",
-                "displayName": "LAST_MONTH_SALE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "PUNITARIO",
-                "displayName": "PUNITARIO",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "PINDEX",
-                "displayName": "PINDEX",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "SOM",
-                "displayName": "SOM",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "SOV",
-                "displayName": "SOV",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "ZSELLOUTCLIENTE",
-                "displayName": "ZSELLOUTCLIENTE",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "foreAct",
-                "displayName": "foreAct",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_forecast_original",
-                "displayName": "MODEL_forecast_original",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_forecast_corrected",
-                "displayName": "MODEL_forecast_corrected",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_forecast_no_cap",
-                "displayName": "MODEL_forecast_no_cap",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MODEL_drivers",
-                "displayName": "MODEL_drivers",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "PERIODID3",
-                "displayName": "PERIODID3",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "dateTime",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "MONTH",
-                "displayName": "MONTH",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "YEAR",
-                "displayName": "YEAR",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "_meta_target_period",
-                "displayName": "_meta_target_period",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "dateTime",
-                "canBeUsedToMatch": true,
-                "removed": false
-              },
-              {
-                "id": "_meta_data_period",
-                "displayName": "_meta_data_period",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "dateTime",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "_meta_forecast_col",
-                "displayName": "_meta_forecast_col",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "_count",
-                "displayName": "_count",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": false
-              },
-              {
-                "id": "createdAt",
-                "displayName": "createdAt",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "dateTime",
-                "canBeUsedToMatch": false,
-                "removed": true
-              },
-              {
-                "id": "updatedAt",
-                "displayName": "updatedAt",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "dateTime",
-                "canBeUsedToMatch": false,
-                "removed": true
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.6,
-        "position": [
-          2128,
-          64
-        ],
-        "id": "101c3ab2-0ff2-403a-8c60-703d8ec3b914",
-        "name": "Insert or update rows in a table1",
+        "id": "2de3d7af-1c2c-49be-9801-ac33167cb727",
+        "name": "Insert or update rows in a table2",
         "credentials": {
           "postgres": {
             "id": "ezJ6rP6dRWwFUGI9",
@@ -1803,572 +1312,21 @@
       },
       {
         "parameters": {
-          "model": {
-            "__rl": true,
-            "value": "gpt-5-nano",
-            "mode": "list",
-            "cachedResultName": "gpt-5-nano"
-          },
-          "builtInTools": {},
+          "method": "POST",
+          "url": "http://172.17.0.1:8000/predict",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }},\n    \"_meta_data_period\": \"{{ $json._meta_data_period }}\"\n}\n] ",
           "options": {}
         },
-        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-        "typeVersion": 1.3,
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
         "position": [
-          1392,
-          0
+          656,
+          -128
         ],
-        "id": "c07bac1f-0f24-4e70-af95-d23f29fa1979",
-        "name": "OpenAI Chat Model",
-        "credentials": {
-          "openAiApi": {
-            "id": "Z9zPhNW2TDZXLiTT",
-            "name": "OpenAi account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "2784475a-1084-4d4b-95e2-9c898313f421",
-                "name": "CUSTID",
-                "value": "={{ $json.CUSTID }}",
-                "type": "string"
-              },
-              {
-                "id": "2d28cffb-a076-4ecf-a9f7-feaace172fd2",
-                "name": "PRDID",
-                "value": "={{ $json.PRDID }}",
-                "type": "string"
-              },
-              {
-                "id": "0b63caf7-e9dc-40b5-a069-3b372467e428",
-                "name": "STATUS",
-                "value": "={{ $json.STATUS }}",
-                "type": "string"
-              },
-              {
-                "id": "1b4a936d-dfe3-477d-91d4-1c0dd02dd0c3",
-                "name": "STRATEGY",
-                "value": "={{ $json.STRATEGY }}",
-                "type": "string"
-              },
-              {
-                "id": "a69d2754-86ec-46ac-b9df-7073780be8b1",
-                "name": "FINAL_SCORE",
-                "value": "={{ $json.FINAL_SCORE }}",
-                "type": "number"
-              },
-              {
-                "id": "a707e5d8-499e-4701-9a5b-6c786d804856",
-                "name": "JUSTIFICATION",
-                "value": "={{ $json.JUSTIFICATION }}",
-                "type": "string"
-              },
-              {
-                "id": "26a72660-fe5a-4137-bfe4-4053643229aa",
-                "name": "ERROR_SHARE",
-                "value": "={{ $json.ERROR_SHARE }}",
-                "type": "string"
-              },
-              {
-                "id": "11f5b705-abe2-4ba6-9ada-949669c2d3a5",
-                "name": "IMPACT_SCORE",
-                "value": "={{ $json.IMPACT_SCORE }}",
-                "type": "string"
-              },
-              {
-                "id": "36e352b5-bc35-4b41-bf0b-ffebb93626bb",
-                "name": "SIGNAL_SCORE",
-                "value": "={{ $json.SIGNAL_SCORE }}",
-                "type": "string"
-              },
-              {
-                "id": "61413328-3386-42d8-8433-318eec04a44d",
-                "name": "TOTAL_SALES",
-                "value": "={{ $json.TOTAL_SALES }}",
-                "type": "number"
-              },
-              {
-                "id": "199b809c-e050-4a63-9916-e56bc2a21d49",
-                "name": "BIAS",
-                "value": "={{ $json.BIAS }}",
-                "type": "string"
-              },
-              {
-                "id": "016e4082-9568-4af1-ab21-44caebe47d63",
-                "name": "WAPE",
-                "value": "={{ $json.WAPE }}",
-                "type": "string"
-              },
-              {
-                "id": "198c1a37-e310-4c6b-bc2a-4c4b697a4af4",
-                "name": "PERIODID3",
-                "value": "={{ $json.PERIODID3 }}",
-                "type": "string"
-              },
-              {
-                "id": "fa623f20-0f99-4d9f-81be-938fea7aa865",
-                "name": "ADJUSTEDACTUALSQTY",
-                "value": "={{ $json.ADJUSTEDACTUALSQTY }}",
-                "type": "string"
-              },
-              {
-                "id": "fc9144b9-ceb0-4c76-a78e-14a77ca10e03",
-                "name": "MONTH",
-                "value": "={{ $json.MONTH }}",
-                "type": "string"
-              },
-              {
-                "id": "07762c64-0467-4ebd-b278-15223498c74d",
-                "name": "YEAR",
-                "value": "={{ $json.YEAR }}",
-                "type": "string"
-              },
-              {
-                "id": "5daeb1e9-427d-4118-bd93-3b8e36ec9375",
-                "name": "SEASON",
-                "value": "={{ $json.SEASON }}",
-                "type": "string"
-              },
-              {
-                "id": "3c991fca-69d8-4121-ade1-683f8f913e2e",
-                "name": "PUNITARIO",
-                "value": "={{ $json.PUNITARIO }}",
-                "type": "string"
-              },
-              {
-                "id": "5406cc88-de7a-414a-a555-70887c3f5739",
-                "name": "PINDEX",
-                "value": "={{ $json.PINDEX }}",
-                "type": "number"
-              },
-              {
-                "id": "66c3b7de-f058-420f-9be1-275c41aed9bf",
-                "name": "SOM",
-                "value": "={{ $json.SOM }}",
-                "type": "string"
-              },
-              {
-                "id": "9dacff5f-3356-407f-828d-7c6f96477b90",
-                "name": "SOV",
-                "value": "={{ $json.SOV }}",
-                "type": "string"
-              },
-              {
-                "id": "03807724-b34d-416b-8082-2ac92d5373f8",
-                "name": "ZSELLOUTCLIENTE",
-                "value": "={{ $json.ZSELLOUTCLIENTE }}",
-                "type": "number"
-              },
-              {
-                "id": "76371e6b-a257-46c9-b7e1-aa8fe5d469f5",
-                "name": "foreAct",
-                "value": "={{ $json.foreAct }}",
-                "type": "number"
-              },
-              {
-                "id": "d8a8a45c-d9f4-45b9-9ab3-3e28eac7219a",
-                "name": "LAST_MONTH_SALE",
-                "value": "={{ $json.LAST_MONTH_SALE }}",
-                "type": "number"
-              },
-              {
-                "id": "79bde76a-dcd0-4e8f-a6c7-c94eea2cee5a",
-                "name": "CUSTREGION",
-                "value": "={{ $json.CUSTREGION }}",
-                "type": "string"
-              },
-              {
-                "id": "84af775b-e463-44a6-879a-c3fe7cc1700d",
-                "name": "CUSTGROUP",
-                "value": "={{ $json.CUSTGROUP }}",
-                "type": "string"
-              },
-              {
-                "id": "ac4716e7-311e-4ad8-b17f-419aa21a10c1",
-                "name": "_meta_target_period",
-                "value": "={{ $json._meta_target_period }}",
-                "type": "string"
-              },
-              {
-                "id": "6fafa67a-9e57-46b5-8752-172d6352db95",
-                "name": "_meta_data_period",
-                "value": "={{ $json._meta_data_period }}",
-                "type": "string"
-              },
-              {
-                "id": "0bf92e4e-a6de-41b6-b779-5068570dfdf0",
-                "name": "_meta_forecast_col",
-                "value": "={{ $json._meta_forecast_col }}",
-                "type": "string"
-              },
-              {
-                "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
-                "name": "agent_explication",
-                "value": "={{ $json.output[0].content[0].text }}",
-                "type": "string"
-              },
-              {
-                "id": "1422b2c6-8973-4c48-b1ed-7328e999ec21",
-                "name": "MODEL_forecast_original",
-                "value": "={{ $json.MODEL_forecast_original }}",
-                "type": "string"
-              },
-              {
-                "id": "cc265cee-46c2-4fdf-9d8d-682ad80ebb4c",
-                "name": "MODEL_forecast_corrected",
-                "value": "={{ $json.MODEL_forecast_corrected }}",
-                "type": "string"
-              },
-              {
-                "id": "aa1d6966-b8a5-4774-af27-e2bada6b1963",
-                "name": "MODEL_forecast_no_cap",
-                "value": "={{ $json.MODEL_forecast_no_cap }}",
-                "type": "string"
-              },
-              {
-                "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
-                "name": "MODEL_delta_pct",
-                "value": "={{ $json.MODEL_delta_pct }}",
-                "type": "string"
-              },
-              {
-                "id": "f2f352b6-26a5-4d01-a5bc-13c4e3cd1262",
-                "name": "MODEL_raw_delta_pct",
-                "value": "={{ $json.MODEL_raw_delta_pct }}",
-                "type": "string"
-              },
-              {
-                "id": "9d3baadb-cb2e-4034-b190-64f672c9f17c",
-                "name": "MODEL_drivers",
-                "value": "={{ $json.MODEL_drivers }}",
-                "type": "string"
-              },
-              {
-                "id": "e4a7513b-201f-4d0e-b222-e3f9dc0ffaee",
-                "name": "_debug_status",
-                "value": "={{ $json._debug_status }}",
-                "type": "string"
-              },
-              {
-                "id": "79494e37-6e86-42b9-878a-fea28e6002e3",
-                "name": "_count",
-                "value": "={{ $json._count }}",
-                "type": "number"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          1904,
-          -320
-        ],
-        "id": "041e74a1-f949-4c7b-ad62-be9ff7b5be76",
-        "name": "Edit Fields3"
-      },
-      {
-        "parameters": {
-          "mode": "combine",
-          "combineBy": "combineByPosition",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.merge",
-        "typeVersion": 3.2,
-        "position": [
-          1680,
-          -320
-        ],
-        "id": "3fe7d4f7-ac00-4e8e-9aac-32f6e0753b32",
-        "name": "Merge3"
-      },
-      {
-        "parameters": {
-          "jsCode": "const results = [];\n\nfor (const item of items) {\n    const r = item.json;\n    \n    // Si el forecast es cero, texto genérico\n    if (r.MODEL_forecast_corrected === 0) {\n        r.agent_explication = \"Sin pronóstico activo para este periodo.\";\n    } \n    // Si está estable, texto genérico con sus variables\n    else if (r.STATUS === 'STABLE') {\n        r.agent_explication = \"Mantenimiento de tendencia normal. Sin anomalías detectadas. Corrección de \" + r.MODEL_delta_pct + \" con max cap de 80%.\";\n    }\n    // Si no cae en los de arriba (CRITICAL, CHAOS, OPPORTUNITY), \n    // r.agent_explication quedará vacío/undefined, listo para tu Switch.\n\n    results.push({ json: r });\n}\n\nreturn results;"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          880,
-          -192
-        ],
-        "id": "ed930ad8-5092-410b-aecf-9ca67f7065c1",
-        "name": "Code in JavaScript2"
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "2784475a-1084-4d4b-95e2-9c898313f421",
-                "name": "CUSTID",
-                "value": "={{ $json.CUSTID }}",
-                "type": "string"
-              },
-              {
-                "id": "2d28cffb-a076-4ecf-a9f7-feaace172fd2",
-                "name": "PRDID",
-                "value": "={{ $json.PRDID }}",
-                "type": "string"
-              },
-              {
-                "id": "0b63caf7-e9dc-40b5-a069-3b372467e428",
-                "name": "STATUS",
-                "value": "={{ $json.STATUS }}",
-                "type": "string"
-              },
-              {
-                "id": "1b4a936d-dfe3-477d-91d4-1c0dd02dd0c3",
-                "name": "STRATEGY",
-                "value": "={{ $json.STRATEGY }}",
-                "type": "string"
-              },
-              {
-                "id": "a69d2754-86ec-46ac-b9df-7073780be8b1",
-                "name": "FINAL_SCORE",
-                "value": "={{ $json.FINAL_SCORE }}",
-                "type": "number"
-              },
-              {
-                "id": "a707e5d8-499e-4701-9a5b-6c786d804856",
-                "name": "JUSTIFICATION",
-                "value": "={{ $json.JUSTIFICATION }}",
-                "type": "string"
-              },
-              {
-                "id": "26a72660-fe5a-4137-bfe4-4053643229aa",
-                "name": "ERROR_SHARE",
-                "value": "={{ $json.ERROR_SHARE }}",
-                "type": "string"
-              },
-              {
-                "id": "11f5b705-abe2-4ba6-9ada-949669c2d3a5",
-                "name": "IMPACT_SCORE",
-                "value": "={{ $json.IMPACT_SCORE }}",
-                "type": "string"
-              },
-              {
-                "id": "36e352b5-bc35-4b41-bf0b-ffebb93626bb",
-                "name": "SIGNAL_SCORE",
-                "value": "={{ $json.SIGNAL_SCORE }}",
-                "type": "string"
-              },
-              {
-                "id": "61413328-3386-42d8-8433-318eec04a44d",
-                "name": "TOTAL_SALES",
-                "value": "={{ $json.TOTAL_SALES }}",
-                "type": "number"
-              },
-              {
-                "id": "199b809c-e050-4a63-9916-e56bc2a21d49",
-                "name": "BIAS",
-                "value": "={{ $json.BIAS }}",
-                "type": "string"
-              },
-              {
-                "id": "016e4082-9568-4af1-ab21-44caebe47d63",
-                "name": "WAPE",
-                "value": "={{ $json.WAPE }}",
-                "type": "string"
-              },
-              {
-                "id": "198c1a37-e310-4c6b-bc2a-4c4b697a4af4",
-                "name": "PERIODID3",
-                "value": "={{ $json.PERIODID3 }}",
-                "type": "string"
-              },
-              {
-                "id": "fa623f20-0f99-4d9f-81be-938fea7aa865",
-                "name": "ADJUSTEDACTUALSQTY",
-                "value": "={{ $json.ADJUSTEDACTUALSQTY }}",
-                "type": "string"
-              },
-              {
-                "id": "fc9144b9-ceb0-4c76-a78e-14a77ca10e03",
-                "name": "MONTH",
-                "value": "={{ $json.MONTH }}",
-                "type": "string"
-              },
-              {
-                "id": "07762c64-0467-4ebd-b278-15223498c74d",
-                "name": "YEAR",
-                "value": "={{ $json.YEAR }}",
-                "type": "string"
-              },
-              {
-                "id": "5daeb1e9-427d-4118-bd93-3b8e36ec9375",
-                "name": "SEASON",
-                "value": "={{ $json.SEASON }}",
-                "type": "string"
-              },
-              {
-                "id": "3c991fca-69d8-4121-ade1-683f8f913e2e",
-                "name": "PUNITARIO",
-                "value": "={{ $json.PUNITARIO }}",
-                "type": "string"
-              },
-              {
-                "id": "5406cc88-de7a-414a-a555-70887c3f5739",
-                "name": "PINDEX",
-                "value": "={{ $json.PINDEX }}",
-                "type": "number"
-              },
-              {
-                "id": "66c3b7de-f058-420f-9be1-275c41aed9bf",
-                "name": "SOM",
-                "value": "={{ $json.SOM }}",
-                "type": "string"
-              },
-              {
-                "id": "9dacff5f-3356-407f-828d-7c6f96477b90",
-                "name": "SOV",
-                "value": "={{ $json.SOV }}",
-                "type": "string"
-              },
-              {
-                "id": "03807724-b34d-416b-8082-2ac92d5373f8",
-                "name": "ZSELLOUTCLIENTE",
-                "value": "={{ $json.ZSELLOUTCLIENTE }}",
-                "type": "number"
-              },
-              {
-                "id": "76371e6b-a257-46c9-b7e1-aa8fe5d469f5",
-                "name": "foreAct",
-                "value": "={{ $json.foreAct }}",
-                "type": "number"
-              },
-              {
-                "id": "d8a8a45c-d9f4-45b9-9ab3-3e28eac7219a",
-                "name": "LAST_MONTH_SALE",
-                "value": "={{ $json.LAST_MONTH_SALE }}",
-                "type": "number"
-              },
-              {
-                "id": "79bde76a-dcd0-4e8f-a6c7-c94eea2cee5a",
-                "name": "CUSTREGION",
-                "value": "={{ $json.CUSTREGION }}",
-                "type": "string"
-              },
-              {
-                "id": "84af775b-e463-44a6-879a-c3fe7cc1700d",
-                "name": "CUSTGROUP",
-                "value": "={{ $json.CUSTGROUP }}",
-                "type": "string"
-              },
-              {
-                "id": "ac4716e7-311e-4ad8-b17f-419aa21a10c1",
-                "name": "_meta_target_period",
-                "value": "={{ $json._meta_target_period }}",
-                "type": "string"
-              },
-              {
-                "id": "6fafa67a-9e57-46b5-8752-172d6352db95",
-                "name": "_meta_data_period",
-                "value": "={{ $json._meta_data_period }}",
-                "type": "string"
-              },
-              {
-                "id": "0bf92e4e-a6de-41b6-b779-5068570dfdf0",
-                "name": "_meta_forecast_col",
-                "value": "={{ $json._meta_forecast_col }}",
-                "type": "string"
-              },
-              {
-                "id": "c2caa95f-04b0-43e1-ad22-abbd23bfc6ef",
-                "name": "agent_explication",
-                "value": "={{ $json.output[0].content[0].text }}",
-                "type": "string"
-              },
-              {
-                "id": "1422b2c6-8973-4c48-b1ed-7328e999ec21",
-                "name": "MODEL_forecast_original",
-                "value": "={{ $json.MODEL_forecast_original }}",
-                "type": "string"
-              },
-              {
-                "id": "cc265cee-46c2-4fdf-9d8d-682ad80ebb4c",
-                "name": "MODEL_forecast_corrected",
-                "value": "={{ $json.MODEL_forecast_corrected }}",
-                "type": "string"
-              },
-              {
-                "id": "aa1d6966-b8a5-4774-af27-e2bada6b1963",
-                "name": "MODEL_forecast_no_cap",
-                "value": "={{ $json.MODEL_forecast_no_cap }}",
-                "type": "string"
-              },
-              {
-                "id": "2d4841bb-7292-4cf4-980d-fae17470cadf",
-                "name": "MODEL_delta_pct",
-                "value": "={{ $json.MODEL_delta_pct }}",
-                "type": "string"
-              },
-              {
-                "id": "f2f352b6-26a5-4d01-a5bc-13c4e3cd1262",
-                "name": "MODEL_raw_delta_pct",
-                "value": "={{ $json.MODEL_raw_delta_pct }}",
-                "type": "string"
-              },
-              {
-                "id": "9d3baadb-cb2e-4034-b190-64f672c9f17c",
-                "name": "MODEL_drivers",
-                "value": "={{ $json.MODEL_drivers }}",
-                "type": "string"
-              },
-              {
-                "id": "e4a7513b-201f-4d0e-b222-e3f9dc0ffaee",
-                "name": "_debug_status",
-                "value": "={{ $json._debug_status }}",
-                "type": "string"
-              },
-              {
-                "id": "79494e37-6e86-42b9-878a-fea28e6002e3",
-                "name": "_count",
-                "value": "={{ $json._count }}",
-                "type": "number"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          1904,
-          64
-        ],
-        "id": "b9a0b64c-0a00-4397-8eb6-de090ca3b65e",
-        "name": "Edit Fields4"
-      },
-      {
-        "parameters": {
-          "promptType": "define",
-          "text": "=Contexto de Negocio:\n- Perfil del Cliente: {{ $json[\"_debug_status\"] }}\n- Venta Real Mes Pasado: {{ $json[\"LAST_MONTH_SALE\"] }} unidades.\n\nAjuste del Modelo:\n- Forecast Original: {{ $json[\"MODEL_forecast_original\"] }} unid.\n- Nuevo Forecast IA: {{ $json[\"MODEL_forecast_corrected\"] }} unid.\n- Variación: {{ $json[\"MODEL_delta_pct\"] }}\n\nDrivers que motivaron el cambio: {{ $json[\"MODEL_drivers\"] }}\n\nRedacta la justificación comercial:",
-          "messages": {
-            "messageValues": [
-              {
-                "message": "=Eres un Analista Senior de Demand Planning en Molinos. Tu objetivo es explicar a los gerentes comerciales por qué la Inteligencia Artificial modificó el pronóstico estadístico de ventas.\nDebes redactar 1 a 2 oraciones fluidas, profesionales y orientadas al negocio. NUNCA suenes como un robot leyendo variables; narra la historia detrás de los números.\n\nREGLAS DE TRADUCCIÓN DE DRIVERS (Usa lenguaje de negocio comercial):\n- Inercia: Tradúcelo como \"fuerte tracción de ventas recientes\" o \"desaceleración en la demanda del mes pasado\".\n- Bias: Tradúcelo como \"corrección de una subestimación/sobreestimación histórica recurrente\".\n- Precio: Tradúcelo como \"aprovechamiento de precio competitivo\" o \"freno por encarecimiento relativo\".\n- Sellout: Tradúcelo como \"prevención de quiebre de stock en calle\" o \"riesgo de sobreinventario por baja rotación al consumidor\".\n\nTONO SEGÚN PERFIL DE RIESGO:\n- CRITICAL: Tono firme y seguro. Justifica el ajuste fuerte para proteger el volumen, ya que es un cliente de alto impacto.\n- CHAOS: Tono preventivo y cauteloso. Menciona que se detectaron señales, pero se APLICÓ UN FRENO (límite de seguridad) porque el comportamiento del cliente es muy errático e inestable.\n- OPPORTUNITY: Tono comercial. Destaca la captura de una señal de venta clara.\n\nREGLA DE FORMATO:\nMenciona sutilmente las unidades de los números clave si ayuda a entender la magnitud, pero sé directo. No uses saludos."
-              }
-            ]
-          },
-          "batching": {
-            "batchSize": 50,
-            "delayBetweenBatches": 6000
-          }
-        },
-        "type": "@n8n/n8n-nodes-langchain.chainLlm",
-        "typeVersion": 1.9,
-        "position": [
-          1360,
-          -208
-        ],
-        "id": "3823fafd-5896-435a-8dfe-ba86c27471b3",
-        "name": "Basic LLM Chain1"
+        "id": "046aa029-b98b-4c00-ad6d-81784e7b1c67",
+        "name": "HTTP Request"
       }
     ],
     "connections": {
@@ -2376,7 +1334,7 @@
         "main": [
           [
             {
-              "node": "Edit Fields2",
+              "node": "Edit Fields",
               "type": "main",
               "index": 0
             }
@@ -2387,166 +1345,83 @@
         "main": [
           [
             {
-              "node": "Edit Fields2",
+              "node": "Edit Fields",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Merge": {
+      "Select rows from a table": {
         "main": [
           [
             {
-              "node": "Code in JavaScript",
+              "node": "Merge2",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Edit Fields2": {
+      "Merge1": {
         "main": [
           [
             {
-              "node": "Execute a SQL query1",
+              "node": "Insert or update rows in a table2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
               "type": "main",
               "index": 0
             },
             {
-              "node": "Get row(s)1",
+              "node": "Merge1",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Get row(s)1": {
+      "Edit Fields": {
         "main": [
           [
             {
-              "node": "Merge",
+              "node": "Execute a SQL query",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Select rows from a table",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Code in JavaScript": {
+      "Execute a SQL query": {
         "main": [
           [
             {
-              "node": "Code in JavaScript2",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Execute a SQL query1": {
-        "main": [
-          [
-            {
-              "node": "Merge",
+              "node": "Merge2",
               "type": "main",
               "index": 1
             }
           ]
         ]
       },
-      "Insert or update rows in a table": {
-        "main": [
-          []
-        ]
-      },
-      "If": {
+      "HTTP Request": {
         "main": [
           [
             {
-              "node": "Basic LLM Chain1",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Merge3",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Edit Fields4",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Insert or update rows in a table1": {
-        "main": [
-          []
-        ]
-      },
-      "OpenAI Chat Model": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "Basic LLM Chain1",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Edit Fields3": {
-        "main": [
-          [
-            {
-              "node": "Insert or update rows in a table",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Merge3": {
-        "main": [
-          [
-            {
-              "node": "Edit Fields3",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Code in JavaScript2": {
-        "main": [
-          [
-            {
-              "node": "If",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Edit Fields4": {
-        "main": [
-          [
-            {
-              "node": "Insert or update rows in a table1",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Basic LLM Chain1": {
-        "main": [
-          [
-            {
-              "node": "Merge3",
+              "node": "Merge1",
               "type": "main",
               "index": 1
             }
@@ -2555,7 +1430,7 @@
       }
     },
     "authors": "Juan  lyncros",
-    "name": "Version d4801a28",
+    "name": "Version 38ada449",
     "description": "",
     "autosaved": false
   },
