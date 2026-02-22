@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-20T23:06:06.228Z",
+  "updatedAt": "2026-02-22T02:22:41.685Z",
   "createdAt": "2026-02-15T00:31:17.331Z",
   "id": "NE79qj90G17n8JtH",
   "name": "correcto completo",
@@ -634,7 +634,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://172.17.0.1:8000/predict",
+        "url": "http://172.17.0.1:8001/predict",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "=[\n  {\n    \"PRDID\": \"{{ $json.PRDID }}\",\n    \"CUSTID\": \"{{ $json.CUSTID }}\",\n    \"foreAct\": {{ $json.foreAct.toNumber() }},\n    \"PINDEX\": {{ $json.PINDEX.toNumber() }},\n    \"ZSELLOUTCLIENTE\": {{ $json.ZSELLOUTCLIENTE.toNumber() }},\n    \"LAST_MONTH_SALE\": {{ $json.LAST_MONTH_SALE.toNumber() }},\n    \"rolling_3m_sale\": {{ $json.rolling_3m_sale.toNumber() }},\n    \"MONTH\": {{ $json.MONTH.toNumber() }},\n    \"CUSTREGION\": \"{{ $json.CUSTREGION }}\",\n    \"STATUS\": \"{{ $json.STATUS }}\",\n    \"STRATEGY\": \"{{ $json.STRATEGY }}\",\n    \"FINAL_SCORE\": {{ $json.FINAL_SCORE }},\n    \"IMPACT_SCORE\": {{ $json.IMPACT_SCORE }},\n    \"_meta_data_period\": \"{{ $json._meta_data_period }}\"\n}\n] ",
@@ -800,7 +800,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4d733b1a-fbcc-4769-a5ae-760cd2283f10",
+  "versionId": "1ca43931-42b1-49a2-8f7d-75918b0bf62c",
   "activeVersionId": "4ea54f07-26c8-433c-b049-016c87a1fe05",
   "triggerCount": 1,
   "shared": [
